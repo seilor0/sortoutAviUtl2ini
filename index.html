@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>format AviUtl2 ini</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div id="root">
+
+    <div class="sidemenu">
+      <h1>sort out<br>AviUtl2.ini</h1>
+      <button class="clickNextInput round blue">aviutl2.iniを読み込む</button>
+      <input type="file" id="iniInput" accept=".ini">
+      <button id="copy" class="round blue">iniファイルを保存</button>
+      <button id="back2readPt" class="round">読み込み時の設定に戻す</button>
+      <button id="clear" class="round">クリア</button>
+
+      <div>
+        <button class="link" popovertarget="modal">使い方</button>
+        <a href="https://github.com/seilor0/sortoutAviUtl2ini">GitHub</a>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="tab-ribbon">
+        <label>
+          <input type="radio" name="process" value="home" checked>
+          Home
+        </label>
+        <label>
+          <input type="radio" name="process" value="labeling">
+          ラベル分け
+        </label>
+        <label>
+          <input type="radio" name="process" value="deleteDup">
+          設定を削除
+        </label>
+      </div>
+  
+      <div>
+        <div data-process="home" class="active">
+          以下の2つのことが手軽にできるサイトです。
+          <ul>
+            <li>スクリプトのラベル分け</li>
+            <li>アンインストールしたスクリプトetc.の設定の確認・削除</li>
+          </ul>
+  
+          <h3>使い方</h3>
+          <ol>
+            <li>
+              「アプリケーションデータ」フォルダ内の<code>aviutl2.ini</code>を読み込む<br>
+              <span class="annotation">※「アプリケーションデータ」フォルダはAviUtl2の<code>「その他」メニュー > 「アプリケーションデータ」 > 「アプリケーションデータフォルダ」</code>から開くことができます</span>
+            </li>
+            <li>各種変更する</li>
+            <li>「iniファイルを保存」ボタンから、1.と同じ<code>aviutl2.ini</code>を上書き保存する</li>
+          </ol>
+          <p class="annotation">※各種変更のやり方の詳細は、画面左下の「<span style="color: var(--blue);">使い方</span>」を見てください</p>
+          
+  
+          <h3>！注意！</h3>
+          <p>
+            予期せぬ不具合により、今までカスタマイズしたAviUtl2の設定が壊れる可能性があります。<br>
+            <span class="annotation">※「3. aviutl2.iniを上書き保存」をしない限りは大丈夫です。</span><br>
+    
+            必ず<mark>aviutl2.iniのバックアップを取ってから</mark>当サイトを使用することを推奨します。
+          </p>
+        </div>
+
+
+        <div data-process="labeling" class="column">
+          <aside class="sub-sidemenu">
+            <label class="select-tag">
+              <input type="radio" name="type-labeling" value="Color">
+              Color
+            </label>
+            <label class="select-tag">
+              <input type="radio" name="type-labeling" value="Effect" checked>
+              Effect
+            </label>
+            <label class="select-tag">
+              <input type="radio" name="type-labeling" value="Font">
+              Font
+            </label>
+            <label class="select-tag">
+              <input type="radio" name="type-labeling" value="Movement">
+              Movement
+            </label>
+            <label class="select-tag">
+              <input type="radio" name="type-labeling" value="Params">
+              Params
+            </label>
+          </aside>
+
+          <div class="sub-sidemenu new-mofism">
+            <div class="new-folder" draggable="true" id="newFolder">
+              <span class="material-symbols-outlined hover">drag_indicator</span>
+              <span class="material-symbols-outlined">create_new_folder</span>
+              New Group
+              <span class="material-symbols-outlined" style="font-size: 1.75rem;
+              margin-inline: 4px 0;">arrow_right_alt</span>
+            </div>
+
+            <div class="drop-area" id="2topAll">
+              全体の先頭へ
+              <span class="material-symbols-outlined">arrow_left_alt</span>
+            </div>
+            <div class="drop-area" id="2bottomAll">
+              全体の末尾へ
+              <span class="material-symbols-outlined">arrow_left_alt</span>
+            </div>
+            <div class="drop-area" id="2topGroup">
+              グループの先頭へ
+              <span class="material-symbols-outlined">arrow_left_alt</span>
+            </div>
+            <div class="drop-area" id="2bottomGroup">
+              グループの末尾へ
+              <span class="material-symbols-outlined">arrow_left_alt</span>
+            </div>
+
+            <label class="toggle-button" style="justify-content: center;height: 2.5rem;">
+              <input type="checkbox" id="previewFont" checked>
+              フォントをプレビュー
+              <span class="slider"></span>
+            </label>
+            
+            <button id="toggleDetails" class="round" data-toggle="close">全グループを開く/閉じる</button>
+
+            <button id="back2savePt" class="round">変更前に戻す</button>
+
+            <button id="sortByLabel" class="round">ラベルでソート</button>
+
+            <label class="toggle-button">
+              <input type="checkbox" id="isAsc" checked>
+              <span class="checked">昇順</span>
+              <span class="not-checked">降順</span>
+              <span class="slider"></span>
+            </label>
+
+            <label class="toggle-button">
+              <input type="checkbox" id="folderIsBottom" checked>
+              <span class="checked">グループが末尾</span>
+              <span class="not-checked">グループが先頭</span>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="result"></div>
+        </div>
+
+        <div data-process="deleteDup" class="column">
+          <aside class="sub-sidemenu">
+            <label class="select-tag">
+              <input type="radio" name="type-delDup" value="Color">
+              Color
+            </label>
+            <label class="select-tag">
+              <input type="radio" name="type-delDup" value="Effect" checked>
+              Effect
+            </label>
+            <label class="select-tag">
+              <input type="radio" name="type-delDup" value="Font">
+              Font
+            </label>
+            <label class="select-tag">
+              <input type="radio" name="type-delDup" value="Input">
+              Input
+            </label>
+            <label class="select-tag">
+              <input type="radio" name="type-delDup" value="Movement">
+              Movement
+            </label>
+            <label class="select-tag">
+              <input type="radio" name="type-delDup" value="Output">
+              Output
+            </label>
+            <label class="select-tag">
+              <input type="radio" name="type-delDup" value="Params">
+              Params
+            </label>
+
+            <div class="sub-sidemenu new-mofism" style="margin-block-start: 1rem;padding:0.5rem 1rem;">
+              <p style="font-size: smaller;margin-block-start: 0.5rem;">ソート：</p>
+              <select id="sortStyle">
+                <option value="defOrder" selected>読み込み時の並び順</option>
+                <option value="order">変更後の並び順</option>
+                <option value="name">パッケージ名</option>
+                <option value="checked">状態</option>
+              </select>
+  
+              <label class="toggle-button" style="justify-content: center;height: 2.5rem;">
+                <input type="checkbox" id="previewFont-delDup" checked>
+                フォントをプレビュー
+                <span class="slider"></span>
+              </label>
+            </div>
+
+          </aside>
+
+          <div class="result">
+            <table>
+              <thead>
+                <tr>
+                  <th>X</th>
+                  <th>種別</th>
+                  <th>order</th>
+                  <th>パッケージ名</th>
+                  <th>設定</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>        
+      </div>
+    </div>
+
+    <dialog id="modal" popover="auto" style="width: 46rem;">
+      <header>
+        <h2>使い方</h2>
+        <button class="icon-frame" popovertarget="modal" popovertargetaction="hide">
+          <div class="icon icon-close"></div>
+        </button>
+      </header>
+      <section>
+        <h3>ラベル分け</h3>
+        <div class="settingDiv">
+          <span>並び替え</span>
+          <div>
+            フォルダ・パッケージを D&D で並び替えられます
+          </div>
+          
+          <span>グループ名の変更</span>
+          <div>
+            グループのタイトル部分はテキスト入力できます
+          </div>
+          
+          <span>新グループの追加</span>
+          <div style="display: flex;align-items: center;gap: 0.5rem;">
+            <span class="mark">
+              <span class="material-symbols-outlined">create_new_folder</span>
+              New Group
+            </span>
+            を挿入したい箇所にD&Dしてください
+          </div>
+
+          <span>ショートカット移動</span>
+          <div>
+            <span style="padding: 1px 12px;border: 2px dotted #72bed6;color: #72bed6;border-radius: 0.5rem;font-size: calc(1em - 2px);font-weight: 500;margin-inline-end: 0.25rem;">全体/グループ内の先頭/末尾</span>の移動したい位置が描かれているエリアにフォルダ・パッケージをD&Dしてください
+          </div>
+        </div>
+        
+
+        <h3>設定を削除</h3>
+        <div class="settingDiv">            
+          <span>アンインストール済の<br>項目の確認</span>
+          <div>
+            <span style="padding: 0 2px;border-radius: 4px;background-color: lightpink;">赤い色がついている項目</span>は<br>
+            「並び順が重複している=片方はアンインストール済の項目」です
+          </div>
+          
+          <span>設定の削除</span>
+          <div>
+            削除したい設定の行をクリックしてください<br>
+            取り消し線が引かれていれば、iniファイルの保存時に<br>
+            その項目の設定は削除されます
+          </div>
+        </div>
+      </section>
+    </dialog>
+
+  </div>
+  <script src="code.js"></script>
+</body>
+
+</html>
