@@ -27,6 +27,11 @@ document.getElementById('iniInput').addEventListener('change', async () => {
   await readFile();
   if (document.querySelector('.tab-ribbon [value=labeling]:checked')) showFolder();
   else showDeleteDupResult();
+
+  document.querySelector('div.active[data-process]')?.classList.remove('active');
+  document.querySelector('.tab-ribbon [value=labeling]').checked = true;
+  labelingDiv.classList.add('active');
+
 });
 document.getElementById('back2readPt').addEventListener('click', async () => {
   await readFile();
