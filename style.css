@@ -57,6 +57,21 @@
     background-color: #72bed6;
     border: 2px dotted var(--blue);
   }
+
+  button.round.blue.target {
+    color: var(--blue);
+    background-color: var(--offwhite);
+    border: 1px solid var(--light-blue);
+  }
+
+  .choice {
+    background-color: rgb(114 190 214 / 33%);
+  }
+  .hide {
+    color: rgb(0 0 0 /0.33);
+    &::before {content: '(';}
+    &::after  {content: ')';}
+  }
 }
 /* -------------------------- */
 
@@ -68,6 +83,15 @@
   button {cursor: pointer;}
   p {margin: 0;}
   a {color: var(--blue);}
+  hr {
+    margin-block: 1rem;
+    width: stretch;
+  }
+  select {
+    width: stretch;
+    padding-block: 2px;
+    border-radius: 3px;
+  }
 
   mark {
     background:linear-gradient(transparent 60%, #f5f3ba 0%);
@@ -175,6 +199,7 @@
   body {
     margin: 0;
     background-color: var(--offwhite);
+    scrollbar-color: #ccc transparent;
   }
   
   #root {
@@ -264,6 +289,7 @@
     color: white;
     background-color: var(--blue);
     box-shadow: 0px -3px 3px 0px rgb(0 0 0 /0.15);
+    height: 2.5rem;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -294,7 +320,8 @@
   }
   
   [data-process] {
-    padding: 2rem 5rem;
+    padding-block-start: 2rem;
+    padding-inline: 5rem;
     &.column {
       display: flex;
       gap: 3rem;
@@ -317,22 +344,29 @@
 
   .new-mofism{
     border: 1px solid white;
-    padding: 0.5rem 1.5rem 1rem 1.5rem;
+    padding: 1rem 1.5rem;
     border-radius: 1.5rem;
     corner-shape: squircle;
     box-shadow: 
       0px 6px 10px 3px rgba(0 0 0 /0.2),
-      inset 0px 0px 10px 2px white
+      inset 0px 0px 10px 2px white;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    white-space: nowrap;
+    height: max-content;
   }
 
-  label.select-tag {
+  .select-tag {
     color: var(--light-blue);
     border: 1px solid var(--light-blue);
-    padding: 0.25rem 0.5rem;
-    text-align: center;
     box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.2);
+    padding: 0.25rem 1rem;
     height: 1.5rem;
+    border-radius: 1.5rem;
     align-content: center;
+    text-align: center;
     
     &:has(:checked) {
       color: white;
@@ -385,7 +419,7 @@
     }
     th {
       color: white;
-      background-color: darkgray;
+      background-color: var(--blue);
       font-size: calc(1em - 2px);
       font-weight: 400;
       text-align: center;
@@ -394,11 +428,11 @@
       font-weight: 300;
     }
     th,td {
-      border: 1px solid rgb(0 0 0 /0.25);
+      border-block: 1px solid rgb(0 0 0 /0.25);
       padding: 4px 8px;
     }
     td:first-child {text-align: center;}
-    td:is(:nth-child(2),:nth-child(3),:nth-child(4)) {white-space: nowrap;}
+    td:is(:nth-child(2),:nth-child(3)) {white-space: nowrap;}
     td:last-child {color: rgb(0 0 0 /0.4);}
     
     tr:has(:first-child > input:checked) td {
@@ -420,7 +454,7 @@
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
 
     border-radius: 0.5rem;
-    margin-block: 0.5rem;
+    margin-block-end: 0.5rem;
 
     display: flex;
     align-items: center;
@@ -454,9 +488,6 @@
   }
   .file:last-child {
     border-block-end: 3px solid transparent;
-  }
-  .file.hide {
-    color: rgb(184 134 11 / 66%);
   }
 
   .folder {
@@ -531,7 +562,7 @@
     --color: var(--blue);
     color: var(--blue);
     font-weight: 500;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 
 
@@ -539,11 +570,13 @@
   /*      モーダル      */
   /* ----------------- */
   dialog {
-    padding: 0;
     border: 1px solid var(--blue);
     background-color: var(--offwhite);
-    border-radius: 0.75rem;
     box-shadow: 0px 6px 20px rgb(0 0 0 / 0.2);
+    border-radius: 0.75rem;
+    padding: 0;
+    width: min(50rem,90dvw);
+    max-height: 90dvh;
     user-select: none;
 
     header {

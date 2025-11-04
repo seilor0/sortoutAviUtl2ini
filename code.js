@@ -3,7 +3,7 @@ let rawDataArr = [];
 let systemArr = [];
 
 const deleteDupDiv = document.querySelector('[data-process=deleteDup]');
-const labelingDiv  = document.querySelector('[data-process="labeling"]');
+const labelingDiv  = document.querySelector('[data-process=labeling]');
 
 
 // ---------------------
@@ -24,22 +24,22 @@ document.querySelectorAll('.clickNextInput').forEach(el => {
   el.addEventListener('click', (e) => e.currentTarget.nextElementSibling?.click());
 });
 document.getElementById('iniInput').addEventListener('change', async () => {
+  if (document.querySelector('[data-process=home].active')) {
+    document.querySelector('[data-process].active')?.classList.remove('active');
+    document.querySelector('input[name=process][value=labeling]').checked = true;
+    labelingDiv.classList.add('active');
+  }
   await readFile();
-  if (document.querySelector('.tab-ribbon [value=labeling]:checked')) showFolder();
+  if (document.querySelector('input[name=process][value=labeling]:checked')) showFolder();
   else showDeleteDupResult();
-
-  document.querySelector('div.active[data-process]')?.classList.remove('active');
-  document.querySelector('.tab-ribbon [value=labeling]').checked = true;
-  labelingDiv.classList.add('active');
-
 });
 document.getElementById('back2readPt').addEventListener('click', async () => {
   await readFile();
-  if (document.querySelector('.tab-ribbon [value=labeling]:checked')) showFolder();
+  if (document.querySelector('input[name=process][value=labeling]:checked')) showFolder();
   else showDeleteDupResult();
 });
 document.getElementById('back2savePt').addEventListener('click', () => {
-  if (document.querySelector('.tab-ribbon [value=labeling]:checked')) showFolder();
+  if (document.querySelector('input[name=process][value=labeling]:checked')) showFolder();
   else showDeleteDupResult();
 });
 document.getElementById('clear').addEventListener('click', () => {
@@ -79,6 +79,19 @@ async function readFile() {
     } else {
       systemArr.push('['+el.trim());
     }
+  });
+
+  // set fonts to select
+  const fontArr = rawDataArr.filter(dic=>dic.type=='Font').map(dic => previewFont(null, dic.name)).sort();
+  new Set(fontArr).forEach(font => {
+    const selectLabeling = document.getElementById('defFont-labeling');
+    const selectDelDup = document.getElementById('defFont-delDup');    
+    const option1 = document.createElement('option');
+    const option2 = document.createElement('option');
+    option1.innerText = font;
+    option2.innerText = font;
+    selectLabeling.appendChild(option1);
+    selectDelDup.appendChild(option2);
   });
 }
 
@@ -138,42 +151,18 @@ function saveFile() {
 }
 
 
-// order/labelの更新
-document.querySelectorAll('.tab-ribbon input').forEach(input=>input.addEventListener('change', updateOrder));
-document.querySelectorAll('input[name=type-labeling]').forEach(input=>input.addEventListener('change', updateOrder));
-
-let preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
-function updateOrder() {
-  const dataArr = rawDataArr.filter(dic=>dic.type==preType && !dic.checked);
-  [...labelingDiv.querySelectorAll('.result .file')].forEach((file,i) => {
-    const name = file.lastChild.textContent;
-    const dic = dataArr.filter(dic=>dic.name==name)[0];
-
-    const label = [];
-    let target = file;
-    while (target.closest('.folder')) {
-      target = target.closest('.folder');
-      const title = target.querySelector('summary input').value;
-      if (title) label.unshift(title);
-      target = target.parentElement;
-    }
-    dic.props.order = i;
-    dic.props.label = label;
-  });
-  preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
-}
-
-
 // ---------------------
 //   重複を削除　ページ
 // ---------------------
-document.querySelector('.tab-ribbon input[value=deleteDup]').addEventListener('click',showDeleteDupResult);
+document.querySelector('input[name=process][value=deleteDup]').addEventListener('click',showDeleteDupResult);
 deleteDupDiv.querySelectorAll('input[name=type-delDup]').forEach(input => input.addEventListener('change', showDeleteDupResult));
 document.getElementById('sortStyle').addEventListener('change', showDeleteDupResult);
-
 // フォントプレビュー
 document.getElementById('previewFont-delDup').addEventListener('change', () => {
   if (deleteDupDiv.querySelector('[name=type-delDup][value=Font]:checked')) showDeleteDupResult();
+});
+document.getElementById('defFont-delDup').addEventListener('change', () => {
+  if (document.getElementById('previewFont-delDup').checked && deleteDupDiv.querySelector('[name=type-delDup][value=Font]:checked')) showDeleteDupResult();
 });
 
 function showDeleteDupResult() {
@@ -210,6 +199,7 @@ function showDeleteDupResult() {
   const sortStyle = document.getElementById('sortStyle').value;
   sort(dataArr, sortStyle, true);
 
+  
   // show
   dataArr.forEach(data => {
     const order = sortStyle=='defOrder' ? data.defOrder : (data.props.order ?? data.props.priority ?? null);
@@ -219,14 +209,17 @@ function showDeleteDupResult() {
       props += `${key}=${value}\n`;
     }
     
-    const row = addRow(tbody, [null, data.type, order, data.name, props.trim()]);
+    const row = addRow(tbody, [null, order, data.name, props.trim()]);
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.checked = data.checked;
     row.firstElementChild.appendChild(input);
 
-    if (deleteDupDiv.querySelector('[name=type-delDup][value=Font]:checked') && document.getElementById('previewFont-delDup').checked)
-      previewFont(row.children[3], data.name, 'Harlow Solid');
+    if (deleteDupDiv.querySelector('[name=type-delDup][value=Font]:checked') && 
+      document.getElementById('previewFont-delDup').checked
+    ) {
+      previewFont(row.children[2], data.name, document.getElementById('defFont-delDup').value);
+    }
 
     if (dataArr.filter(dic=>dic.type==data.type && dic.defOrder==data.defOrder).length>1) 
       row.className = 'duplicate';
@@ -255,12 +248,15 @@ function showDeleteDupResult() {
  */
 
 // タブ部分
-document.querySelector('.tab-ribbon input[value=labeling]').addEventListener('click', showFolder);
+document.querySelector('input[name=process][value=labeling]').addEventListener('click', showFolder);
 // 対象選択
 labelingDiv.querySelectorAll('input[name=type-labeling]').forEach(el=>el.addEventListener('change', showFolder));
 // フォントプレビュー
-document.getElementById('previewFont').addEventListener('change', () => {
+document.getElementById('previewFont-labeling').addEventListener('change', () => {
   if (labelingDiv.querySelector('[name=type-labeling][value=Font]:checked')) showFolder();
+});
+document.getElementById('defFont-labeling').addEventListener('change', () => {
+  if (document.getElementById('previewFont-labeling').checked && labelingDiv.querySelector('[name=type-labeling][value=Font]:checked')) showFolder();
 });
 
 function showFolder() {
@@ -274,73 +270,6 @@ function showFolder() {
   const dataArr = rawDataArr.filter(dic=>dic.type==type&&!dic.checked).sort((a,b)=>
     type=='Input' ? a.props.priority - b.props.priority : a.props.order - b.props.order
   );
-
-  // const weightDic = {
-  //   'UltraThin': 50,
-  //   'Ultra Thin': 50,
-
-  //   'Thin': 100,
-
-  //   'ExtraLight': 200,
-  //   'Extra Light': 200,
-  //   'UltraLight': 200,
-  //   'Ultra Light': 200,
-  //   'EL': 200,
-
-  //   'Light': 300,
-  //   'Lt': 300,
-  //   'L': 300,
-  //   'W3': 300,
-
-  //   'SemiLight': 350,
-  //   'Semi Light': 350,
-  //   'DemiLight': 350,
-  //   'Demi Light': 350,
-
-  //   'Normal': 400,
-  //   'R': 400,
-  //   'W4': 400,
-
-  //   'Medium': 500,
-  //   'M': 500,
-
-  //   'SemiBold': 600,
-  //   'Semi Bold': 600,
-  //   'DemiBold': 600,
-  //   'Demi Bold': 600,
-  //   'Demi': 600,
-  //   'DB': 600,
-  //   'W6': 600,
-
-  //   'ExtraBold': 800,
-  //   'Extra Bold': 800,
-  //   'EB': 800,
-  //   'XBd': 800,
-  //   'UltraBold': 800,
-  //   'Ultra Bold': 800,
-  //   'W8': 800,
-
-  //   'Black': 900,
-  //   'Heavy': 900,
-
-  //   'Bold': 700,
-  //   'B': 700,
-  // };
-  // const condDic = {
-  //   'ExtraCondensed': 'extra-condensed',
-  //   'Extra Condensed': 'extra-condensed',
-  //   'Ext Condensed': 'extra-condensed',
-  //   'SemiCondensed': 'semi-condensed',
-  //   'Semi Condensed': 'semi-condensed',
-  //   'DemiCondensed': 'semi-condensed',
-  //   'Demi Condensed': 'semi-condensed',
-  //   'Demi Cond': 'semi-condensed',
-  //   'Condensed': 'condensed',
-  //   'Cond': 'condensed',
-  //   'Compressed': 'condensed',
-  //   'Narrow': 'condensed',
-  //   'Extended': 'expanded',
-  // };
 
   // add packages
   dataArr.forEach(dic => {
@@ -366,11 +295,13 @@ function showFolder() {
     file.addEventListener('dragleave', dragLeave);
     file.addEventListener('dragover', dragOver);
     file.addEventListener('drop', drop);
+    
     file.addEventListener('click',toggleHide);
+    file.addEventListener('click', ctrlClick);
     
     // font preview
-    if (type=='Font' && document.getElementById('previewFont').checked)
-      previewFont(file, dic.name, 'Harlow Solid');
+    if (type=='Font' && document.getElementById('previewFont-labeling').checked)
+      previewFont(file, dic.name, document.getElementById('defFont-labeling').value);
     
     target.appendChild(file);
   });
@@ -378,6 +309,33 @@ function showFolder() {
   // numbering
   numbering();
 }
+
+
+// order, labelの更新
+document.querySelectorAll('input[name=process]').forEach(input=>input.addEventListener('change', updateOrder));
+document.querySelectorAll('input[name=type-labeling]').forEach(input=>input.addEventListener('change', updateOrder));
+
+let preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
+function updateOrder() {
+  const dataArr = rawDataArr.filter(dic=>dic.type==preType && !dic.checked);
+  [...labelingDiv.querySelectorAll('.result .file')].forEach((file,i) => {
+    const name = file.lastChild.textContent;
+    const dic = dataArr.filter(dic=>dic.name==name)[0];
+
+    const label = [];
+    let target = file;
+    while (target.closest('.folder')) {
+      target = target.closest('.folder');
+      const title = target.querySelector('summary input').value;
+      if (title) label.unshift(title);
+      target = target.parentElement;
+    }
+    dic.props.order = i;
+    dic.props.label = label;
+  });
+  preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
+}
+
 
 // new folder
 document.getElementById('newFolder').addEventListener('dragstart', dragStartNewFolder);
@@ -417,6 +375,11 @@ document.getElementById('toggleDetails').addEventListener('click', e => {
     labelingDiv.querySelectorAll('details').forEach(details => details.open=true);
     e.currentTarget.dataset.toggle = 'close';
   }
+});
+
+// 選択をクリア
+document.getElementById('clearChoice').addEventListener('click', ()=> {
+  labelingDiv.querySelectorAll('.choice').forEach(el=>el.classList.remove('choice'));
 });
 
 // sort result
@@ -484,11 +447,11 @@ function dragEnter (e) {
 }
 function dragLeave (e) {
   if (e.relatedTarget?.tagName=='INPUT') return;
-  e.stopPropagation();  
-  e.currentTarget.classList.remove('target');
-  if (e.currentTarget.parentElement.classList.contains('result') && !e.currentTarget.nextElementSibling && e.offsetY>0) {
-    e.currentTarget.classList.add('target-down');
-  }
+  e.stopPropagation();
+  const el = e.currentTarget;
+  el.classList.remove('target');
+  if (el.parentElement.classList.contains('result') && !el.nextElementSibling && e.offsetY>0)
+    el.classList.add('target-down');
 }
 function dragEnterBody (e) {
   e.stopPropagation();
@@ -510,10 +473,17 @@ function drop (e) {
     srcDiv = labelingDiv.querySelector(`.${type}[data-index="${index}"]`);
   }
   // insert
-  if (!srcDiv.contains(e.currentTarget)) {
-    e.currentTarget.before(srcDiv);
-    numbering();
+  if (srcDiv.classList.contains('choice')) {
+    const srcDivs = labelingDiv.querySelectorAll('.choice');
+    srcDivs.forEach(el=>{
+      if (el.parentElement.closest('.choice')) return;
+      if (!el.contains(e.currentTarget)) e.currentTarget.before(el);
+    });
+    srcDivs.forEach(el=>el.classList.remove('choice'));
+  } else {
+    if (!srcDiv.contains(e.currentTarget)) e.currentTarget.before(srcDiv);
   }
+  numbering();
   e.currentTarget.classList.remove('target', 'target-down');
   e.stopPropagation();
 }
@@ -528,11 +498,31 @@ function drop2body (e) {
     srcDiv = labelingDiv.querySelector(`.${type}[data-index="${index}"]`);
   }
   // insert
-  if (!srcDiv.contains(e.currentTarget)) {
-    if      (e.currentTarget.classList.contains('target')) e.currentTarget.insertAdjacentElement('afterbegin',srcDiv);
-    else if (e.currentTarget.classList.contains('target-down')) e.currentTarget.appendChild(srcDiv);
-    numbering();
+  const cur = e.currentTarget;
+
+  if (srcDiv.classList.contains('choice')) {
+    const srcDivs = labelingDiv.querySelectorAll('.choice');
+
+    if (cur.classList.contains('target')) {
+      [...srcDivs].reverse().forEach(el=>{
+        if (el.parentElement.closest('.choice')) return;
+        if (!el.contains(cur)) cur.insertAdjacentElement('afterbegin',el);
+      });
+
+    } else if (cur.classList.contains('target-down')) {
+      srcDivs.forEach(el=>{
+        if (el.parentElement.closest('.choice')) return;
+        if (!el.contains(cur)) cur.appendChild(el);
+      });
+    }
+    srcDivs.forEach(el=>el.classList.remove('choice'));
+  } else {
+    if (!srcDiv.contains(cur)) {
+      if (cur.classList.contains('target')) cur.insertAdjacentElement('afterbegin',srcDiv);
+      else if (cur.classList.contains('target-down')) cur.appendChild(srcDiv);
+    }
   }
+  numbering();
   e.currentTarget.classList.remove('target', 'target-down');
   e.stopPropagation();
 }
@@ -542,7 +532,12 @@ function dragEnd (e) {
   if (!dstDiv) return;
   // 差し込み元
   let srcDiv = e.currentTarget.id=='newFolder' ? makeFolderDiv() : e.currentTarget;
-  dstDiv.after(srcDiv);
+  // insert
+  if (srcDiv.classList.contains('.choice')) {
+    const srcDivs = labelingDiv.querySelectorAll('.choice');
+    [...srcDivs].reverse().forEach(el=>{if(!el.parentElement.closest('.choice')) dstDiv.after(el)});
+    srcDivs.forEach(el=>el.classList.remove('choice'));
+  } else dstDiv.after(srcDiv);
   numbering();
   dstDiv.classList.remove('target-down');
   e.stopPropagation();
@@ -557,26 +552,63 @@ function dropMove(e) {
     const index = e.dataTransfer.getData('text/index');
     srcDiv = labelingDiv.querySelector(`.${type}[data-index="${index}"]`);
   }
+  // insert
+  const resultDiv = labelingDiv.querySelector('.result');
+  const add = (el) => {
+    const parentGroup = el.parentElement.closest('.folder')?.lastElementChild ?? resultDiv;
+    switch (e.currentTarget.id) {
+      case '2topAll':
+        resultDiv.insertAdjacentElement('afterbegin', el);
+        break;
+      case '2bottomAll':
+        resultDiv.appendChild(el);
+        break;
+      case '2topGroup':
+        parentGroup.insertAdjacentElement('afterbegin', el);
+        break;
+      case '2bottomGroup':
+        parentGroup.appendChild(el);
+        break;
+    }
+  };
+
+  if (srcDiv.classList.contains('choice')) {
+    const srcDivs = labelingDiv.querySelectorAll('.choice');
+    if (e.currentTarget.id.includes('top')) {
+      [...srcDivs].reverse().forEach(el=>{if(!el.parentElement.closest('.choice')) add(el)});
+    } else {
+      srcDivs.forEach(el=>{if(!el.parentElement.closest('.choice')) add(el)});
+    }
+    srcDivs.forEach(el=>el.classList.remove('choice'));
+  } else {
+    add(srcDiv);
+  }
 
   e.currentTarget.classList.remove('target');
-    
-  const resultDiv = labelingDiv.querySelector('.result');
-  const parentGroup = srcDiv.parentElement.closest('.folder')?.lastElementChild ?? resultDiv;
-  switch (e.currentTarget.id) {
-    case '2topAll':
-      resultDiv.insertAdjacentElement('afterbegin', srcDiv);
-      break;
-    case '2bottomAll':
-      resultDiv.appendChild(srcDiv);
-      break;
-    case '2topGroup':
-      parentGroup.insertAdjacentElement('afterbegin', srcDiv);
-      break;
-    case '2bottomGroup':
-      parentGroup.appendChild(srcDiv);
-      break;
-  }
+  numbering();
 }
+
+{
+  const iniInput = document.getElementById('iniInput').previousElementSibling;
+  iniInput.addEventListener('dragenter', dragEnter2iniInput);
+  iniInput.addEventListener('dragleave', dragLeave2iniInput);
+  iniInput.addEventListener('dragover', dragOver);
+  iniInput.addEventListener('drop', drop2iniInput);
+}
+// drop to iniInput
+function dragEnter2iniInput (e) {
+  e.currentTarget.classList.add('target');
+}
+function dragLeave2iniInput (e) {
+  e.currentTarget.classList.remove('target');
+}
+function drop2iniInput (e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('target');
+  document.getElementById('iniInput').files = e.dataTransfer.files;
+  document.getElementById('iniInput').dispatchEvent(new Event('change'));
+}
+
 
 // ungroup
 function ungroupFolder (e) {
@@ -593,6 +625,7 @@ function ungroupFolder (e) {
 }
 
 function toggleHide (e) {
+  if (e.ctrlKey) return;
   e.currentTarget.classList.toggle('hide');
   const name = e.currentTarget.lastChild.textContent;
   const type = labelingDiv.querySelector('[name=type-labeling]:checked').value;
@@ -600,12 +633,18 @@ function toggleHide (e) {
   dic.props.hide = Number(e.currentTarget.classList.contains('hide'));
 }
 
+function ctrlClick (e) {
+  if (!e.ctrlKey) return;
+  e.currentTarget.classList.toggle('choice');
+  e.stopPropagation();
+}
+
 
 
 // ------------------------
 //   汎用関数
 // ------------------------
-function previewFont (element, fontName, defFont=null) {
+function previewFont (element=null, fontName, defFont=null) {
   const weightDic = {
     'UltraThin': 50,
     'Ultra Thin': 50,
@@ -677,7 +716,7 @@ function previewFont (element, fontName, defFont=null) {
   for (const key in weightDic) {
     const regExp = new RegExp(` ${key}\\b`,'i');
     if (regExp.test(fontName)) {
-      element.style.fontWeight = weightDic[key];
+      if (element) element.style.fontWeight = weightDic[key];
       fontName = fontName.replace(regExp,'');
       break;
     }
@@ -686,14 +725,14 @@ function previewFont (element, fontName, defFont=null) {
   for (const key in condDic) {
     const regExp = new RegExp(` ${key}\\b`,'i');
     if (regExp.test(fontName)) {
-      element.style.fontStretch = condDic[key];
+      if (element) element.style.fontStretch = condDic[key];
       fontName = fontName.replace(regExp,'');
       break;
     }
   }
-  element.style.fontFamily = '"'+fontName+'"';
-  if (defFont) element.style.fontFamily += `, "${defFont}"`;
-  return element;
+  if (element) element.style.fontFamily = '"'+fontName+'"';
+  if (element && defFont) element.style.fontFamily += `, "${defFont}"`;
+  return fontName;
 }
 
 
@@ -704,9 +743,11 @@ function makeFolderDiv(parent=null, label=null) {
   folder.open = true;
 
   const summary = document.createElement('summary');
+  
   const indicator = document.createElement('span');
   indicator.classList.add('material-symbols-outlined','hover');
   indicator.innerText = 'drag_indicator';
+
   const titleDiv = document.createElement('div');
   const titleInput = document.createElement('input');
   titleInput.type = 'text';
@@ -726,6 +767,8 @@ function makeFolderDiv(parent=null, label=null) {
   folder.addEventListener('dragleave', dragLeave);
   folder.addEventListener('dragover', dragOver);
   folder.addEventListener('drop', drop);
+
+  folder.addEventListener('click', ctrlClick)
 
   body.addEventListener('dragenter', dragEnterBody);
   body.addEventListener('dragleave', dragLeaveBody);
@@ -763,11 +806,4 @@ function addRow(parent, content, thCol=-1) {
   });
   parent.appendChild(row);
   return row;
-}
-
-function copy2clipboard(element, text) {
-  const defText = element.innerText;
-	navigator.clipboard.writeText(text);
-	element.innerText = 'Copied!';
-	setTimeout(() => element.innerText=defText, 1000);
 }

@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>format AviUtl2 ini</title>
+  <title>sort out AviUtl2.ini</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -53,12 +53,14 @@
           <ol>
             <li>
               「アプリケーションデータ」フォルダ内の<code>aviutl2.ini</code>を読み込む<br>
-              <span class="annotation">※「アプリケーションデータ」フォルダはAviUtl2の<code>「その他」メニュー > 「アプリケーションデータ」 > 「アプリケーションデータフォルダ」</code>から開くことができます</span>
+              <span class="annotation">
+                ※「アプリケーションデータ」フォルダはAviUtl2の<code>「その他」メニュー > 「アプリケーションデータ」 > 「アプリケーションデータフォルダ」</code>から開くことができます
+              </span>
             </li>
             <li>各種変更する</li>
             <li>「iniファイルを保存」ボタンから、1.と同じ<code>aviutl2.ini</code>を上書き保存する</li>
           </ol>
-          <p class="annotation">※各種変更のやり方の詳細は、画面左下の「<span style="color: var(--blue);">使い方</span>」を見てください</p>
+          <p class="annotation">※各種変更のやり方の詳細は、画面左下の「<span style="color: var(--blue);cursor: pointer;" onclick="document.getElementById('modal').showPopover()">使い方</span>」を見てください</p>
           
   
           <h3>！注意！</h3>
@@ -95,57 +97,64 @@
             </label>
           </aside>
 
-          <div class="sub-sidemenu new-mofism">
-            <div class="new-folder" draggable="true" id="newFolder">
-              <span class="material-symbols-outlined hover">drag_indicator</span>
-              <span class="material-symbols-outlined">create_new_folder</span>
-              New Group
-              <span class="material-symbols-outlined" style="font-size: 1.75rem;
-              margin-inline: 4px 0;">arrow_right_alt</span>
+          <div class="sub-sidemenu">
+            <div class="new-mofism">
+              <div class="new-folder" draggable="true" id="newFolder">
+                <span class="material-symbols-outlined hover">drag_indicator</span>
+                <span class="material-symbols-outlined">create_new_folder</span>
+                New Group
+                <span class="material-symbols-outlined" style="font-size: 1.75rem;
+                margin-inline: 4px 0;">arrow_right_alt</span>
+              </div>
+  
+              <div class="drop-area" id="2topAll">
+                全体の先頭へ
+                <span class="material-symbols-outlined">arrow_left_alt</span>
+              </div>
+              <div class="drop-area" id="2bottomAll">
+                全体の末尾へ
+                <span class="material-symbols-outlined">arrow_left_alt</span>
+              </div>
+              <div class="drop-area" id="2topGroup">
+                グループの先頭へ
+                <span class="material-symbols-outlined">arrow_left_alt</span>
+              </div>
+              <div class="drop-area" id="2bottomGroup">
+                グループの末尾へ
+                <span class="material-symbols-outlined">arrow_left_alt</span>
+              </div>
             </div>
-
-            <div class="drop-area" id="2topAll">
-              全体の先頭へ
-              <span class="material-symbols-outlined">arrow_left_alt</span>
+            <div class="new-mofism" style="margin-block-start: 1rem;">
+              <button id="toggleDetails" class="round" data-toggle="close">全グループを開閉</button>
+              <button id="clearChoice" class="round">複数選択をクリア</button>
+              <button id="back2savePt" class="round">変更前に戻す</button>
+              <button id="sortByLabel" class="round">ラベルでソート</button>
+              <label class="toggle-button" style="justify-content: flex-end;">
+                <input type="checkbox" id="isAsc" checked>
+                <span class="checked">昇順</span>
+                <span class="not-checked">降順</span>
+                <span class="slider"></span>
+              </label>
+              <label class="toggle-button" style="justify-content: flex-end;">
+                <input type="checkbox" id="folderIsBottom" checked>
+                <span class="checked">グループが末尾</span>
+                <span class="not-checked">グループが先頭</span>
+                <span class="slider"></span>
+              </label>
+  
+              <hr color="darkgray" size="1" noshade>
+  
+              <div>
+                <label class="toggle-button">
+                  <input type="checkbox" id="previewFont-labeling" checked>
+                  フォントをプレビュー
+                  <span class="slider"></span>
+                </label>
+                <p style="font-size: smaller;margin-block-start: 0.5rem;">デフォルトのフォント：</p>
+                <select id="defFont-labeling"></select>
+              </div>
+  
             </div>
-            <div class="drop-area" id="2bottomAll">
-              全体の末尾へ
-              <span class="material-symbols-outlined">arrow_left_alt</span>
-            </div>
-            <div class="drop-area" id="2topGroup">
-              グループの先頭へ
-              <span class="material-symbols-outlined">arrow_left_alt</span>
-            </div>
-            <div class="drop-area" id="2bottomGroup">
-              グループの末尾へ
-              <span class="material-symbols-outlined">arrow_left_alt</span>
-            </div>
-
-            <label class="toggle-button" style="justify-content: center;height: 2.5rem;">
-              <input type="checkbox" id="previewFont" checked>
-              フォントをプレビュー
-              <span class="slider"></span>
-            </label>
-            
-            <button id="toggleDetails" class="round" data-toggle="close">全グループを開く/閉じる</button>
-
-            <button id="back2savePt" class="round">変更前に戻す</button>
-
-            <button id="sortByLabel" class="round">ラベルでソート</button>
-
-            <label class="toggle-button">
-              <input type="checkbox" id="isAsc" checked>
-              <span class="checked">昇順</span>
-              <span class="not-checked">降順</span>
-              <span class="slider"></span>
-            </label>
-
-            <label class="toggle-button">
-              <input type="checkbox" id="folderIsBottom" checked>
-              <span class="checked">グループが末尾</span>
-              <span class="not-checked">グループが先頭</span>
-              <span class="slider"></span>
-            </label>
           </div>
 
           <div class="result"></div>
@@ -182,20 +191,28 @@
               Params
             </label>
 
-            <div class="sub-sidemenu new-mofism" style="margin-block-start: 1rem;padding:0.5rem 1rem;">
-              <p style="font-size: smaller;margin-block-start: 0.5rem;">ソート：</p>
-              <select id="sortStyle">
-                <option value="defOrder" selected>読み込み時の並び順</option>
-                <option value="order">変更後の並び順</option>
-                <option value="name">パッケージ名</option>
-                <option value="checked">状態</option>
-              </select>
+            <div class="new-mofism" style="margin-block-start: 1rem;padding: 1rem;">
+              <div>
+                <p style="font-size: smaller;">ソート：</p>
+                <select id="sortStyle">
+                  <option value="defOrder" selected>読み込み時の並び順</option>
+                  <option value="order">変更後の並び順</option>
+                  <option value="name">パッケージ名</option>
+                  <option value="checked">状態</option>
+                </select>
+              </div>
   
-              <label class="toggle-button" style="justify-content: center;height: 2.5rem;">
-                <input type="checkbox" id="previewFont-delDup" checked>
-                フォントをプレビュー
-                <span class="slider"></span>
-              </label>
+              <hr style="margin-block: 0.75rem;">
+
+              <div>
+                <label class="toggle-button">
+                  <input type="checkbox" id="previewFont-delDup" checked>
+                  フォントをプレビュー
+                  <span class="slider"></span>
+                </label>
+                <p style="font-size: smaller;margin-block-start: 0.5rem;">デフォルトのフォント：</p>
+                <select id="defFont-delDup"></select>
+              </div>
             </div>
 
           </aside>
@@ -205,7 +222,6 @@
               <thead>
                 <tr>
                   <th>X</th>
-                  <th>種別</th>
                   <th>order</th>
                   <th>パッケージ名</th>
                   <th>設定</th>
@@ -218,7 +234,7 @@
       </div>
     </div>
 
-    <dialog id="modal" popover="auto" style="width: 46rem;">
+    <dialog id="modal" popover="auto">
       <header>
         <h2>使い方</h2>
         <button class="icon-frame" popovertarget="modal" popovertargetaction="hide">
@@ -229,16 +245,12 @@
         <h3>ラベル分け</h3>
         <div class="settingDiv">
           <span>並び替え</span>
-          <div>
-            フォルダ・パッケージを D&D で並び替えられます
+          <div style="line-height: 1.75;">
+            パッケージ/グループを、挿入したい箇所か<span style="padding: 2px 12px;border: 2px dotted #72bed6;color: #72bed6;border-radius: 0.5rem;font-size: calc(1em - 2px);font-weight: 500;margin-inline: 4px;">全体の先頭</span>にD&Dしてください<br>
+            <span class="annotation">※<code>ctrl+クリック</code>による複数選択も可</span><br>
           </div>
           
-          <span>グループ名の変更</span>
-          <div>
-            グループのタイトル部分はテキスト入力できます
-          </div>
-          
-          <span>新グループの追加</span>
+          <span>グループ追加</span>
           <div style="display: flex;align-items: center;gap: 0.5rem;">
             <span class="mark">
               <span class="material-symbols-outlined">create_new_folder</span>
@@ -247,14 +259,20 @@
             を挿入したい箇所にD&Dしてください
           </div>
 
-          <span>移動ショートカット</span>
+          <span>グループ解除</span>
           <div>
-            <span style="padding: 1px 12px;border: 2px dotted #72bed6;color: #72bed6;border-radius: 0.5rem;font-size: calc(1em - 2px);font-weight: 500;margin-inline-end: 0.25rem;">全体/グループ内 の 先頭/末尾</span>の移動したい位置が描かれているエリアにフォルダ・パッケージをD&Dしてください
+            グループ右上の<code>×</code>をクリックしてください<br>
+            <span class="annotation">※内部のパッケージ/グループはその場に展開されます</span>
           </div>
-          
+
+          <span>グループ名の変更</span>
+          <div>
+            グループのタイトル部分にテキスト入力してください
+          </div>
+
           <span>表示/非表示の切替</span>
           <div>
-            パッケージをクリックすると、Aviutl2のポップアップメニューで表示するかを切り替えられます。<br>
+            パッケージをクリックすると、AviUtl2のポップアップメニューで表示するかを切り替えられます<br>
             <span class="annotation">※フォントメニュー等で左端にある☑のON/OFF切替です</span>
           </div>
         </div>
@@ -262,19 +280,29 @@
 
         <h3>設定を削除</h3>
         <div class="settingDiv">            
-          <span>アンインストール済の<br>項目の確認</span>
+          <span>アンインストール済の<br>パッケージの確認</span>
           <div>
             <span style="padding: 0 2px;border-radius: 4px;background-color: lightpink;">赤い色がついている項目</span>は<br>
-            「並び順が重複している=片方はアンインストール済の項目」です
+            「並び順が重複している=片方はアンインストール済」のパッケージです
           </div>
           
           <span>設定の削除</span>
           <div>
-            削除したい設定の行をクリックしてください<br>
-            取り消し線が引かれていれば、iniファイルの保存時に<br>
-            その項目の設定は削除されます
+            削除したいパッケージをクリックしてください<br>
+            <span class="annotation">取り消し線が引かれていれば、iniファイルの保存時にそのパッケージの設定は削除されます</span>
           </div>
         </div>
+
+        <h3>その他</h3>
+        <div class="settingDiv">
+          <span>メニューが画面外に<br>はみ出す場合</span>
+          <span>
+            サイトを縮小して表示してください。<br>
+            <span class="annotation">80%くらいでちょうどよくなるかもしれません。</span>
+          </span>
+
+        </div>
+
       </section>
     </dialog>
 
