@@ -16,6 +16,31 @@ document.querySelectorAll('input[name=process]').forEach(input=> {
   });
 });
 
+// order, labelの更新
+document.querySelectorAll('input[name=process]').forEach(input=>input.addEventListener('change', updateOrder));
+document.querySelectorAll('input[name=type-labeling]').forEach(input=>input.addEventListener('change', updateOrder));
+
+let preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
+function updateOrder() {
+  const dataArr = rawDataArr.filter(dic=>dic.type==preType && !dic.checked);
+  [...labelingDiv.querySelectorAll('.result .file')].forEach((file,i) => {
+    const name = file.lastChild.textContent;
+    const dic = dataArr.filter(dic=>dic.name==name)[0];
+
+    const label = [];
+    let target = file;
+    while (target.closest('.folder')) {
+      target = target.closest('.folder');
+      const title = target.querySelector('summary input').value;
+      if (title) label.unshift(title);
+      target = target.parentElement;
+    }
+    dic.props.order = i;
+    dic.props.label = label;
+  });
+  preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
+}
+
 
 // ---------------------
 //   iniファイル選択時
@@ -309,33 +334,6 @@ function showFolder() {
   // numbering
   numbering();
 }
-
-
-// order, labelの更新
-document.querySelectorAll('input[name=process]').forEach(input=>input.addEventListener('change', updateOrder));
-document.querySelectorAll('input[name=type-labeling]').forEach(input=>input.addEventListener('change', updateOrder));
-
-let preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
-function updateOrder() {
-  const dataArr = rawDataArr.filter(dic=>dic.type==preType && !dic.checked);
-  [...labelingDiv.querySelectorAll('.result .file')].forEach((file,i) => {
-    const name = file.lastChild.textContent;
-    const dic = dataArr.filter(dic=>dic.name==name)[0];
-
-    const label = [];
-    let target = file;
-    while (target.closest('.folder')) {
-      target = target.closest('.folder');
-      const title = target.querySelector('summary input').value;
-      if (title) label.unshift(title);
-      target = target.parentElement;
-    }
-    dic.props.order = i;
-    dic.props.label = label;
-  });
-  preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
-}
-
 
 // new folder
 document.getElementById('newFolder').addEventListener('dragstart', dragStartNewFolder);
