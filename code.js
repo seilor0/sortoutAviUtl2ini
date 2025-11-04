@@ -75,6 +75,8 @@ document.getElementById('clear').addEventListener('click', () => {
   document.getElementById('sortStyle').value = 'order';
   document.getElementById('toggleDetails').dataset.toggle = 'close';
   document.getElementById('iniInput').value = null;
+  document.getElementById('defFont-labeling').innerHTML = '';
+  document.getElementById('defFont-delDup').innerHTML = '';
 });
 async function readFile() {
   const file = document.getElementById('iniInput').files[0];
@@ -108,9 +110,11 @@ async function readFile() {
 
   // set fonts to select
   const fontArr = rawDataArr.filter(dic=>dic.type=='Font').map(dic => previewFont(null, dic.name)).sort();
+  const selectLabeling = document.getElementById('defFont-labeling');
+  const selectDelDup = document.getElementById('defFont-delDup');    
+  selectLabeling.innerHTML = '';
+  selectDelDup.innerHTML = '';
   new Set(fontArr).forEach(font => {
-    const selectLabeling = document.getElementById('defFont-labeling');
-    const selectDelDup = document.getElementById('defFont-delDup');    
     const option1 = document.createElement('option');
     const option2 = document.createElement('option');
     option1.innerText = font;
