@@ -9,16 +9,17 @@ const labelingDiv  = document.querySelector('[data-process=labeling]');
 // ---------------------
 //   ページ切り替え
 // ---------------------
+// order, labelの更新
+document.querySelectorAll('input[name=process]').forEach      (input=>input.addEventListener('change', updateOrder));
+document.querySelectorAll('input[name=type-labeling]').forEach(input=>input.addEventListener('change', updateOrder));
+
+// ページの表示切替
 document.querySelectorAll('input[name=process]').forEach(input=> {
   input.addEventListener('click', (e) => {
     document.querySelector('div.active[data-process]')?.classList.remove('active');
     document.querySelector(`div[data-process=${e.currentTarget.value}]`).classList.add('active');
   });
 });
-
-// order, labelの更新
-document.querySelectorAll('input[name=process]').forEach(input=>input.addEventListener('change', updateOrder));
-document.querySelectorAll('input[name=type-labeling]').forEach(input=>input.addEventListener('change', updateOrder));
 
 let preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
 function updateOrder() {
@@ -45,9 +46,7 @@ function updateOrder() {
 // ---------------------
 //   iniファイル選択時
 // ---------------------
-document.querySelectorAll('.clickNextInput').forEach(el => {
-  el.addEventListener('click', (e) => e.currentTarget.nextElementSibling?.click());
-});
+document.querySelectorAll('.clickNextInput').forEach(el => el.addEventListener('click', (e) => e.currentTarget.nextElementSibling?.click()));
 document.getElementById('iniInput').addEventListener('change', async () => {
   if (document.querySelector('[data-process=home].active')) {
     document.querySelector('[data-process].active')?.classList.remove('active');
@@ -188,10 +187,13 @@ deleteDupDiv.querySelectorAll('input[name=type-delDup]').forEach(input => input.
 document.getElementById('sortStyle').addEventListener('change', showDeleteDupResult);
 // フォントプレビュー
 document.getElementById('previewFont-delDup').addEventListener('change', () => {
-  if (deleteDupDiv.querySelector('[name=type-delDup][value=Font]:checked')) showDeleteDupResult();
+  if (!deleteDupDiv.querySelector('[name=type-delDup][value=Font]:checked')) return;
+  showDeleteDupResult();
 });
 document.getElementById('defFont-delDup').addEventListener('change', () => {
-  if (document.getElementById('previewFont-delDup').checked && deleteDupDiv.querySelector('[name=type-delDup][value=Font]:checked')) showDeleteDupResult();
+  if (!deleteDupDiv.querySelector('[name=type-delDup][value=Font]:checked')) return;
+  if (!document.getElementById('previewFont-delDup').checked) return;
+  showDeleteDupResult();
 });
 
 function showDeleteDupResult() {
@@ -282,10 +284,15 @@ document.querySelector('input[name=process][value=labeling]').addEventListener('
 labelingDiv.querySelectorAll('input[name=type-labeling]').forEach(el=>el.addEventListener('change', showFolder));
 // フォントプレビュー
 document.getElementById('previewFont-labeling').addEventListener('change', () => {
-  if (labelingDiv.querySelector('[name=type-labeling][value=Font]:checked')) showFolder();
+  if (!labelingDiv.querySelector('[name=type-labeling][value=Font]:checked')) return;
+  updateOrder();
+  showFolder();
 });
 document.getElementById('defFont-labeling').addEventListener('change', () => {
-  if (document.getElementById('previewFont-labeling').checked && labelingDiv.querySelector('[name=type-labeling][value=Font]:checked')) showFolder();
+  if (!labelingDiv.querySelector('[name=type-labeling][value=Font]:checked')) return;
+  if (!document.getElementById('previewFont-labeling').checked) return;
+  updateOrder();
+  showFolder();
 });
 
 function showFolder() {
