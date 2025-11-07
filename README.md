@@ -1,5 +1,14 @@
 # sortoutAviUtl2ini
 
+## Change Log
+### 2025/11/04
+サイト＆リポジトリ公開
+
+### 2025/11/07
+- 追加：Ctrl+ドラッグによるパッケージの複数選択
+- 修正：フォントプレビューの切り替え時に変更内容がリセットされる問題
+- 他：`README.md`にChange Logを追加
+
 ## Credits
 ### Google Fonts
 ```
