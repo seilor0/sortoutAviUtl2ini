@@ -376,6 +376,8 @@
     input {display: none;}
   }
 
+  label.toggle-button:has(input[id^=previewFont]:not(:checked)) ~ * {opacity: 0.3;}
+
   .result {
     padding-block-end: 20%;
   }
