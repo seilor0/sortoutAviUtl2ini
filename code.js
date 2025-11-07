@@ -444,11 +444,16 @@ function dragStartFile (e) {
 
 function dragEnter (e) {
   e.stopPropagation();
-  labelingDiv.querySelectorAll(':is(.target,.target-down)').forEach(el=>el.classList.remove('target','target-down'));
-  e.currentTarget.classList.add('target');
+  if (e.ctrlKey) {
+    e.currentTarget.classList.add('choice');
+  } else {
+    labelingDiv.querySelectorAll(':is(.target,.target-down)').forEach(el=>el.classList.remove('target','target-down'));
+    e.currentTarget.classList.add('target');
+  }
 }
 function dragLeave (e) {
   if (e.relatedTarget?.tagName=='INPUT') return;
+  if (e.ctrlKey) return;
   e.stopPropagation();
   const el = e.currentTarget;
   el.classList.remove('target');
@@ -457,14 +462,17 @@ function dragLeave (e) {
 }
 function dragEnterBody (e) {
   e.stopPropagation();
+  if (e.ctrlKey) return;
   e.currentTarget.classList.add(e.offsetY>8 ? 'target-down' : 'target');
 }
 function dragLeaveBody (e) {
   e.stopPropagation();
+  if (e.ctrlKey) return;
   e.currentTarget.classList.remove('target', 'target-down');
 }
 
 function drop (e) {
+  if (e.ctrlKey) return;
   // 差し込み元のファイル
   let srcDiv;
   if (e.dataTransfer.getData('text/process')=='new') {
@@ -490,6 +498,7 @@ function drop (e) {
   e.stopPropagation();
 }
 function drop2body (e) {
+  if (e.ctrlKey) return;
   // 差し込み元のファイル
   let srcDiv;
   if (e.dataTransfer.getData('text/process')=='new') {
@@ -529,6 +538,7 @@ function drop2body (e) {
   e.stopPropagation();
 }
 function dragEnd (e) {
+  if (e.ctrlKey) return;
   // 差し込み先
   const dstDiv = labelingDiv.querySelector('.result > .target-down:last-child');
   if (!dstDiv) return;
