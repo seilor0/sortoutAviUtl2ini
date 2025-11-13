@@ -1,9 +1,13 @@
 
 let rawDataArr = [];
+let backupArr = [];
 let systemArr = [];
 
 const deleteDupDiv = document.querySelector('[data-process=deleteDup]');
 const labelingDiv  = document.querySelector('[data-process=labeling]');
+
+const prevLabelFontCheckbox = document.getElementById('previewFont-labeling');
+const typeLabelRadio_font = labelingDiv.querySelector('[name=type-labeling][value=Font]');
 
 
 // ---------------------
@@ -58,11 +62,7 @@ document.getElementById('iniInput').addEventListener('change', async () => {
   else showDeleteDupResult();
 });
 document.getElementById('back2readPt').addEventListener('click', async () => {
-  await readFile();
-  if (document.querySelector('input[name=process][value=labeling]:checked')) showFolder();
-  else showDeleteDupResult();
-});
-document.getElementById('back2savePt').addEventListener('click', () => {
+  rawDataArr = structuredClone(backupArr);
   if (document.querySelector('input[name=process][value=labeling]:checked')) showFolder();
   else showDeleteDupResult();
 });
@@ -106,6 +106,8 @@ async function readFile() {
       systemArr.push('['+el.trim());
     }
   });
+
+  backupArr = structuredClone(rawDataArr);
 
   // set fonts to select
   const fontArr = rawDataArr.filter(dic=>dic.type=='Font').map(dic => previewFont(null, dic.name)).sort();
@@ -282,27 +284,51 @@ function showDeleteDupResult() {
 document.querySelector('input[name=process][value=labeling]').addEventListener('click', showFolder);
 // 対象選択
 labelingDiv.querySelectorAll('input[name=type-labeling]').forEach(el=>el.addEventListener('change', showFolder));
+
 // フォントプレビュー
-document.getElementById('previewFont-labeling').addEventListener('change', () => {
-  if (!labelingDiv.querySelector('[name=type-labeling][value=Font]:checked')) return;
-  updateOrder();
-  showFolder();
+prevLabelFontCheckbox.addEventListener('change', (e) => {
+  if (!typeLabelRadio_font.checked) return;
+  labelingDiv.querySelector('.result').style.setProperty(
+    '--font-size', 
+    e.currentTarget.checked ? document.getElementById('fontSize').value+'rem' : null
+  );
+  labelingDiv.querySelectorAll('.file').forEach(file => {
+    if (e.currentTarget.checked)
+      previewFont(file, file.innerText, document.getElementById('defFont-labeling').value);
+    else {
+      file.style.setProperty('font-family', null);
+      file.style.setProperty('font-weight', null);
+      file.style.setProperty('font-stretch', null);
+    }
+  });
 });
-document.getElementById('defFont-labeling').addEventListener('change', () => {
-  if (!labelingDiv.querySelector('[name=type-labeling][value=Font]:checked')) return;
-  if (!document.getElementById('previewFont-labeling').checked) return;
-  updateOrder();
-  showFolder();
+document.getElementById('defFont-labeling').addEventListener('change', (e) => {
+  if (!typeLabelRadio_font.checked) return;
+  if (!prevLabelFontCheckbox.checked) return;
+  labelingDiv.querySelectorAll('.file').forEach(file=>previewFont(file, file.innerText, e.currentTarget.value));
+});
+document.getElementById('fontSize').addEventListener('change', (e) => {
+  if (!typeLabelRadio_font.checked) return;
+  if (!prevLabelFontCheckbox.checked) return;
+  labelingDiv.querySelector('.result').style.setProperty('--font-size',e.currentTarget.value+'rem');
 });
 
+
+
 function showFolder() {
+  const type = labelingDiv.querySelector('[name=type-labeling]:checked').value;
   // initialize
   document.getElementById('toggleDetails').dataset.toggle = 'close';
   const resultDiv = labelingDiv.querySelector('.result');
   resultDiv.innerHTML = '';
+  resultDiv.style.setProperty(
+    '--font-size', 
+    type=='Font'&&prevLabelFontCheckbox.checked ? 
+      document.getElementById('fontSize').value+'rem' : 
+      null
+  );
 
   // sort
-  const type = labelingDiv.querySelector('[name=type-labeling]:checked').value;
   const dataArr = rawDataArr.filter(dic=>dic.type==type&&!dic.checked).sort((a,b)=>
     type=='Input' ? a.props.priority - b.props.priority : a.props.order - b.props.order
   );
@@ -336,7 +362,7 @@ function showFolder() {
     file.addEventListener('click', ctrlClick);
     
     // font preview
-    if (type=='Font' && document.getElementById('previewFont-labeling').checked)
+    if (type=='Font' && prevLabelFontCheckbox.checked)
       previewFont(file, dic.name, document.getElementById('defFont-labeling').value);
     
     target.appendChild(file);

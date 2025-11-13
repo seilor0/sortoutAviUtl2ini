@@ -6,6 +6,8 @@
   --offwhite: #fafafa;
   --blue: #326cc2;
   --light-blue: #a3b7e0;
+  --font-size: 1rem;
+  accent-color: var(--blue);
 }
 
 .material-symbols-outlined {
@@ -471,7 +473,7 @@
   .drop-area {
     border: 2px dotted #72bed6;
     color: #72bed6;
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 1rem;
     border-radius: 0.5rem;
     font-size: calc(1em - 2px);
     font-weight: 500;
@@ -482,7 +484,8 @@
   
   .file {
     border-block-start: 3px solid transparent;
-    height: 1.5rem;
+    font-size: var(--font-size);
+    height: 1.5em;
     align-content: center;
     white-space: pre-wrap;
     position: relative;

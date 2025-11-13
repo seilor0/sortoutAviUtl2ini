@@ -124,10 +124,9 @@
                 <span class="material-symbols-outlined">arrow_left_alt</span>
               </div>
             </div>
-            <div class="new-mofism" style="margin-block-start: 1rem;">
+            <div class="new-mofism" style="margin-block-start: 0.5rem;">
               <button id="toggleDetails" class="round" data-toggle="close">全グループを開閉</button>
               <button id="clearChoice" class="round">複数選択をクリア</button>
-              <button id="back2savePt" class="round">変更前に戻す</button>
               <button id="sortByLabel" class="round">ラベルでソート</button>
               <label class="toggle-button" style="justify-content: flex-end;">
                 <input type="checkbox" id="isAsc" checked>
@@ -150,7 +149,9 @@
                   フォントをプレビュー
                   <span class="slider"></span>
                 </label>
-                <p style="font-size: smaller;margin-block-start: 0.5rem;">デフォルトのフォント：</p>
+                <p style="font-size: smaller;margin-block-start: 0.75rem;">フォントサイズ：</p>
+                <input id="fontSize" type="range" min="1" max="3" value="1" step="0.1" style="width: stretch;">
+                <p style="font-size: smaller;margin-block-start: 0.25rem;">デフォルトのフォント：</p>
                 <select id="defFont-labeling"></select>
               </div>
   
