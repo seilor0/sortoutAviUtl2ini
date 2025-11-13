@@ -5,9 +5,9 @@
 :root {
   --offwhite: #fafafa;
   --blue: #326cc2;
+  accent-color: var(--blue);
   --light-blue: #a3b7e0;
   --font-size: 1rem;
-  accent-color: var(--blue);
 }
 
 .material-symbols-outlined {
