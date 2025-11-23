@@ -6,69 +6,33 @@ let systemArr = [];
 const deleteDupDiv = document.querySelector('[data-process=deleteDup]');
 const labelingDiv  = document.querySelector('[data-process=labeling]');
 
-const prevLabelFontCheckbox = document.getElementById('previewFont-labeling');
-const typeLabelRadio_font = labelingDiv.querySelector('[name=type-labeling][value=Font]');
+const prevFontCheckbox_labeling = document.getElementById('previewFont-labeling');
+const prevFontCheckbox_deldup   = document.getElementById('previewFont-delDup');
+const typeRadio_font_labeling = labelingDiv.querySelector('[name=type-labeling][value=Font]');
+const typeRadio_font_deldup   = deleteDupDiv.querySelector('[name=type-delDup][value=Font]');
 
 
-// ---------------------
-//   ページ切り替え
-// ---------------------
-// order, labelの更新
-document.querySelectorAll('input[name=process]').forEach      (input=>input.addEventListener('change', updateOrder));
-document.querySelectorAll('input[name=type-labeling]').forEach(input=>input.addEventListener('change', updateOrder));
-
-// ページの表示切替
-document.querySelectorAll('input[name=process]').forEach(input=> {
-  input.addEventListener('click', (e) => {
-    document.querySelector('div.active[data-process]')?.classList.remove('active');
-    document.querySelector(`div[data-process=${e.currentTarget.value}]`).classList.add('active');
-  });
-});
-
-let preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
-function updateOrder() {
-  const dataArr = rawDataArr.filter(dic=>dic.type==preType && !dic.checked);
-  [...labelingDiv.querySelectorAll('.result .file')].forEach((file,i) => {
-    const name = file.lastChild.textContent;
-    const dic = dataArr.filter(dic=>dic.name==name)[0];
-
-    const label = [];
-    let target = file;
-    while (target.closest('.folder')) {
-      target = target.closest('.folder');
-      const title = target.querySelector('summary input').value;
-      if (title) label.unshift(title);
-      target = target.parentElement;
-    }
-    dic.props.order = i;
-    dic.props.label = label;
-  });
-  preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
-}
-
-
-// ---------------------
-//   iniファイル選択時
-// ---------------------
-document.querySelectorAll('.clickNextInput').forEach(el => el.addEventListener('click', (e) => e.currentTarget.nextElementSibling?.click()));
+// iniファイル選択時
+document.querySelector('.clickNextInput').addEventListener('click',(e)=>e.currentTarget.nextElementSibling?.click());
 document.getElementById('iniInput').addEventListener('change', async () => {
-  if (document.querySelector('[data-process=home].active')) {
-    document.querySelector('[data-process].active')?.classList.remove('active');
-    document.querySelector('input[name=process][value=labeling]').checked = true;
-    labelingDiv.classList.add('active');
-  }
   await readFile();
-  if (document.querySelector('input[name=process][value=labeling]:checked')) showFolder();
-  else showDeleteDupResult();
+  const process = document.querySelector('input[name=process]:checked').value;
+  if      (process=='home')      document.querySelector('input[name=process][value=labeling]').click();
+  else if (process=='labeling')  showFolder();
+  else if (process=='deleteDup') showDeleteDupResult();
 });
-document.getElementById('back2readPt').addEventListener('click', async () => {
+// 「読み込み時の設定に戻す」ボタン
+document.getElementById('back2readPt').addEventListener('click', () => {
   rawDataArr = structuredClone(backupArr);
-  if (document.querySelector('input[name=process][value=labeling]:checked')) showFolder();
-  else showDeleteDupResult();
+  const process = document.querySelector('input[name=process]:checked').value;
+  if      (process=='labeling')  showFolder();
+  else if (process=='deleteDup') showDeleteDupResult();
 });
+// 「クリア」ボタン
 document.getElementById('clear').addEventListener('click', () => {
-  rawDataArr = [];
-  systemArr = [];
+  rawDataArr.splice(0);
+  backupArr.splice(0);
+  systemArr.splice(0);
   deleteDupDiv.querySelector('table tbody').innerHTML = '';
   labelingDiv.querySelector('.result').innerHTML = '';
   document.getElementById('sortStyle').value = 'order';
@@ -77,13 +41,133 @@ document.getElementById('clear').addEventListener('click', () => {
   document.getElementById('defFont-labeling').innerHTML = '';
   document.getElementById('defFont-delDup').innerHTML = '';
 });
+//   結果保存
+document.getElementById('copy').addEventListener('click', updateOrder);
+document.getElementById('copy').addEventListener('click', saveFile);
+
+
+// ---------------------
+//   ページ切り替え
+// ---------------------
+
+// order, labelの更新
+document.querySelectorAll('input[name=process]').forEach      (input=>input.addEventListener('change', updateOrder));
+document.querySelectorAll('input[name=type-labeling]').forEach(input=>input.addEventListener('change', updateOrder));
+
+// ページの表示切替
+document.querySelectorAll('input[name=process]').forEach(input=>
+  input.addEventListener('click', (e) => {
+    document.querySelector('div[data-process].active')?.classList.remove('active');
+    document.querySelector(`div[data-process=${e.currentTarget.value}]`).classList.add('active');
+  })
+);
+
+// タブ名部分
+document.querySelector('input[name=process][value=deleteDup]').addEventListener('click',showDeleteDupResult);
+document.querySelector('input[name=process][value=labeling]').addEventListener('click', showFolder);
+
+// 対象選択
+deleteDupDiv.querySelectorAll('input[name=type-delDup]').forEach(el=>el.addEventListener('change', showDeleteDupResult));
+labelingDiv.querySelectorAll('input[name=type-labeling]').forEach(el=>el.addEventListener('change', showFolder));
+
+
+// ---------------------
+//   重複を削除　ページ
+// ---------------------
+document.getElementById('sortStyle').addEventListener('change', showDeleteDupResult);
+
+// フォントプレビュー
+prevFontCheckbox_deldup.addEventListener('change', (e) => {
+  if (!typeRadio_font_deldup.checked) return;
+  const defFont = document.getElementById('defFont-delDup').value;
+  const target = deleteDupDiv.querySelectorAll('table tbody tr > :nth-child(3)');
+  target.forEach(cell => previewFont(cell, e.currentTarget.checked ? cell.innerText : null, defFont));
+});
+// default font
+document.getElementById('defFont-delDup').addEventListener('change', (e) => {
+  if (!typeRadio_font_deldup.checked) return;
+  if (!prevFontCheckbox_deldup.checked) return;
+  const target = deleteDupDiv.querySelectorAll('table tbody tr > :nth-child(3)');
+  target.forEach(cell => previewFont(cell, cell.innerText, e.currentTarget.value));
+});
+
+
+// ---------------------
+//   ラベリング　ページ
+// ---------------------
+// フォントプレビュー
+prevFontCheckbox_labeling.addEventListener('change', (e) => {
+  if (!typeRadio_font_labeling.checked) return;
+  if (e.currentTarget.checked) {
+    labelingDiv.querySelector('.result').style.setProperty('--font-size', document.getElementById('fontSize').value+'rem');
+    const defFont = document.getElementById('defFont-labeling').value;
+    labelingDiv.querySelectorAll('.file').forEach(file=>previewFont(file, file.innerText, defFont));
+  } else {
+    labelingDiv.querySelector('.result').style.setProperty('--font-size', null);
+    labelingDiv.querySelectorAll('.file').forEach(file=>previewFont(file, null));
+  }
+});
+
+// default font
+document.getElementById('defFont-labeling').addEventListener('change', (e) => {
+  if (!typeRadio_font_labeling.checked || !prevFontCheckbox_labeling.checked) return;
+  labelingDiv.querySelectorAll('.file').forEach(file=>previewFont(file, file.innerText, e.currentTarget.value));
+});
+
+// font size
+document.getElementById('fontSize').addEventListener('change', (e) => {
+  if (!typeRadio_font_labeling.checked || !prevFontCheckbox_labeling.checked) return;
+  labelingDiv.querySelector('.result').style.setProperty('--font-size',e.currentTarget.value+'rem');
+});
+
+// new folder
+document.getElementById('newFolder').addEventListener('dragstart', dragStartNewFolder);
+document.getElementById('newFolder').addEventListener('dragend', dragEnd);
+
+// to top/bottom of all/group
+['2topAll', '2bottomAll', '2topGroup', '2bottomGroup'].forEach(id=>{
+  const target = document.getElementById(id);
+  target.addEventListener('dragenter', dragEnter);
+  target.addEventListener('dragleave', dragLeave);
+  target.addEventListener('dragover', dragOver);
+  target.addEventListener('drop', dropMove);
+});
+
+// 開閉
+document.getElementById('toggleDetails').addEventListener('click', e => {
+  if (e.currentTarget.dataset.toggle=='close') {
+    labelingDiv.querySelectorAll('details').forEach(details => details.open=false);
+    e.currentTarget.dataset.toggle = 'open';
+  } else {
+    labelingDiv.querySelectorAll('details').forEach(details => details.open=true);
+    e.currentTarget.dataset.toggle = 'close';
+  }
+});
+
+// 選択をクリア
+document.getElementById('clearChoice').addEventListener('click', ()=> 
+  labelingDiv.querySelectorAll('.choice').forEach(el=>el.classList.remove('choice'))
+);
+
+// sort result
+document.getElementById('sortByLabel').addEventListener('click', () => {
+  sortByLabel(labelingDiv.querySelector('.result'));
+  numbering();
+});
+
+
+
+// ------------------
+//   main function
+// ------------------
 async function readFile() {
   const file = document.getElementById('iniInput').files[0];
   if (!file) return;
 
   // initialize
-  rawDataArr = [];
-  systemArr = [];
+  rawDataArr.splice(0);
+  backupArr.splice(0);
+  systemArr.splice(0);
 
   // read file
   const text = await file.text();
@@ -126,11 +210,6 @@ async function readFile() {
 }
 
 
-// ---------------------
-//   結果保存
-// ---------------------
-document.getElementById('copy').addEventListener('click', updateOrder);
-document.getElementById('copy').addEventListener('click', saveFile);
 function saveFile() {
   const dataArr = rawDataArr.filter(dic=>!dic.checked);
   if (!dataArr.length) return;
@@ -181,23 +260,6 @@ function saveFile() {
 }
 
 
-// ---------------------
-//   重複を削除　ページ
-// ---------------------
-document.querySelector('input[name=process][value=deleteDup]').addEventListener('click',showDeleteDupResult);
-deleteDupDiv.querySelectorAll('input[name=type-delDup]').forEach(input => input.addEventListener('change', showDeleteDupResult));
-document.getElementById('sortStyle').addEventListener('change', showDeleteDupResult);
-// フォントプレビュー
-document.getElementById('previewFont-delDup').addEventListener('change', () => {
-  if (!deleteDupDiv.querySelector('[name=type-delDup][value=Font]:checked')) return;
-  showDeleteDupResult();
-});
-document.getElementById('defFont-delDup').addEventListener('change', () => {
-  if (!deleteDupDiv.querySelector('[name=type-delDup][value=Font]:checked')) return;
-  if (!document.getElementById('previewFont-delDup').checked) return;
-  showDeleteDupResult();
-});
-
 function showDeleteDupResult() {
   // initialize
   const tbody = deleteDupDiv.querySelector('table tbody');
@@ -234,6 +296,9 @@ function showDeleteDupResult() {
 
   
   // show
+  const defFont = document.getElementById('defFont-delDup').value;
+  const previewFontFlag = type=='Font' && prevFontCheckbox_deldup.checked;
+
   dataArr.forEach(data => {
     const order = sortStyle=='defOrder' ? data.defOrder : (data.props.order ?? data.props.priority ?? null);
     let props = '';
@@ -248,14 +313,9 @@ function showDeleteDupResult() {
     input.checked = data.checked;
     row.firstElementChild.appendChild(input);
 
-    if (deleteDupDiv.querySelector('[name=type-delDup][value=Font]:checked') && 
-      document.getElementById('previewFont-delDup').checked
-    ) {
-      previewFont(row.children[2], data.name, document.getElementById('defFont-delDup').value);
-    }
+    if (previewFontFlag) previewFont(row.children[2], data.name, defFont);
 
-    if (dataArr.filter(dic=>dic.type==data.type && dic.defOrder==data.defOrder).length>1) 
-      row.className = 'duplicate';
+    if (dataArr.filter(dic=>dic.type==data.type && dic.defOrder==data.defOrder).length>1) row.className = 'duplicate';
 
     row.addEventListener('click', (e)=>{
       const input = e.currentTarget.firstElementChild.firstElementChild;
@@ -266,78 +326,26 @@ function showDeleteDupResult() {
 }
 
 
-// ---------------------
-//   ラベリング　ページ
-// ---------------------
-
-/* 
-変更の保存タイミング：
-- タブを切り替えた時
-- 種類を切り替えた時
-
-セーブポイント:
-- 読み込み時の状態
-- 前回保存時の状態
- */
-
-// タブ部分
-document.querySelector('input[name=process][value=labeling]').addEventListener('click', showFolder);
-// 対象選択
-labelingDiv.querySelectorAll('input[name=type-labeling]').forEach(el=>el.addEventListener('change', showFolder));
-
-// フォントプレビュー
-prevLabelFontCheckbox.addEventListener('change', (e) => {
-  if (!typeLabelRadio_font.checked) return;
-  labelingDiv.querySelector('.result').style.setProperty(
-    '--font-size', 
-    e.currentTarget.checked ? document.getElementById('fontSize').value+'rem' : null
-  );
-  labelingDiv.querySelectorAll('.file').forEach(file => {
-    if (e.currentTarget.checked)
-      previewFont(file, file.innerText, document.getElementById('defFont-labeling').value);
-    else {
-      file.style.setProperty('font-family', null);
-      file.style.setProperty('font-weight', null);
-      file.style.setProperty('font-stretch', null);
-    }
-  });
-});
-document.getElementById('defFont-labeling').addEventListener('change', (e) => {
-  if (!typeLabelRadio_font.checked) return;
-  if (!prevLabelFontCheckbox.checked) return;
-  labelingDiv.querySelectorAll('.file').forEach(file=>previewFont(file, file.innerText, e.currentTarget.value));
-});
-document.getElementById('fontSize').addEventListener('change', (e) => {
-  if (!typeLabelRadio_font.checked) return;
-  if (!prevLabelFontCheckbox.checked) return;
-  labelingDiv.querySelector('.result').style.setProperty('--font-size',e.currentTarget.value+'rem');
-});
-
-
-
 function showFolder() {
   const type = labelingDiv.querySelector('[name=type-labeling]:checked').value;
+  const previewFontFlag = type=='Font' && prevFontCheckbox_labeling.checked;
+
   // initialize
   document.getElementById('toggleDetails').dataset.toggle = 'close';
   const resultDiv = labelingDiv.querySelector('.result');
   resultDiv.innerHTML = '';
-  resultDiv.style.setProperty(
-    '--font-size', 
-    type=='Font'&&prevLabelFontCheckbox.checked ? 
-      document.getElementById('fontSize').value+'rem' : 
-      null
-  );
+  resultDiv.style.setProperty('--font-size', previewFontFlag ? document.getElementById('fontSize').value+'rem' : null);
 
   // sort
-  const dataArr = rawDataArr.filter(dic=>dic.type==type&&!dic.checked).sort((a,b)=>
-    type=='Input' ? a.props.priority - b.props.priority : a.props.order - b.props.order
-  );
+  const dataArr = rawDataArr
+    .filter(dic=>dic.type==type&&!dic.checked)
+    .sort((a,b)=>type=='Input' ? a.props.priority-b.props.priority : a.props.order-b.props.order);
 
   // add packages
   dataArr.forEach(dic => {
     let target = resultDiv;
     dic.props.label.forEach(label => {
-      target = [...target.querySelectorAll('summary input')].filter(input=>input.value==label)?.[0]?.closest('.folder').lastElementChild || makeFolderDiv(target, label).lastElementChild;
+      target = [...target.querySelectorAll('&>.folder>summary input')].filter(input=>input.value==label)?.[0]?.closest('.folder').lastElementChild || makeFolderDiv(target, label).lastElementChild;
     });
     const file = document.createElement('p');
     file.classList.add('file');
@@ -362,8 +370,7 @@ function showFolder() {
     file.addEventListener('click', ctrlClick);
     
     // font preview
-    if (type=='Font' && prevLabelFontCheckbox.checked)
-      previewFont(file, dic.name, document.getElementById('defFont-labeling').value);
+    if (previewFontFlag) previewFont(file, dic.name, document.getElementById('defFont-labeling').value);
     
     target.appendChild(file);
   });
@@ -372,56 +379,29 @@ function showFolder() {
   numbering();
 }
 
-// new folder
-document.getElementById('newFolder').addEventListener('dragstart', dragStartNewFolder);
-document.getElementById('newFolder').addEventListener('dragend', dragEnd);
 
-// to top/bottom of all/group
-document.getElementById('2topAll').addEventListener     ('dragenter', dragEnter);
-document.getElementById('2bottomAll').addEventListener  ('dragenter', dragEnter);
-document.getElementById('2topGroup').addEventListener   ('dragenter', dragEnter);
-document.getElementById('2bottomGroup').addEventListener('dragenter', dragEnter);
-document.getElementById('2topAll').addEventListener     ('dragLeave', dragLeave);
-document.getElementById('2bottomAll').addEventListener  ('dragLeave', dragLeave);
-document.getElementById('2topGroup').addEventListener   ('dragLeave', dragLeave);
-document.getElementById('2bottomGroup').addEventListener('dragLeave', dragLeave);
-document.getElementById('2topAll').addEventListener     ('dragover', dragOver);
-document.getElementById('2bottomAll').addEventListener  ('dragover', dragOver);
-document.getElementById('2topGroup').addEventListener   ('dragover', dragOver);
-document.getElementById('2bottomGroup').addEventListener('dragover', dragOver);
-document.getElementById('2topAll').addEventListener     ('drop', dropMove);
-document.getElementById('2bottomAll').addEventListener  ('drop', dropMove);
-document.getElementById('2topGroup').addEventListener   ('drop', dropMove);
-document.getElementById('2bottomGroup').addEventListener('drop', dropMove);
+let preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
+function updateOrder() {
+  const dataArr = rawDataArr.filter(dic=>dic.type==preType && !dic.checked);
+  [...labelingDiv.querySelectorAll('.result .file')].forEach((file,i) => {
+    const name = file.lastChild.textContent;
+    const dic = dataArr.filter(dic=>dic.name==name)[0];
 
-
-// numbering
-function numbering () {
-  labelingDiv.querySelectorAll('.file').forEach  ((el,i) => el.dataset.index=i);
-  labelingDiv.querySelectorAll('.folder').forEach((el,i) => el.dataset.index=i);
+    const label = [];
+    let target = file;
+    while (target.closest('.folder')) {
+      target = target.closest('.folder');
+      const title = target.querySelector('summary input').value;
+      if (title) label.unshift(title);
+      target = target.parentElement;
+    }
+    dic.props.order = i;
+    dic.props.label = label;
+  });
+  preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
 }
 
-// 開閉
-document.getElementById('toggleDetails').addEventListener('click', e => {
-  if (e.currentTarget.dataset.toggle=='close') {
-    labelingDiv.querySelectorAll('details').forEach(details => details.open=false);
-    e.currentTarget.dataset.toggle = 'open';
-  } else {
-    labelingDiv.querySelectorAll('details').forEach(details => details.open=true);
-    e.currentTarget.dataset.toggle = 'close';
-  }
-});
 
-// 選択をクリア
-document.getElementById('clearChoice').addEventListener('click', ()=> {
-  labelingDiv.querySelectorAll('.choice').forEach(el=>el.classList.remove('choice'));
-});
-
-// sort result
-document.getElementById('sortByLabel').addEventListener('click', () => {
-  sortByLabel(labelingDiv.querySelector('.result'));
-  numbering();
-});
 function sortByLabel (target) {
   const files   = [...target.querySelectorAll('& > .file')];
   const folders = [...target.querySelectorAll('& > .folder')];
@@ -453,15 +433,28 @@ function sortByLabel (target) {
 }
 
 
+
 // ------------------
 //   event listener
 // ------------------
-
 function dragOver (e) {e.preventDefault()};
 
-function dragStartNewFolder (e) {
-  e.dataTransfer.setData('text/process', 'new');
+// drop to iniInput
+const iniInput = document.getElementById('iniInput').previousElementSibling;
+iniInput.addEventListener('dragenter', dragEnter2iniInput);
+iniInput.addEventListener('dragleave', dragLeave2iniInput);
+iniInput.addEventListener('dragover', dragOver);
+iniInput.addEventListener('drop', drop2iniInput);
+function dragEnter2iniInput (e) {e.currentTarget.classList.add('target');}
+function dragLeave2iniInput (e) {e.currentTarget.classList.remove('target');}
+function drop2iniInput (e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('target');
+  document.getElementById('iniInput').files = e.dataTransfer.files;
+  document.getElementById('iniInput').dispatchEvent(new Event('change'));
 }
+
+function dragStartNewFolder (e) {e.dataTransfer.setData('text/process', 'new');}
 function dragStartFolder (e) {
   e.stopPropagation();
   e.dataTransfer.setData('text/process', 'existing');
@@ -475,11 +468,11 @@ function dragStartFile (e) {
   e.dataTransfer.setData('text/index', e.currentTarget.dataset.index);
 }
 
+
 function dragEnter (e) {
   e.stopPropagation();
-  if (e.ctrlKey) {
-    e.currentTarget.classList.add('choice');
-  } else {
+  if (e.ctrlKey) e.currentTarget.classList.add('choice');
+  else {
     labelingDiv.querySelectorAll(':is(.target,.target-down)').forEach(el=>el.classList.remove('target','target-down'));
     e.currentTarget.classList.add('target');
   }
@@ -503,6 +496,7 @@ function dragLeaveBody (e) {
   if (e.ctrlKey) return;
   e.currentTarget.classList.remove('target', 'target-down');
 }
+
 
 function drop (e) {
   if (e.ctrlKey) return;
@@ -633,27 +627,6 @@ function dropMove(e) {
   numbering();
 }
 
-{
-  const iniInput = document.getElementById('iniInput').previousElementSibling;
-  iniInput.addEventListener('dragenter', dragEnter2iniInput);
-  iniInput.addEventListener('dragleave', dragLeave2iniInput);
-  iniInput.addEventListener('dragover', dragOver);
-  iniInput.addEventListener('drop', drop2iniInput);
-}
-// drop to iniInput
-function dragEnter2iniInput (e) {
-  e.currentTarget.classList.add('target');
-}
-function dragLeave2iniInput (e) {
-  e.currentTarget.classList.remove('target');
-}
-function drop2iniInput (e) {
-  e.preventDefault();
-  e.currentTarget.classList.remove('target');
-  document.getElementById('iniInput').files = e.dataTransfer.files;
-  document.getElementById('iniInput').dispatchEvent(new Event('change'));
-}
-
 
 // ungroup
 function ungroupFolder (e) {
@@ -689,97 +662,110 @@ function ctrlClick (e) {
 // ------------------------
 //   汎用関数
 // ------------------------
-function previewFont (element=null, fontName, defFont=null) {
-  const weightDic = {
-    'UltraThin': 50,
-    'Ultra Thin': 50,
-
-    'Thin': 100,
-
-    'ExtraLight': 200,
-    'Extra Light': 200,
-    'UltraLight': 200,
-    'Ultra Light': 200,
-    'EL': 200,
-
-    'Light': 300,
-    'Lt': 300,
-    'L': 300,
-    'W3': 300,
-
-    'SemiLight': 350,
-    'Semi Light': 350,
-    'DemiLight': 350,
-    'Demi Light': 350,
-
-    'Normal': 400,
-    'R': 400,
-    'W4': 400,
-
-    'Medium': 500,
-    'M': 500,
-
-    'SemiBold': 600,
-    'Semi Bold': 600,
-    'DemiBold': 600,
-    'Demi Bold': 600,
-    'Demi': 600,
-    'DB': 600,
-    'W6': 600,
-
-    'ExtraBold': 800,
-    'Extra Bold': 800,
-    'EB': 800,
-    'XBd': 800,
-    'UltraBold': 800,
-    'Ultra Bold': 800,
-    'W8': 800,
-
-    'Black': 900,
-    'Heavy': 900,
-
-    'Bold': 700,
-    'B': 700,
-  };
-  const condDic = {
-    'ExtraCondensed': 'extra-condensed',
-    'Extra Condensed': 'extra-condensed',
-    'Ext Condensed': 'extra-condensed',
-    'SemiCondensed': 'semi-condensed',
-    'Semi Condensed': 'semi-condensed',
-    'DemiCondensed': 'semi-condensed',
-    'Demi Condensed': 'semi-condensed',
-    'Demi Cond': 'semi-condensed',
-    'Condensed': 'condensed',
-    'Cond': 'condensed',
-    'Compressed': 'condensed',
-    'Narrow': 'condensed',
-    'Extended': 'expanded',
-  };
-
-  // weight
-  for (const key in weightDic) {
-    const regExp = new RegExp(` ${key}\\b`,'i');
-    if (regExp.test(fontName)) {
-      if (element) element.style.fontWeight = weightDic[key];
-      fontName = fontName.replace(regExp,'');
-      break;
-    }
-  }
-  // condensed
-  for (const key in condDic) {
-    const regExp = new RegExp(` ${key}\\b`,'i');
-    if (regExp.test(fontName)) {
-      if (element) element.style.fontStretch = condDic[key];
-      fontName = fontName.replace(regExp,'');
-      break;
-    }
-  }
-  if (element) element.style.fontFamily = '"'+fontName+'"';
-  if (element && defFont) element.style.fontFamily += `, "${defFont}"`;
-  return fontName;
+function numbering () {
+  labelingDiv.querySelectorAll('.file').forEach  ((el,i) => el.dataset.index=i);
+  labelingDiv.querySelectorAll('.folder').forEach((el,i) => el.dataset.index=i);
 }
 
+function previewFont (element=null, fontName=null, defFont=null) {
+  if (!fontName) {
+    if (element) {
+      element.style.setProperty('font-family', null);
+      element.style.setProperty('font-weight', null);
+      element.style.setProperty('font-stretch', null);
+    }
+    return null;
+  } else {
+    const weightDic = {
+      'UltraThin': 50,
+      'Ultra Thin': 50,
+  
+      'Thin': 100,
+  
+      'ExtraLight': 200,
+      'Extra Light': 200,
+      'UltraLight': 200,
+      'Ultra Light': 200,
+      'EL': 200,
+  
+      'Light': 300,
+      'Lt': 300,
+      'L': 300,
+      'W3': 300,
+  
+      'SemiLight': 350,
+      'Semi Light': 350,
+      'DemiLight': 350,
+      'Demi Light': 350,
+  
+      'Normal': 400,
+      'R': 400,
+      'W4': 400,
+  
+      'Medium': 500,
+      'M': 500,
+  
+      'SemiBold': 600,
+      'Semi Bold': 600,
+      'DemiBold': 600,
+      'Demi Bold': 600,
+      'Demi': 600,
+      'DB': 600,
+      'W6': 600,
+  
+      'ExtraBold': 800,
+      'Extra Bold': 800,
+      'EB': 800,
+      'XBd': 800,
+      'UltraBold': 800,
+      'Ultra Bold': 800,
+      'W8': 800,
+  
+      'Black': 900,
+      'Heavy': 900,
+  
+      'Bold': 700,
+      'B': 700,
+    };
+    const condDic = {
+      'ExtraCondensed': 'extra-condensed',
+      'Extra Condensed': 'extra-condensed',
+      'Ext Condensed': 'extra-condensed',
+      'SemiCondensed': 'semi-condensed',
+      'Semi Condensed': 'semi-condensed',
+      'DemiCondensed': 'semi-condensed',
+      'Demi Condensed': 'semi-condensed',
+      'Demi Cond': 'semi-condensed',
+      'Condensed': 'condensed',
+      'Cond': 'condensed',
+      'Compressed': 'condensed',
+      'Narrow': 'condensed',
+      'Extended': 'expanded',
+    };
+  
+    // weight
+    for (const key in weightDic) {
+      const regExp = new RegExp(` ${key}\\b`,'i');
+      if (regExp.test(fontName)) {
+        if (element) element.style.fontWeight = weightDic[key];
+        fontName = fontName.replace(regExp,'');
+        break;
+      }
+    }
+    // condensed
+    for (const key in condDic) {
+      const regExp = new RegExp(` ${key}\\b`,'i');
+      if (regExp.test(fontName)) {
+        if (element) element.style.fontStretch = condDic[key];
+        fontName = fontName.replace(regExp,'');
+        break;
+      }
+    }
+    if (element) element.style.fontFamily = '"'+fontName+'"';
+    if (element && defFont) element.style.fontFamily += `, "${defFont}"`;
+    return fontName;
+  }
+}
 
 function makeFolderDiv(parent=null, label=null) {
   const folder = document.createElement('details');
