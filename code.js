@@ -176,7 +176,7 @@ async function readFile() {
     if (/^(?:Color|Effect|Font|Input|Movement|Output|Params)\..+/.test(el)) {
       const splitArr = el.trim().split('\n');
       
-      const {type, name} = splitArr.shift().match(/(?<type>.+?)\.(?<name>.+?)]/).groups;
+      const {type, name} = splitArr.shift().match(/(?<type>.+?)\.(?<name>.+?)]$/).groups;
       const dic = {checked:false, type:type, name:name, props:{}};
       splitArr.forEach(row => {
         let {key, value} = row.match(/(?<key>.+?)=(?<value>.*)/).groups;
