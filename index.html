@@ -45,7 +45,7 @@
         <div data-process="home" class="active">
           以下の2つのことが手軽にできるサイトです。
           <ul>
-            <li>スクリプトのラベル分け</li>
+            <li>スクリプトetc.のラベル分け</li>
             <li>アンインストールしたスクリプトetc.の設定の確認・削除</li>
           </ul>
   
@@ -176,23 +176,29 @@
               Font
             </label>
             <label class="select-tag">
-              <input type="radio" name="type-delDup" value="Input">
-              Input
-            </label>
-            <label class="select-tag">
               <input type="radio" name="type-delDup" value="Movement">
               Movement
-            </label>
-            <label class="select-tag">
-              <input type="radio" name="type-delDup" value="Output">
-              Output
             </label>
             <label class="select-tag">
               <input type="radio" name="type-delDup" value="Params">
               Params
             </label>
 
+            
             <div class="new-mofism" style="margin-block-start: 1rem;padding: 1rem;">
+              <p>
+                アンインストール済の<br>
+                Effect・Movement・Paramsの<br>
+                設定をまとめて削除→
+              </p>
+              <button class="clickNextInput round blue" style="height: 3.5rem;">
+                アプリケーション<br>
+                データフォルダを選択
+              </button>
+              <input type="file" id="scriptsInput" multiple webkitdirectory>
+
+              <hr style="margin-block: 0.75rem;">
+
               <div>
                 <p style="font-size: smaller;">ソート：</p>
                 <select id="sortStyle">
@@ -204,7 +210,7 @@
               </div>
   
               <hr style="margin-block: 0.75rem;">
-
+  
               <div>
                 <label class="toggle-button">
                   <input type="checkbox" id="previewFont-delDup" checked>
@@ -215,7 +221,6 @@
                 <select id="defFont-delDup"></select>
               </div>
             </div>
-
           </aside>
 
           <div class="result">
@@ -247,7 +252,7 @@
         <div class="settingDiv">
           <span>並び替え</span>
           <div style="line-height: 1.75;">
-            パッケージ/グループを、挿入したい箇所か<span style="padding: 2px 12px;border: 2px dotted #72bed6;color: #72bed6;border-radius: 0.5rem;font-size: calc(1em - 2px);font-weight: 500;margin-inline: 4px;">全体の先頭</span>にD&Dしてください<br>
+            パッケージ/グループを、挿入したい箇所か<span style="padding: 2px 12px;border: 2px dotted #72bed6;color: #72bed6;border-radius: 0.5rem;font-size: calc(1em - 2px);font-weight: 500;margin-inline: 4px;">全体の先頭</span>にD&D<br>
             <span class="annotation">※<code>ctrl+クリック</code>, <code>ctrl+ドラッグ</code>による複数選択も可</span><br>
           </div>
           
@@ -257,23 +262,24 @@
               <span class="material-symbols-outlined">create_new_folder</span>
               New Group
             </span>
-            を挿入したい箇所にD&Dしてください
+            を挿入したい箇所にD&D
           </div>
 
           <span>グループ解除</span>
           <div>
-            グループ右上の<code>×</code>をクリックしてください<br>
+            グループ右上の<code>×</code>をクリック<br>
             <span class="annotation">※内部のパッケージ/グループはその場に展開されます</span>
           </div>
 
           <span>グループ名の変更</span>
           <div>
-            グループのタイトル部分にテキスト入力してください
+            グループのタイトル部分にテキスト入力
           </div>
 
           <span>表示/非表示の切替</span>
           <div>
-            パッケージをクリックすると、AviUtl2のポップアップメニューで表示するかを切り替えられます<br>
+            パッケージをクリックすると、<br>
+            AviUtl2のポップアップメニューで表示するかを切り替えられます<br>
             <span class="annotation">※フォントメニュー等で左端にある☑のON/OFF切替です</span>
           </div>
         </div>
@@ -283,13 +289,15 @@
         <div class="settingDiv">            
           <span>アンインストール済の<br>パッケージの確認</span>
           <div>
-            <span style="padding: 0 2px;border-radius: 4px;background-color: lightpink;">赤い色がついている項目</span>は<br>
-            「並び順が重複している=片方はアンインストール済」のパッケージです
+            <span style="padding: 0 2px;font-weight:600;color:var(--blue);">青太字の項目</span>：
+            並び順が重複している（=片方はアンインストール済）<br>
+            <span style="padding: 0 2px;border-radius: 4px;background-color: lightpink;">赤い色がついている項目</span>：アンインストール済み<br>
+            のパッケージです
           </div>
           
           <span>設定の削除</span>
           <div>
-            削除したいパッケージをクリックしてください<br>
+            削除したいパッケージをクリック<br>
             <span class="annotation">取り消し線が引かれていれば、iniファイルの保存時にそのパッケージの設定は削除されます</span>
           </div>
         </div>
@@ -297,11 +305,7 @@
         <h3>その他</h3>
         <div class="settingDiv">
           <span>メニューが画面外に<br>はみ出す場合</span>
-          <span>
-            サイトを縮小して表示してください<br>
-            <span class="annotation">80%くらいでちょうどよくなるかもしれません</span>
-          </span>
-
+          <span>サイトを縮小して表示してください</span>
         </div>
 
       </section>

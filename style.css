@@ -358,6 +358,8 @@
     gap: 0.5rem;
     white-space: nowrap;
     height: max-content;
+
+    p {font-size: smaller;}
   }
 
   .select-tag {
@@ -418,7 +420,11 @@
     tr:nth-child(even) {
       background-color: #f0f0f0;
     }
-    tr.duplicate {
+    tr.duplicate :is(th,td) {
+      font-weight: 600;
+      color: var(--blue);
+    }
+    tr.uninstalled {
       background-color: lightpink;
     }
     th {
