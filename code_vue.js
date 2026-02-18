@@ -1,3 +1,4 @@
+import buttonCssIcon from './components/button-css-icon.js';
 import toggleButton from './components/toggle-button.js'
 
 const {createApp, ref, computed, onMounted} = Vue;
@@ -5,6 +6,7 @@ const {createApp, ref, computed, onMounted} = Vue;
 const rootApp = createApp({
 
   components: {
+    buttonCssIcon,
     toggleButton,
   },
   
