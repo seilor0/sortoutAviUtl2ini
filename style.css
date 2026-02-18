@@ -1,12 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_left_alt,arrow_right_alt,create_new_folder,drag_indicator");
-
 @layer default, each, event;
 
 :root {
-  --offwhite: #fafafa;
   --blue: #326cc2;
-  accent-color: var(--blue);
   --light-blue: #a3b7e0;
+  --offwhite: #fafafa;
+  accent-color: var(--blue);
   --font-size: 1rem;
 }
 
@@ -74,6 +72,8 @@
     &::before {content: '(';}
     &::after  {content: ')';}
   }
+
+  .disabled {opacity: 0.3;}
 }
 /* -------------------------- */
 
@@ -107,12 +107,16 @@
     padding: 1px 0.5rem;
   }
 
-  .annotation {
-    color: rgb(0 0 0 /0.5);
-    font-size: calc(1em - 1px);
+  [data-process] {
+    padding-block-start: 2rem;
+    padding-inline: 5rem;
+    &.column {
+      display: flex;
+      gap: 3rem;
+    }
   }
 
-  .clickNextInput + input {display: none;}
+  input[type=checkbox] {cursor: pointer;}
 
   .icon-frame {
     width: max-content;
@@ -155,7 +159,7 @@
     font-size: calc(2*var(--radius));
     
     --transition-time: 0.2s;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     white-space: nowrap;
     cursor: pointer;
@@ -291,13 +295,12 @@
     color: white;
     background-color: var(--blue);
     box-shadow: 0px -3px 3px 0px rgb(0 0 0 /0.15);
-    height: 2.5rem;
+    /* height: 2.5rem; */
     position: sticky;
     top: 0;
     z-index: 10;
     
     display: flex;
-    gap: 4px;
     padding-inline: 2.5rem 1rem;
     padding-block: 0.5rem 0;
     
@@ -306,13 +309,12 @@
       border-radius: 0.5rem 0.5rem 0 0;
       align-content: center;
       padding: 0.375rem 1rem;
+      min-width: 3rem;
+      text-align: center;
     }
     label:has(:checked) {
       color: var(--blue);
       background-color: var(--offwhite);
-      border-color: rgb(0 0 0 /0.5);
-      border-block-end-color: transparent;
-      box-shadow: 0px -3px 3px 0px rgb(0 0 0 /0.15);
       font-weight: 600;
     }
     label:not(:has(:checked)):hover {
@@ -321,16 +323,6 @@
     input[type=radio] {display: none;}
   }
   
-  [data-process] {
-    padding-block-start: 2rem;
-    padding-inline: 5rem;
-    &.column {
-      display: flex;
-      gap: 3rem;
-    }
-    &:not(.active) {display: none;}
-  }
-
   .sub-sidemenu {
     display: flex;
     flex-direction: column;
@@ -380,10 +372,13 @@
     input {display: none;}
   }
 
-  label.toggle-button:has(input[id^=previewFont]:not(:checked)) ~ * {opacity: 0.3;}
-
   .result {
     padding-block-end: 20%;
+  }
+
+  .annotation {
+    color: rgb(0 0 0 /0.5);
+    font-size: calc(1em - 1px);
   }
 
   
@@ -408,34 +403,23 @@
   /* ----------------- */
   /* 重複を削除　ページ */
   /* ----------------- */
-  [data-process=deleteDup] {
-    width: 80%;
-      
+  [data-process=del-dup] {
     table {
       border-collapse: collapse;
       user-select: none;
       width: stretch;
       min-width: 36rem;
+      font-weight: 300;
     }
-    tr:nth-child(even) {
-      background-color: #f0f0f0;
-    }
-    tr.duplicate :is(th,td) {
-      font-weight: 600;
-      color: var(--blue);
-    }
-    tr.uninstalled {
-      background-color: lightpink;
-    }
+    tr {cursor: pointer;}
+    tr:nth-child(even) {background-color: #f0f0f0;}
+
     th {
       color: white;
       background-color: var(--blue);
       font-size: calc(1em - 2px);
       font-weight: 400;
       text-align: center;
-    }
-    td {
-      font-weight: 300;
     }
     th,td {
       border-block: 1px solid rgb(0 0 0 /0.25);
@@ -445,7 +429,10 @@
     td:is(:nth-child(2),:nth-child(3)) {white-space: nowrap;}
     td:last-child {color: rgb(0 0 0 /0.4);}
     
-    tr:has(:first-child > input:checked) td {
+    tr.uninstalled {
+      background-color: lightpink;
+    }
+    tr.to-delete {
       text-decoration: line-through;
       color: rgb(0 0 0 /0.4);
     }
