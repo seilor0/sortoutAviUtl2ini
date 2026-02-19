@@ -240,7 +240,7 @@ const rootApp = createApp({
       }));
 
       // reflect to packageData
-      installedPackage.data.forEach((key, set) => {
+      installedPackage.data.forEach((set, key) => {
         const target = packageData.value.get(key);
         target.forEach(dic => {
           if (set.has(dic.name)) return;
