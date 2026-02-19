@@ -155,7 +155,7 @@
           </div>
 
           <div class="result">
-            <tree-item v-for="model in treeData" :model="model"
+            <tree-item v-for="model in treeDataMap.get(setting.type)" :model="model"
              :file-click-func="toggleHide"
             ></tree-item>
           </div>

@@ -33,52 +33,91 @@ const rootApp = createApp({
       delDupSortStyle: 'initOrder'
     });
 
-    /**
-     * { name, initOrder, toDelele, uninstalled, props:{ order:Number, hide:Boolean, label:[] } } []
-     */
-    const packageData = ref(new Map([
+    /*
+    treeDataMap: [
+      file ... { name, initOrder, toDelele, uninstalled, props:{ order, hide, label:[] } }
+      folder ... { name, children }
+    ]
+    */
+    const treeDataMap = ref(new Map([
       [ 'Color',    [] ],
       [ 'Effect',   [] ],
       [ 'Font',     [] ],
       [ 'Movement', [] ],
       [ 'Params',   [] ],
     ]));
-    const packageInitData = new Map([
+    // 読み込み時のpackageData
+    const initTreeDataMap = new Map([
       [ 'Color',    [] ],
       [ 'Effect',   [] ],
       [ 'Font',     [] ],
       [ 'Movement', [] ],
       [ 'Params',   [] ],
-    ]); // 読み込み時のpackageData
+    ]);
     const systemArr = [];
 
-    /*
-    treeData: [
-     {name:String, hide:Boolean} ... file
-     {name:String, children:[]} ... folder
-    ]
-    */
-    const treeData = computed(() => {
-      const resultArr = [];
-      packageData.value
-        .get(setting.value.type)
-        .filter(dic=>!dic.toDelete)
-        // .sort((a,b)=>a.props.order-b.props.order)
-        .forEach(packageDic=> {
-          let addTarget = resultArr;
-          packageDic.props.label.forEach(label => {
-            const existFolder = addTarget.find(dic=>dic.name===label);
-            if (existFolder) addTarget = existFolder.children;
-            else {
-              addTarget.push({name:label, children:[]});
-              addTarget = addTarget.at(-1).children;
-            }
-          });
-          addTarget.push({name: packageDic.name, hide: packageDic.props.hide});
-        });
+    // const packageData = ref(new Map([
+    //   [ 'Color',    [] ],
+    //   [ 'Effect',   [] ],
+    //   [ 'Font',     [] ],
+    //   [ 'Movement', [] ],
+    //   [ 'Params',   [] ],
+    // ]));
+    const packageData = computed(() => {
+      const resultMap = new Map();
+      treeDataMap.value.forEach((treeDatas, key) => {
+        const [count, resultArr] = test(treeDatas, 0, []);
+        resultMap.set(key, resultArr);
+        console.log(count, resultArr);
+      });
+      return resultMap;
+    });
 
-      console.log('compute treeData', resultArr);
-      return resultArr;
+    /**
+     * 
+     * @param {Array} labels 
+     */
+    function test (treeDatas, startOrder, labels) {
+      let order = startOrder;
+      const resultArr = [];
+      console.log(labels);
+      treeDatas.forEach(treeData=> {
+        if (!treeData.children) {
+          // console.log(treeData);
+          const dic = {
+            name: treeData.name, 
+            initOrder: treeData.initOrder, 
+            toDelete: treeData.toDelete, 
+            uninstalled: treeData.uninstalled, 
+            props: treeData.props
+          };
+          // const dic = structuredClone(treeData);
+          
+          dic.props.label = labels;
+          dic.props.order = order++;
+          resultArr.push(dic);
+          // console.log(dic);
+
+        } else {
+          // console.log(labels, typeof(labels));
+          let labels2 = structuredClone(labels);
+          labels2.push(treeData.name);
+          // console.log(labels2)
+          let [order2, arr] = test(treeData.children, order, labels2);
+          order = order2;
+          resultArr.push(...arr);
+        }
+      });
+      return [order, resultArr];
+    }
+
+    const delDupData = computed(() => {
+      const sortStyle = setting.value.delDupSortStyle;
+      const target = packageData.value.get(setting.value.type);
+      if (sortStyle==='order')
+        return target.toSorted((a,b) => a.props.order - b.props.order);
+      else 
+        return target.toSorted((a,b) => a[sortStyle] > b[sortStyle] ? 1 : -1);
     });
 
 
@@ -98,27 +137,28 @@ const rootApp = createApp({
       return new Set(arr);
     });
 
-    const delDupData = computed(() => {
-      const sortStyle = setting.value.delDupSortStyle;
-      const target = packageData.value.get(setting.value.type);
-      if (sortStyle==='order')
-        return target.toSorted((a,b) => a.props.order - b.props.order);
-      else 
-        return target.toSorted((a,b) => a[sortStyle] > b[sortStyle] ? 1 : -1);
-    });
-
     
     async function readIniFile(e) {
       const file = e.currentTarget.files[0];
       if (!file) return;
 
       // initialize
-      packageData.value.values().forEach(arr=>arr.splice(0));
-      packageInitData.values().forEach(arr=>arr.splice(0));
+      initTreeDataMap.forEach(arr=>arr.splice(0));
+      treeDataMap.value.forEach(arr=>arr.splice(0));
       systemArr.splice(0);
       fontMap.value.clear();
 
       // read file
+      /**
+       * { name, initOrder, toDelele, uninstalled, props:{ order, hide, label:[] } } []
+       */
+      const initPackageData = new Map([
+        [ 'Color',    [] ],
+        [ 'Effect',   [] ],
+        [ 'Font',     [] ],
+        [ 'Movement', [] ],
+        [ 'Params',   [] ],
+      ]);
       const text = await file.text();
       text
         .split(/^\[/mg)
@@ -146,20 +186,42 @@ const rootApp = createApp({
               dic.props[key] = value;
             });
             dic.initOrder = dic.props.order;
-            packageInitData.get(type).push(dic);
+            initPackageData.get(type).push(dic);
           }
           else {
             systemArr.push('[' + el.trim());
           }
         });
       
-      packageInitData.values().forEach(arr =>
+      initPackageData.forEach(arr =>
         arr.sort((a,b) => a.props.order - b.props.order)
       );
-      packageData.value = structuredClone(packageInitData);
+
+      // transform to tree data
+      initPackageData.forEach((value, key) => {
+        const resultArr = [];
+        value.forEach(packageDic => {
+          let addTarget = resultArr;
+          packageDic.props.label.forEach(label => {
+            const existFolder = addTarget.find(dic=>dic.name===label);
+            if (existFolder) addTarget = existFolder.children;
+            else {
+              const newFolder = {name:label, children:[]};
+              addTarget.push(newFolder);
+              addTarget = newFolder.children;
+            }
+          });
+          const addDic = structuredClone(packageDic);
+          delete addDic.label;
+          addTarget.push(addDic);
+        });
+        initTreeDataMap.set(key, resultArr);
+      });
+      treeDataMap.value = structuredClone(initTreeDataMap);
+      console.log(structuredClone(initTreeDataMap));
       
       // update font map
-      packageInitData.get('Font').forEach(dic => {
+      initPackageData.get('Font').forEach(dic => {
         let fontFamily = dic.name;
         const fontDic = {fontFamily: null, fontWeight: null, fontStretch: null};
 
@@ -255,7 +317,7 @@ const rootApp = createApp({
     }
 
     function resetPackageData() {
-      packageData.value = structuredClone(packageInitData);
+      packageData.value = structuredClone(initTreeDataMap);
     }
 
     function saveIniFile() {
@@ -285,7 +347,7 @@ const rootApp = createApp({
     return {
       setting,
       packageData,
-      treeData,
+      treeDataMap,
 
       fontStyleMap,
       fontFamilySet,
