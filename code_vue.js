@@ -5,7 +5,6 @@ import TreeItem from './components/tree-item.js';
 const {createApp, ref, computed, onMounted} = Vue;
 
 const rootApp = createApp({
-
   components: {
     ButtonCssIcon,
     ToggleButton,
@@ -55,28 +54,30 @@ const rootApp = createApp({
 
     /*
     treeData: [
-     {name:String} ... file
+     {name:String, hide:Boolean} ... file
      {name:String, children:[]} ... folder
     ]
     */
-
     const treeData = computed(() => {
-      console.log('compute treeData');
       const resultArr = [];
-      const packages = packageData.value.get(setting.value.type).toSorted((a,b)=>a.props.order-b.props.order);
-      packages.forEach(packageDic=> {
-        let addTarget = resultArr;
-        packageDic.props.label.forEach(label => {
-          const existFolder = addTarget.find(dic=>dic.name===label);
-          if (existFolder) addTarget = existFolder.children;
-          else {
-            addTarget.push({name:label, children:[]});
-            addTarget = addTarget.at(-1).children;
-          }
+      packageData.value
+        .get(setting.value.type)
+        .filter(dic=>!dic.toDelete)
+        // .sort((a,b)=>a.props.order-b.props.order)
+        .forEach(packageDic=> {
+          let addTarget = resultArr;
+          packageDic.props.label.forEach(label => {
+            const existFolder = addTarget.find(dic=>dic.name===label);
+            if (existFolder) addTarget = existFolder.children;
+            else {
+              addTarget.push({name:label, children:[]});
+              addTarget = addTarget.at(-1).children;
+            }
+          });
+          addTarget.push({name: packageDic.name, hide: packageDic.props.hide});
         });
-        addTarget.push({name: packageDic.name});
-      });
-      console.log(resultArr);
+
+      console.log('compute treeData', resultArr);
       return resultArr;
     });
 
@@ -131,7 +132,7 @@ const rootApp = createApp({
             
             if (
                installedPackage.loaded &&
-               installedPackage.data.get(type) &&
+               installedPackage.data.has(type) &&
               !installedPackage.data.get(type).has(name)
             ) {
               dic.toDelete = true;
@@ -152,10 +153,13 @@ const rootApp = createApp({
           }
         });
       
-        packageData.value = structuredClone(packageInitData);
+      packageInitData.values().forEach(arr =>
+        arr.sort((a,b) => a.props.order - b.props.order)
+      );
+      packageData.value = structuredClone(packageInitData);
       
       // update font map
-      packageData.value.get('Font').forEach(dic => {
+      packageInitData.get('Font').forEach(dic => {
         let fontFamily = dic.name;
         const fontDic = {fontFamily: null, fontWeight: null, fontStretch: null};
 
@@ -184,7 +188,7 @@ const rootApp = createApp({
       if (setting.value.process==='home') setting.value.process = 'labeling';
     }
 
-    async function readPackage(e) {
+    async function readInstalledPackage(e) {
       const files = e.currentTarget.files;
       if (!files) return;
 
@@ -266,6 +270,12 @@ const rootApp = createApp({
       dic.toDelete = !dic.toDelete;
     }
 
+    function toggleHide (name) {
+      const target = packageData.value.get(setting.value.type).find(dic=>dic.name===name);
+      target.props.hide=!target.props.hide;
+      console.log('file-click-event', target);
+    }
+
 
     onMounted(async () => {
       defValJson = await fetch('./defaultValue.json').then(res=>res.json());
@@ -283,11 +293,12 @@ const rootApp = createApp({
       delDupData,
 
       readIniFile,
-      readPackage,
+      readInstalledPackage,
       resetPackageData,
       saveIniFile,
       clickNextInput,
       toggleToDelete,
+      toggleHide,
     }
   }
 });

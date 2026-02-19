@@ -155,7 +155,9 @@
           </div>
 
           <div class="result">
-            <tree-item v-for="model in treeData" :model="model"></tree-item>
+            <tree-item v-for="model in treeData" :model="model"
+             :file-click-func="toggleHide"
+            ></tree-item>
           </div>
         </div>
 
@@ -175,7 +177,7 @@
                 アプリケーション<br>
                 データフォルダを選択
               </button>
-              <input type="file" id="scriptsInput" style="display: none;" @click="readPackage" multiple webkitdirectory />
+              <input type="file" id="scriptsInput" style="display: none;" @click="readInstalledPackage" multiple webkitdirectory />
 
               <hr style="margin-block: 0.75rem;">
 
