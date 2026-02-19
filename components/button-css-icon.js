@@ -1,4 +1,5 @@
 export default {
+  name: 'ButtonCssIcon',
   props:{
     iconName:String
   },

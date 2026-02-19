@@ -2,7 +2,7 @@ import buttonCssIcon from "./button-css-icon.js";
 const { computed } = Vue
 
 export default {
-  name: 'treeItem', // necessary for self-reference
+  name: 'TreeItem', // necessary for self-reference
   props: {
     model: Object
   },

@@ -1,4 +1,5 @@
 export default {
+  name: 'ToggleButton',
   props: {
     isChecked: {
       type: Boolean,
