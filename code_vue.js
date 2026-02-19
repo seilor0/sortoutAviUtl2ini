@@ -1,15 +1,15 @@
-import buttonCssIcon from './components/button-css-icon.js';
-import toggleButton from './components/toggle-button.js'
-import treeItem from './components/tree-item.js';
+import ButtonCssIcon from './components/button-css-icon.js';
+import ToggleButton from './components/toggle-button.js'
+import TreeItem from './components/tree-item.js';
 
 const {createApp, ref, computed, onMounted} = Vue;
 
 const rootApp = createApp({
 
   components: {
-    buttonCssIcon,
-    toggleButton,
-    treeItem,
+    ButtonCssIcon,
+    ToggleButton,
+    TreeItem,
   },
   
   setup () {
