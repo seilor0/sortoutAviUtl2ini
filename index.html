@@ -7,6 +7,7 @@
   <title>sort out AviUtl2.ini</title>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_left_alt,arrow_right_alt,create_new_folder,drag_indicator" />
+  <link rel="stylesheet" href="../__utility/style.css" />
   <link rel="stylesheet" href="./style.css" />
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
@@ -153,7 +154,9 @@
             </div>
           </div>
 
-          <div class="result"></div>
+          <div class="result">
+            <tree-item v-for="model in treeData" :model="model"></tree-item>
+          </div>
         </div>
 
         <div data-process="del-dup" class="column" v-if="setting.process==='del-dup'">
@@ -215,7 +218,7 @@
                 <tr v-for="dic in delDupData" :class="{uninstalled:dic.uninstalled, 'to-delete':dic.toDelete}" @click="toggleToDelete(dic)">
                   <td><input type="checkbox" v-model="dic.toDelete"/></td>
                   <td>{{dic.props.order}}</td>
-                  <td :style="setting.previewFont.enabled && setting.type==='Font' ? fontMap.get(dic.name) : null">{{dic.name}}</td>
+                  <td :style="setting.previewFont.enabled && setting.type==='Font' ? fontStyleMap.get(dic.name) : null">{{dic.name}}</td>
                   <td>{{dic.props}}</td>
                 </tr>
               </tbody>
@@ -278,7 +281,6 @@
           <span>設定の削除</span>
           <div>
             削除したいパッケージをクリック<br>
-            <!-- <span class="annotation">取り消し線が引かれていれば、iniファイルの保存時にそのパッケージの設定は削除されます</span> -->
           </div>
         </div>
 

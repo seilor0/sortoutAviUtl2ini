@@ -1,5 +1,6 @@
 import buttonCssIcon from './components/button-css-icon.js';
 import toggleButton from './components/toggle-button.js'
+import treeItem from './components/tree-item.js';
 
 const {createApp, ref, computed, onMounted} = Vue;
 
@@ -8,6 +9,7 @@ const rootApp = createApp({
   components: {
     buttonCssIcon,
     toggleButton,
+    treeItem,
   },
   
   setup () {
@@ -23,7 +25,6 @@ const rootApp = createApp({
         [ 'Params', new Set() ], // params
       ])
     };
-
 
     const setting = ref({
       process: 'home',
@@ -52,9 +53,45 @@ const rootApp = createApp({
     ]); // 読み込み時のpackageData
     const systemArr = [];
 
+    /*
+    treeData: [
+     {name:String} ... file
+     {name:String, children:[]} ... folder
+    ]
+    */
+
+    const treeData = computed(() => {
+      console.log('compute treeData');
+      const resultArr = [];
+      const packages = packageData.value.get(setting.value.type).toSorted((a,b)=>a.props.order-b.props.order);
+      packages.forEach(packageDic=> {
+        let addTarget = resultArr;
+        packageDic.props.label.forEach(label => {
+          const existFolder = addTarget.find(dic=>dic.name===label);
+          if (existFolder) addTarget = existFolder.children;
+          else {
+            addTarget.push({name:label, children:[]});
+            addTarget = addTarget.at(-1).children;
+          }
+        });
+        addTarget.push({name: packageDic.name});
+      });
+      console.log(resultArr);
+      return resultArr;
+    });
+
 
     // fontname: {fontFamily, fontWeight, fontStretch}
     const fontMap = ref(new Map());
+    const fontStyleMap = computed(() => {
+      const map = new Map([]);
+      fontMap.value.forEach((value,key) => {
+        const dic = {...value};
+        dic.fontFamily = `"${value.fontFamily}", "${setting.value.previewFont.defFontFamily}"`
+        map.set(key, dic);
+      });
+      return map;
+    });
     const fontFamilySet = computed(() => {
       const arr = Array.from(fontMap.value.values(), dic=>dic.fontFamily).sort();
       return new Set(arr);
@@ -83,12 +120,11 @@ const rootApp = createApp({
       // read file
       const text = await file.text();
       text
-        .replaceAll('\r\n','\n')
         .split(/^\[/mg)
         .filter(Boolean)
         .forEach(el => {
           if (/^(?:Color|Effect|Font|Movement|Params)\..+/.test(el)) {
-            const splitArr = el.trim().split('\n');
+            const splitArr = el.trim().split('\r\n');
             const {type, name} = splitArr.shift().match(/(?<type>.+?)\.(?<name>.+?)]$/).groups;
 
             const dic = {name:name, initOrder:null, toDelete:false, uninstalled:false, props:{}};
@@ -239,8 +275,11 @@ const rootApp = createApp({
     return {
       setting,
       packageData,
-      fontMap,
+      treeData,
+
+      fontStyleMap,
       fontFamilySet,
+
       delDupData,
 
       readIniFile,
