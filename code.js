@@ -24,9 +24,9 @@ const typeRadio_font_labeling = labelingDiv.querySelector('[name=type-labeling][
 const typeRadio_font_deldup   = deleteDupDiv.querySelector('[name=type-delDup][value=Font]');
 
 
-document.querySelectorAll('.clickNextInput').forEach(el =>
-  el.addEventListener('click', (e) => e.currentTarget.nextElementSibling?.click())
-);
+// document.querySelectorAll('.clickNextInput').forEach(el =>
+//   el.addEventListener('click', (e) => e.currentTarget.nextElementSibling?.click())
+// );
 
 // iniファイル選択時
 document.getElementById('iniInput').addEventListener('change', async () => {
@@ -69,47 +69,47 @@ document.getElementById('copy').addEventListener('click', saveFile);
 document.querySelectorAll('input[name=process]').forEach      (input=>input.addEventListener('change', updateOrder));
 document.querySelectorAll('input[name=type-labeling]').forEach(input=>input.addEventListener('change', updateOrder));
 
-// ページの表示切替
-document.querySelectorAll('input[name=process]').forEach(input=>
-  input.addEventListener('click', (e) => {
-    document.querySelector('div[data-process].active')?.classList.remove('active');
-    document.querySelector(`div[data-process=${e.currentTarget.value}]`).classList.add('active');
-  })
-);
+// // ページの表示切替
+// document.querySelectorAll('input[name=process]').forEach(input=>
+//   input.addEventListener('click', (e) => {
+//     document.querySelector('div[data-process].active')?.classList.remove('active');
+//     document.querySelector(`div[data-process=${e.currentTarget.value}]`).classList.add('active');
+//   })
+// );
 
-// タブ名部分
-document.querySelector('input[name=process][value=deleteDup]').addEventListener('click',showResult_delDup);
-document.querySelector('input[name=process][value=labeling]').addEventListener('click', showResult_labeling);
+// // タブ名部分
+// document.querySelector('input[name=process][value=deleteDup]').addEventListener('click',showResult_delDup);
+// document.querySelector('input[name=process][value=labeling]').addEventListener('click', showResult_labeling);
 
-// 対象選択
-deleteDupDiv.querySelectorAll('input[name=type-delDup]').forEach(el=>el.addEventListener('change', showResult_delDup));
-labelingDiv.querySelectorAll('input[name=type-labeling]').forEach(el=>el.addEventListener('change', showResult_labeling));
+// // 対象選択
+// deleteDupDiv.querySelectorAll('input[name=type-delDup]').forEach(el=>el.addEventListener('change', showResult_delDup));
+// labelingDiv.querySelectorAll('input[name=type-labeling]').forEach(el=>el.addEventListener('change', showResult_labeling));
 
 
 // ---------------------
 //   重複を削除　ページ
 // ---------------------
-document.getElementById('sortStyle').addEventListener('change', showResult_delDup);
+// document.getElementById('sortStyle').addEventListener('change', showResult_delDup);
 
-document.getElementById('scriptsInput').addEventListener('change', async(e) => {
-  await readPackage(e);
-  showResult_delDup();
-});
+// document.getElementById('scriptsInput').addEventListener('change', async(e) => {
+//   await readPackage(e);
+//   showResult_delDup();
+// });
 
-// フォントプレビュー
-prevFontCheckbox_deldup.addEventListener('change', (e) => {
-  if (!typeRadio_font_deldup.checked) return;
-  const defFont = document.getElementById('defFont-delDup').value;
-  const target = deleteDupDiv.querySelectorAll('table tbody tr > :nth-child(3)');
-  target.forEach(cell => previewFont(cell, e.currentTarget.checked ? cell.innerText : null, defFont));
-});
-// default font
-document.getElementById('defFont-delDup').addEventListener('change', (e) => {
-  if (!typeRadio_font_deldup.checked) return;
-  if (!prevFontCheckbox_deldup.checked) return;
-  const target = deleteDupDiv.querySelectorAll('table tbody tr > :nth-child(3)');
-  target.forEach(cell => previewFont(cell, cell.innerText, e.currentTarget.value));
-});
+// // フォントプレビュー
+// prevFontCheckbox_deldup.addEventListener('change', (e) => {
+//   if (!typeRadio_font_deldup.checked) return;
+//   const defFont = document.getElementById('defFont-delDup').value;
+//   const target = deleteDupDiv.querySelectorAll('table tbody tr > :nth-child(3)');
+//   target.forEach(cell => previewFont(cell, e.currentTarget.checked ? cell.innerText : null, defFont));
+// });
+// // default font
+// document.getElementById('defFont-delDup').addEventListener('change', (e) => {
+//   if (!typeRadio_font_deldup.checked) return;
+//   if (!prevFontCheckbox_deldup.checked) return;
+//   const target = deleteDupDiv.querySelectorAll('table tbody tr > :nth-child(3)');
+//   target.forEach(cell => previewFont(cell, cell.innerText, e.currentTarget.value));
+// });
 
 
 // ---------------------
@@ -182,118 +182,118 @@ document.getElementById('sortByLabel').addEventListener('click', () => {
 // ------------------
 //   main function
 // ------------------
-async function readIniFile() {
-  const file = document.getElementById('iniInput').files[0];
-  if (!file) return;
+// async function readIniFile() {
+//   const file = document.getElementById('iniInput').files[0];
+//   if (!file) return;
 
-  // initialize
-  rawDataArr.splice(0);
-  backupArr.splice(0);
-  systemArr.splice(0);
+//   // initialize
+//   rawDataArr.splice(0);
+//   backupArr.splice(0);
+//   systemArr.splice(0);
 
-  // read file
-  const text = await file.text();
-  const arr = text.replaceAll('\r\n','\n').split(/^\[/mg).filter(Boolean);
-  arr.forEach(el => {
-    if (/^(?:Color|Effect|Font|Movement|Params)\..+/.test(el)) {
-      const splitArr = el.trim().split('\n');
-      const {type, name} = splitArr.shift().match(/(?<type>.+?)\.(?<name>.+?)]$/).groups;
-      const dic = {checked:false, type:type, name:name, props:{}};
+//   // read file
+//   const text = await file.text();
+//   const arr = text.replaceAll('\r\n','\n').split(/^\[/mg).filter(Boolean);
+//   arr.forEach(el => {
+//     if (/^(?:Color|Effect|Font|Movement|Params)\..+/.test(el)) {
+//       const splitArr = el.trim().split('\n');
+//       const {type, name} = splitArr.shift().match(/(?<type>.+?)\.(?<name>.+?)]$/).groups;
+//       const dic = {checked:false, type:type, name:name, props:{}};
       
-      if (packageDic.Movement.size > 0) {
-        if (packageDic[type] && !packageDic[type].has(name)) dic.checked = true;
-      }
+//       if (packageDic.Movement.size > 0) {
+//         if (packageDic[type] && !packageDic[type].has(name)) dic.checked = true;
+//       }
 
-      splitArr.forEach(row => {
-        let {key, value} = row.match(/(?<key>.+?)=(?<value>.*)/).groups;
-        if (key=='label') value=value.split('\\').filter(Boolean);
-        else if (key=='hide'||key=='order') value = parseInt(value);
-        dic.props[key] = value;
-      });
-      dic.defOrder = dic.props.order;
-      rawDataArr.push(dic);
-    } else {
-      systemArr.push('['+el.trim());
-    }
-  });
+//       splitArr.forEach(row => {
+//         let {key, value} = row.match(/(?<key>.+?)=(?<value>.*)/).groups;
+//         if (key=='label') value=value.split('\\').filter(Boolean);
+//         else if (key=='hide'||key=='order') value = parseInt(value);
+//         dic.props[key] = value;
+//       });
+//       dic.defOrder = dic.props.order;
+//       rawDataArr.push(dic);
+//     } else {
+//       systemArr.push('['+el.trim());
+//     }
+//   });
 
-  backupArr = structuredClone(rawDataArr);
+//   backupArr = structuredClone(rawDataArr);
 
-  // set fonts to select
-  const fontArr = rawDataArr.filter(dic=>dic.type=='Font').map(dic => previewFont(null, dic.name)).sort();
-  const selectLabeling = document.getElementById('defFont-labeling');
-  const selectDelDup = document.getElementById('defFont-delDup');    
-  selectLabeling.innerHTML = '';
-  selectDelDup.innerHTML = '';
-  new Set(fontArr).forEach(font => {
-    const option1 = document.createElement('option');
-    const option2 = document.createElement('option');
-    option1.innerText = font;
-    option2.innerText = font;
-    selectLabeling.appendChild(option1);
-    selectDelDup.appendChild(option2);
-  });
-}
+//   // set fonts to select
+//   const fontArr = rawDataArr.filter(dic=>dic.type=='Font').map(dic => previewFont(null, dic.name)).sort();
+//   const selectLabeling = document.getElementById('defFont-labeling');
+//   const selectDelDup = document.getElementById('defFont-delDup');    
+//   selectLabeling.innerHTML = '';
+//   selectDelDup.innerHTML = '';
+//   new Set(fontArr).forEach(font => {
+//     const option1 = document.createElement('option');
+//     const option2 = document.createElement('option');
+//     option1.innerText = font;
+//     option2.innerText = font;
+//     selectLabeling.appendChild(option1);
+//     selectDelDup.appendChild(option2);
+//   });
+// }
 
 
-async function readPackage(e) {
-  const files = e.currentTarget.files;
-  if (!files?.length) return;
+// async function readPackage(e) {
+//   const files = e.currentTarget.files;
+//   if (!files?.length) return;
 
-  // initialize packageDic
-  packageDic.Movement.clear();
-  packageDic.Params.clear();
-  packageDic.Effect.clear();
+//   // initialize packageDic
+//   packageDic.Movement.clear();
+//   packageDic.Params.clear();
+//   packageDic.Effect.clear();
   
-  // add default package
-  defValJson.defMovement.forEach(name => packageDic.Movement.add(name));
-  defValJson.defParams.forEach(name => packageDic.Params.add(name));
-  defValJson.defEffect.forEach(name => packageDic.Effect.add(name));
+//   // add default package
+//   defValJson.defMovement.forEach(name => packageDic.Movement.add(name));
+//   defValJson.defParams.forEach(name => packageDic.Params.add(name));
+//   defValJson.defEffect.forEach(name => packageDic.Effect.add(name));
 
-  // add packages to packageDic
-  await Promise.all(Array.from(files, async file => {
-    const {filename, extension} = file.name.match(/(?<filename>.+)\.(?<extension>.+?)$/)?.groups;
+//   // add packages to packageDic
+//   await Promise.all(Array.from(files, async file => {
+//     const {filename, extension} = file.name.match(/(?<filename>.+)\.(?<extension>.+?)$/)?.groups;
     
-    if (!/^(?:anm2?|cam2?|scn2?|obj2?|tra2?|object|params)$/.test(extension)) return;
+//     if (!/^(?:anm2?|cam2?|scn2?|obj2?|tra2?|object|params)$/.test(extension)) return;
 
-    if (extension==='params') {
-      const text = await file.text();
-      text.split('\r\n').filter(Boolean).forEach(row => {
-        if (row.charAt(0)===';') return;
-        const paramname = row.match(/^(.+)=[\d\-., ]*$/)?.[1];
-        packageDic.Params.add(`${paramname}@${filename}`);
-      });
+//     if (extension==='params') {
+//       const text = await file.text();
+//       text.split('\r\n').filter(Boolean).forEach(row => {
+//         if (row.charAt(0)===';') return;
+//         const paramname = row.match(/^(.+)=[\d\-., ]*$/)?.[1];
+//         packageDic.Params.add(`${paramname}@${filename}`);
+//       });
 
-    } else if (extension==='object') {
-      packageDic.Effect.add(`object.${filename}`);
+//     } else if (extension==='object') {
+//       packageDic.Effect.add(`object.${filename}`);
 
-    // anm2?|cam2?|scn2?|obj2?|tra2?
-    } else {
-      const addTargetSet = packageDic[/^tra2?$/.test(extension) ? 'Movement' : 'Effect'];
+//     // anm2?|cam2?|scn2?|obj2?|tra2?
+//     } else {
+//       const addTargetSet = packageDic[/^tra2?$/.test(extension) ? 'Movement' : 'Effect'];
 
-      if (filename==='script') {
-        let text;
-        if (extension.endsWith('2')) text = await file.text();
-        else text = new TextDecoder('shift_jis').decode(await file.arrayBuffer());
-        text.match(/(?<=^@).+$/mg).forEach(packagename => addTargetSet.add(packagename));
+//       if (filename==='script') {
+//         let text;
+//         if (extension.endsWith('2')) text = await file.text();
+//         else text = new TextDecoder('shift_jis').decode(await file.arrayBuffer());
+//         text.match(/(?<=^@).+$/mg).forEach(packagename => addTargetSet.add(packagename));
 
-      } else if (filename.charAt(0)==='@') {
-        let text;
-        if (extension.endsWith('2')) text = await file.text();
-        else text = new TextDecoder('shift_jis').decode(await file.arrayBuffer());
-        text.match(/(?<=^@).+$/mg).forEach(packagename => addTargetSet.add(packagename+filename));
+//       } else if (filename.charAt(0)==='@') {
+//         let text;
+//         if (extension.endsWith('2')) text = await file.text();
+//         else text = new TextDecoder('shift_jis').decode(await file.arrayBuffer());
+//         text.match(/(?<=^@).+$/mg).forEach(packagename => addTargetSet.add(packagename+filename));
         
-      } else {
-        addTargetSet.add(filename);
-      }
-    }
-  }));
+//       } else {
+//         addTargetSet.add(filename);
+//       }
+//     }
+//   }));
   
-  rawDataArr.forEach(dic => {
-    if (packageDic[dic.type] && !packageDic[dic.type].has(dic.name)) dic.checked = true;
-  });
-  return;
-}
+//   rawDataArr.forEach(dic => {
+//     if (packageDic[dic.type] && !packageDic[dic.type].has(dic.name)) dic.checked = true;
+//   });
+//   return;
+// }
 
 
 function saveFile() {
@@ -332,59 +332,59 @@ function saveFile() {
 }
 
 
-function showResult_delDup() {
-  // initialize
-  const tbody = deleteDupDiv.querySelector('table tbody');
-  tbody.innerHTML = '';
+// function showResult_delDup() {
+//   // initialize
+//   const tbody = deleteDupDiv.querySelector('table tbody');
+//   tbody.innerHTML = '';
   
-  const type = deleteDupDiv.querySelector('[name=type-delDup]:checked').value;
-  const dataArr = rawDataArr.filter(dic => dic.type==type);
+//   const type = deleteDupDiv.querySelector('[name=type-delDup]:checked').value;
+//   const dataArr = rawDataArr.filter(dic => dic.type==type);
 
-  // sort
-  const sort = (dataArr, sortStyle, isAsc) => {
-    const sign = isAsc ? 1 : -1;
-    if (['name','checked','defOrder'].includes(sortStyle)) {
-      dataArr.sort((a, b) => sign * (a[sortStyle] > b[sortStyle] ? 1 : -1));
-    } else if (sortStyle==='order') {
-      dataArr.sort((a, b) => sign*(a.props.order-b.props.order));
-    }
-  };
-  const sortStyle = document.getElementById('sortStyle').value;
-  sort(dataArr, sortStyle, true);
+//   // sort
+//   const sort = (dataArr, sortStyle, isAsc) => {
+//     const sign = isAsc ? 1 : -1;
+//     if (['name','checked','defOrder'].includes(sortStyle)) {
+//       dataArr.sort((a, b) => sign * (a[sortStyle] > b[sortStyle] ? 1 : -1));
+//     } else if (sortStyle==='order') {
+//       dataArr.sort((a, b) => sign*(a.props.order-b.props.order));
+//     }
+//   };
+//   const sortStyle = document.getElementById('sortStyle').value;
+//   sort(dataArr, sortStyle, true);
   
-  // show
-  const defFont = document.getElementById('defFont-delDup').value;
-  const previewFontFlag = type=='Font' && prevFontCheckbox_deldup.checked;
+//   // show
+//   const defFont = document.getElementById('defFont-delDup').value;
+//   const previewFontFlag = type=='Font' && prevFontCheckbox_deldup.checked;
 
-  dataArr.forEach(data => {
-    const order = sortStyle=='defOrder' ? data.defOrder : (data.props.order ?? null);
-    let props = '';
-    for (const key in data.props) {
-      const value = key=='label' ? data.props[key].join('\\') : data.props[key];
-      props += `${key}=${value}\n`;
-    }
+//   dataArr.forEach(data => {
+//     const order = sortStyle=='defOrder' ? data.defOrder : (data.props.order ?? null);
+//     let props = '';
+//     for (const key in data.props) {
+//       const value = key=='label' ? data.props[key].join('\\') : data.props[key];
+//       props += `${key}=${value}\n`;
+//     }
     
-    const row = addRow(tbody, [null, order, data.name, props.trim()]);
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.checked = data.checked;
-    row.firstElementChild.appendChild(input);
+//     const row = addRow(tbody, [null, order, data.name, props.trim()]);
+//     const input = document.createElement('input');
+//     input.type = 'checkbox';
+//     input.checked = data.checked;
+//     row.firstElementChild.appendChild(input);
 
-    if (previewFontFlag) previewFont(row.children[2], data.name, defFont);
+//     if (previewFontFlag) previewFont(row.children[2], data.name, defFont);
 
-    if (packageDic[type]?.size) {
-      if (!packageDic[type].has(data.name)) row.className = 'uninstalled';
-    } else {
-      if (dataArr.filter(dic=>dic.defOrder==data.defOrder).length>1) row.className = 'duplicate';
-    }
+//     if (packageDic[type]?.size) {
+//       if (!packageDic[type].has(data.name)) row.className = 'uninstalled';
+//     } else {
+//       if (dataArr.filter(dic=>dic.defOrder==data.defOrder).length>1) row.className = 'duplicate';
+//     }
 
-    row.addEventListener('click', (e)=>{
-      const input = e.currentTarget.firstElementChild.firstElementChild;
-      input.checked = !input.checked;
-      dataArr[e.currentTarget.sectionRowIndex].checked = input.checked;
-    });
-  });
-}
+//     row.addEventListener('click', (e)=>{
+//       const input = e.currentTarget.firstElementChild.firstElementChild;
+//       input.checked = !input.checked;
+//       dataArr[e.currentTarget.sectionRowIndex].checked = input.checked;
+//     });
+//   });
+// }
 
 
 function showResult_labeling() {
@@ -636,20 +636,6 @@ function dropMove(e) {
     else if (e.currentTarget.id==='2bottomAll')   resultDiv.appendChild(el);
     else if (e.currentTarget.id==='2topGroup')    parentGroup.insertAdjacentElement('afterbegin', el);
     else if (e.currentTarget.id==='2bottomGroup') parentGroup.appendChild(el);
-    // switch (e.currentTarget.id) {
-    //   case '2topAll':
-    //     resultDiv.insertAdjacentElement('afterbegin', el);
-    //     break;
-    //   case '2bottomAll':
-    //     resultDiv.appendChild(el);
-    //     break;
-    //   case '2topGroup':
-    //     parentGroup.insertAdjacentElement('afterbegin', el);
-    //     break;
-    //   case '2bottomGroup':
-    //     parentGroup.appendChild(el);
-    //     break;
-    // }
   };
 
   if (srcDiv.classList.contains('choice')) {
@@ -683,14 +669,14 @@ function ungroupFolder (e) {
   return;
 }
 
-function toggleHide (e) {
-  if (e.ctrlKey) return;
-  e.currentTarget.classList.toggle('hide');
-  const name = e.currentTarget.lastChild.textContent;
-  const type = labelingDiv.querySelector('[name=type-labeling]:checked').value;
-  const dic = rawDataArr.filter(dic=>dic.type==type && dic.name==name)[0];
-  dic.props.hide = Number(e.currentTarget.classList.contains('hide'));
-}
+// function toggleHide (e) {
+//   if (e.ctrlKey) return;
+//   e.currentTarget.classList.toggle('hide');
+//   const name = e.currentTarget.lastChild.textContent;
+//   const type = labelingDiv.querySelector('[name=type-labeling]:checked').value;
+//   const dic = rawDataArr.filter(dic=>dic.type==type && dic.name==name)[0];
+//   dic.props.hide = Number(e.currentTarget.classList.contains('hide'));
+// }
 
 function ctrlClick (e) {
   if (!e.ctrlKey) return;
