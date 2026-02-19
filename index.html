@@ -122,12 +122,12 @@
               <button id="sortByLabel" class="round">ラベルでソート</button>
 
               <toggle-button :top-is-slider="false" style="justify-content: flex-end;"
-                :is-checked="setting.labelSort.isAsc" @update="val=>setting.labelSort.isAsc=val"
+                :is-checked="setting.labelSort.isAsc" @checked-toggle="val=>setting.labelSort.isAsc=val"
                 text-checked="昇順" text-not-checked="降順"
               ></toggle-button>
 
               <toggle-button :top-is-slider="false" style="justify-content: flex-end;"
-                :is-checked="setting.labelSort.folderIsBottom" @update="val=>setting.labelSort.folderIsBottom=val"
+                :is-checked="setting.labelSort.folderIsBottom" @checked-toggle="val=>setting.labelSort.folderIsBottom=val"
                 text-checked="グループが末尾" text-not-checked="グループが先頭"
               ></toggle-button>
   
@@ -135,7 +135,7 @@
   
               <div>
                 <toggle-button :top-is-slider="false"
-                  :is-checked="setting.previewFont.enabled" @update="value=>setting.previewFont.enabled=value"
+                  :is-checked="setting.previewFont.enabled" @checked-toggle="value=>setting.previewFont.enabled=value"
                   text="フォントをプレビュー"
                 ></toggle-button>
 
@@ -193,7 +193,7 @@
   
               <div>
                 <toggle-button :top-is-slider="false"
-                  :is-checked="setting.previewFont.enabled" @update="value=>setting.previewFont.enabled=value"
+                  :is-checked="setting.previewFont.enabled" @checked-toggle="value=>setting.previewFont.enabled=value"
                   text="フォントをプレビュー"
                 ></toggle-button>
                 <p style="font-size: smaller;margin-block-start: 0.5rem;" :class="{disabled: !setting.previewFont.enabled}">デフォルトのフォント：</p>
