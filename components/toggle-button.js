@@ -10,10 +10,10 @@ export default {
     textChecked: String,
     textNotChecked: String,
   },
-  emits: ['update'],
+  emits: ['checked-toggle'],
   template: `
   <label class="toggle-button">
-    <input type="checkbox" :checked="isChecked" @change="(e)=>$emit('update', e.currentTarget.checked)"/>
+    <input type="checkbox" :checked="isChecked" @change="(e)=>$emit('checked-toggle', e.currentTarget.checked)"/>
     <span v-if="topIsSlider" class="slider"></span>
     <span v-if="text">{{text}}</span>
     <span v-if="textChecked" class="checked">{{textChecked}}</span>
