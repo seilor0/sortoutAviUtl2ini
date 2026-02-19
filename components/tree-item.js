@@ -1,4 +1,4 @@
-import buttonCssIcon from "./button-css-icon.js";
+import ButtonCssIcon from "./button-css-icon.js";
 const { computed } = Vue
 
 export default {
@@ -7,7 +7,7 @@ export default {
     model: Object
   },
   components: {
-    buttonCssIcon,
+    ButtonCssIcon,
   },
   setup(props) {
     const isFolder = computed(() => props.model.children ? true : false);
