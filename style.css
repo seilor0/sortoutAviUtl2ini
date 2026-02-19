@@ -39,8 +39,8 @@
 
 
 
-/* -------------------------- */
-/* event */
+/* ---------------------- */
+/*          event         */
 @layer event {
   .target:is(.file,.folder),
   .target:not(:has(> :first-child)),
@@ -52,6 +52,7 @@
   .target-down:not(.file,.folder,.drop-area) > :last-child {
     border-block-end: 3px solid lightblue;
   }
+  
   .drop-area.target {
     color: white;
     background-color: #72bed6;
@@ -75,11 +76,11 @@
 
   .disabled {opacity: 0.3;}
 }
-/* -------------------------- */
+/* ---------------------- */
 
 
-/* -------------------------- */
-/* 汎用設定 */
+/* ---------------------- */
+/*        汎用設定        */
 @layer default {
   label {cursor: pointer;}
   button {cursor: pointer;}
@@ -117,90 +118,12 @@
   }
 
   input[type=checkbox] {cursor: pointer;}
-
-  .icon-frame {
-    width: max-content;
-    height: max-content;
-  }
-  
-  .icon {
-    --size: 1rem;
-    --line-radius: 2px;
-  
-    aspect-ratio: 1;
-    width: var(--size);
-    cursor: pointer;
-    text-align: center;
-    position: relative;
-  
-    &::before, &::after {
-      content: '';
-      position: absolute;
-      background-color: currentColor;
-      border-radius: var(--line-radius);
-    }
-  }
-  
-  .icon-close {
-    &::before,&::after {
-      height: calc(1.4*var(--size));
-      width:  calc(2*var(--line-radius));
-      translate: calc(-1 * var(--line-radius)) calc(-0.2 * var(--size));
-    }
-    &::before {rotate: 45deg;}
-    &::after {rotate: -45deg;}
-  }
-
-  .toggle-button {
-    --radius: 1rem;
-    --padding: 2px;
-    --color: seagreen;
-    gap: calc(0.5*var(--radius));
-    font-size: calc(2*var(--radius));
-    
-    --transition-time: 0.2s;
-    display: inline-flex;
-    align-items: center;
-    white-space: nowrap;
-    cursor: pointer;
-  
-    input[type=checkbox] {display: none;}
-    &:has(:checked)   .not-checked {display: none;}
-    &:not(:has(:checked)) .checked {display: none;}
-  
-    span.slider {
-      position: relative;
-      aspect-ratio: 2 / 1;
-      height: calc(2*(var(--radius) + var(--padding)));
-      border-radius: calc(var(--radius) + var(--padding));
-  
-      transition: background-color var(--transition-time);
-      background-color: #d9d9d9;
-      :checked ~ & {background-color: var(--color);}
-    }
-    span.slider::before {
-      content: '';
-      aspect-ratio: 1 / 1;
-      height: calc(2*var(--radius));
-      border-radius: 50%;
-      background-color: white;
-  
-      position: absolute;
-      top: var(--padding);
-      left: var(--padding);
-  
-      transition: left var(--transition-time);
-    }
-    :checked ~ span.slider::before {
-      left: calc(3*var(--padding) + 2*var(--radius));
-    }
-  }
 }
-/* -------------------------- */
+/* ---------------------- */
 
 
-/* -------------------------- */
-/* each */
+/* ---------------------- */
+/*          each          */
 @layer each {
   body {
     margin: 0;
@@ -380,11 +303,10 @@
     color: rgb(0 0 0 /0.5);
     font-size: calc(1em - 1px);
   }
+}
 
-  
-  /* ----------------- */
-  /*   ホーム　ページ   */
-  /* ----------------- */
+/*   ホーム　ページ   */
+@layer each {
   [data-process=home] {
     h2 {margin: 0;}
     h3 {
@@ -399,10 +321,10 @@
     li {margin-block: 0.75rem;}
     li::marker {color: var(--blue);}
   }
-  
-  /* ----------------- */
-  /* 重複を削除　ページ */
-  /* ----------------- */
+}
+
+/* 重複を削除　ページ */
+@layer each {
   [data-process=del-dup] {
     table {
       border-collapse: collapse;
@@ -411,8 +333,16 @@
       min-width: 36rem;
       font-weight: 300;
     }
+
     tr {cursor: pointer;}
     tr:nth-child(even) {background-color: #f0f0f0;}
+    tr.uninstalled {
+      background-color: lightpink;
+    }
+    tr.to-delete {
+      color: rgb(0 0 0 /0.4);
+      text-decoration: line-through;
+    }
 
     th {
       color: white;
@@ -426,25 +356,16 @@
       padding: 4px 8px;
     }
     td:first-child {text-align: center;}
-    td:is(:nth-child(2),:nth-child(3)) {white-space: nowrap;}
+    td:nth-child(2),
+    td:nth-child(3) {white-space: nowrap;}
     td:last-child {color: rgb(0 0 0 /0.4);}
-    
-    tr.uninstalled {
-      background-color: lightpink;
-    }
-    tr.to-delete {
-      text-decoration: line-through;
-      color: rgb(0 0 0 /0.4);
-    }
-  }
-  
-  
-  /* ----------------- */
-  /* ラベリング　ページ */
-  /* ----------------- */
-  [data-process=labeling] {
-    gap: 4rem;
-  }
+  } 
+}
+
+/* ラベリング　ページ */
+@layer each {
+  [data-process=labeling] {gap: 4rem;}
+
   .new-folder {
     color: #a29d13;
     border: 1px solid #d7d02b;
@@ -488,34 +409,50 @@
     border-block-end: 3px solid transparent;
   }
 
+  .toggle-button {
+    --radius: 7px;
+    --color: var(--blue);
+    color: var(--blue);
+    font-weight: 500;
+    justify-content: flex-start;
+  }
+
+  .mark {
+    color: #a29d13;
+    font-size: calc(1rem - 2px);
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .settingDiv {
+    margin-block: 1rem;
+    display: grid;
+    align-items: center;
+    grid-template-columns: max-content auto;
+    gap: 1rem;
+
+    > :nth-child(odd) {
+      color: white;
+      background-color: var(--blue);
+      font-size: calc(1rem - 1px);
+      border-radius: 4px;
+      padding: 4px 0.5rem;
+      text-align: center;
+    }
+  }
+}
+
+/* folder */
+@layer each {
   .folder {
     border: 1px solid darkgoldenrod;
     margin-block: 0.5rem;
     box-shadow: 0px 4px 5px rgb(0 0 0 / 0.1);
     border-radius: 0.5rem;
     cursor: pointer;
-
-    .icon-frame:has(>.icon-close) {
-      padding: 0.5rem;
-      background-color: transparent;
-      color: darkgoldenrod;
-      border-style: none;
-      border-radius: 6px;
-      position: absolute;
-      right: 2px;
-      
-      &:hover {
-        color: white;
-        background-color: goldenrod;
-      }
-    }
-    .icon-close {
-      --size: 10px;
-      --line-radius: 1.5px;
-    }
   }
 
-  .folder summary {
+  .folder > summary {
     background-color: #f5f3ba;
     padding-inline-start: 0.5rem;
     border-radius: 0.5rem;
@@ -537,6 +474,26 @@
       font-family: auto;
       padding: 0.25rem 0.5rem;
     }
+
+    .icon-frame {
+      padding: 0.5rem;
+      background-color: transparent;
+      color: darkgoldenrod;
+      border-style: none;
+      border-radius: 6px;
+      position: absolute;
+      right: 2px;
+      
+      &:hover {
+        color: white;
+        background-color: goldenrod;
+      }
+    }
+
+    .icon-close {
+      --size: 10px;
+      --line-radius: 1.5px;
+    }
   }
 
   .folder[open] > summary {
@@ -545,7 +502,7 @@
     border-end-start-radius: 0;
   }
 
-  .folder > :last-child {
+  .folder-body {
     min-height: 1.5rem;
     padding-block: 0.5rem;
     padding-inline: 1.5rem 0.75rem;
@@ -554,19 +511,10 @@
       border-block: 3px solid transparent;
     }
   }
+}
 
-  .toggle-button {
-    --radius: 7px;
-    --color: var(--blue);
-    color: var(--blue);
-    font-weight: 500;
-    justify-content: flex-start;
-  }
-
-
-  /* ----------------- */
-  /*      モーダル      */
-  /* ----------------- */
+/* modal */
+@layer each {
   dialog {
     border: 1px solid var(--blue);
     background-color: var(--offwhite);
@@ -606,30 +554,6 @@
 
     section {
       padding: 1rem 2rem;
-    }
-  }
-
-  .mark {
-    color: #a29d13;
-    font-size: calc(1rem - 2px);
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .settingDiv {
-    margin-block: 1rem;
-    display: grid;
-    align-items: center;
-    grid-template-columns: max-content auto;
-    gap: 1rem;
-
-    > :nth-child(odd) {
-      color: white;
-      background-color: var(--blue);
-      font-size: calc(1rem - 1px);
-      border-radius: 4px;
-      padding: 4px 0.5rem;
-      text-align: center;
     }
   }
 }
