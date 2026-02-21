@@ -75,22 +75,22 @@ const rootApp = createApp({
       return resultMap;
   
       function tree2array (treeDatas, startOrder, labels) {
-      let order = startOrder;
-      const resultArr = [];
+        let order = startOrder;
+        const resultArr = [];
         treeDatas.forEach( treeData => {
-        if (!treeData.children) {
+          if (!treeData.children) {
             treeData.props.label = labels;
             treeData.props.order = order++;
             resultArr.push(treeData);
-
-        } else {
+  
+          } else {
             let [order2, arr] = tree2array(treeData.children, order, [...labels, treeData.name]);
-          order = order2;
-          resultArr.push(...arr);
-        }
-      });
-      return [order, resultArr];
-    }
+            order = order2;
+            resultArr.push(...arr);
+          }
+        });
+        return [order, resultArr];
+      }
     });
 
     const delDupData = computed(() => {
