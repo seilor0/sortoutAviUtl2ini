@@ -29,7 +29,7 @@ const rootApp = createApp({
       process: 'home',
       type: 'Effect',
       previewFont: {enabled:true, fontSize:1, defFontFamily:''},
-      labelSort: {isAsc:true, folderIsBottom:true},
+      labelSort: {isAsc:true, style:'folderIsBottom'},
       delDupSort: {isAsc:true, style:'initOrder'},
     });
 
@@ -347,6 +347,24 @@ const rootApp = createApp({
     function ungroupFolder (model, parentArray, index) {
       parentArray.splice(index, 1, ...model.children);
     }
+
+    function sortTreeData (target) {
+      const sortStyle = setting.value.labelSort.style;
+      const isAsc = setting.value.labelSort.isAsc ? 1 : -1;
+      if (sortStyle==='folderIsMix')
+        target.sort((a,b) => isAsc * (a.name > b.name ? 1 : -1));
+      
+      if (sortStyle==='folderIsTop') {
+        target
+          .sort((a,b) => isAsc * (a.name > b.name ? 1 : -1))
+          .sort((a,b) => Boolean(a.children) > Boolean(b.children) ? -1 : 1);
+          
+        } else if (sortStyle==='folderIsBottom') {
+        target
+          .sort((a,b) => isAsc * (a.name > b.name ? -1 : 1))
+          .sort((a,b) => Boolean(a.children) > Boolean(b.children) ? 1 : -1);
+      }
+    }
     
     function toggleHide (model) {
       model.props.hide = Math.abs(model.props.hide - 1);
@@ -384,6 +402,7 @@ const rootApp = createApp({
       
       clickNextInput,
       ungroupFolder,
+      sortTreeData,
       toggleHide,
       toggleToDelete,
     }

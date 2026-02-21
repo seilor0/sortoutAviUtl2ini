@@ -6,6 +6,7 @@ export default {
   props: {
     model: Object,
     fileClickFunc: Function,
+    sortBtnClickFunc: Function,
     xBtnClickFunc: Function,
     parentArray: Array,
     index: Number,
@@ -25,6 +26,9 @@ export default {
       <span class="material-symbols-outlined hover">drag_indicator</span>
       <div>
         <input type="text" v-model="model.name" />
+        <span class="material-symbols-outlined"
+         @click.prevent="sortBtnClickFunc(model.children)"
+        >sort</span>
         <button-css-icon icon-name="icon-close"
          @click="xBtnClickFunc(model, parentArray, index)"
         ></button-css-icon>
@@ -33,6 +37,7 @@ export default {
     <div class="folder-body">
       <tree-item v-for="(childModel, index) in model.children" :model="childModel"
        :file-click-func="fileClickFunc"
+       :sort-btn-click-func="sortBtnClickFunc"
        :x-btn-click-func="xBtnClickFunc" :parent-array="model.children" :index="index"
       ></tree-item>
     </div>
