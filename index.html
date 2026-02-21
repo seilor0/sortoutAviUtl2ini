@@ -46,8 +46,8 @@
         </label>
       </div>
 
-      <div>
-        <div data-process="home" v-if="setting.process==='home'">
+      <div :data-process="setting.process">
+        <div v-if="setting.process==='home'">
           以下の2つのことが手軽にできるサイトです。
           <ul>
             <li>スクリプトetc.のラベル分け</li>
@@ -81,7 +81,7 @@
           </p>
         </div>
 
-        <div data-process="labeling" class="column" v-if="setting.process==='labeling'">
+        <div v-else-if="setting.process==='labeling'" style="display:flex;gap:4rem;">
           <aside class="sub-sidemenu">
             <label v-for="name in packageData.keys()" class="select-tag">
               <input type="radio" :value="name" v-model="setting.type" />
@@ -161,7 +161,7 @@
           </div>
         </div>
 
-        <div data-process="del-dup" class="column" v-if="setting.process==='del-dup'">
+        <div v-else-if="setting.process==='del-dup'" style="display:flex;gap:3rem;">
           <aside class="sub-sidemenu">
             <label v-for="name in packageData.keys()" class="select-tag">
               <input type="radio" :value="name" v-model="setting.type" />

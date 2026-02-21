@@ -111,10 +111,6 @@
   [data-process] {
     padding-block-start: 2rem;
     padding-inline: 5rem;
-    &.column {
-      display: flex;
-      gap: 3rem;
-    }
   }
 
   input[type=checkbox] {cursor: pointer;}
@@ -364,8 +360,6 @@
 
 /* ラベリング　ページ */
 @layer each {
-  [data-process=labeling] {gap: 4rem;}
-
   .new-folder {
     color: #a29d13;
     border: 1px solid #d7d02b;
