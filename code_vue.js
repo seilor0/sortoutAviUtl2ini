@@ -42,10 +42,11 @@ const rootApp = createApp({
 
     /*
     treeDataMap: [
-      file ... { name, initOrder, toDelele, uninstalled, props:{ order, hide, label:[] } }
+      file   ... { name, initOrder, toDelele, uninstalled, props:{ order, hide, ... } }
       folder ... { name, children }
     ]
     */
+    const systemArr = [];
     const treeDataMap = ref(new Map([
       [ 'Color',    [] ],
       [ 'Effect',   [] ],
@@ -61,21 +62,16 @@ const rootApp = createApp({
       [ 'Movement', [] ],
       [ 'Params',   [] ],
     ]);
-    const systemArr = [];
 
-    // const packageData = ref(new Map([
-    //   [ 'Color',    [] ],
-    //   [ 'Effect',   [] ],
-    //   [ 'Font',     [] ],
-    //   [ 'Movement', [] ],
-    //   [ 'Params',   [] ],
-    // ]));
-    const packageData = computed(() => {
+    // { name, initOrder, toDelele, uninstalled, props:{ order, hide, ... } } []
+    const packageDataMap = computed(() => {
       const resultMap = new Map();
       treeDataMap.value.forEach((treeDatas, key) => {
         const [count, resultArr] = tree2array(treeDatas, 0, []);
         resultMap.set(key, resultArr);
       });
+      console.log('compute packageDataMap\n', resultMap);
+      console.log('|- treeDataMap\n', treeDataMap.value);
       return resultMap;
   
       function tree2array (treeDatas, startOrder, labels) {
@@ -95,6 +91,7 @@ const rootApp = createApp({
       });
       return [order, resultArr];
     }
+    });
 
     const delDupData = computed(() => {
       const sortStyle = setting.value.delDupSort.style;
@@ -195,14 +192,14 @@ const rootApp = createApp({
               addTarget = newFolder.children;
             }
           });
-          const addDic = structuredClone(packageDic);
-          delete addDic.label;
-          addTarget.push(addDic);
+          delete packageDic.props.order;
+          delete packageDic.props.label;
+          addTarget.push(packageDic);
         });
         initTreeDataMap.set(key, resultArr);
       });
       treeDataMap.value = structuredClone(initTreeDataMap);
-      console.log(structuredClone(initTreeDataMap));
+      console.log('initPackageData\n', initPackageData);
       
       // update font map
       initPackageData.get('Font').forEach(dic => {
@@ -291,7 +288,7 @@ const rootApp = createApp({
 
       // reflect to packageData
       installedPackage.data.forEach((set, key) => {
-        const target = packageData.value.get(key);
+        const target = packageDataMap.get(key);
         target.forEach(dic => {
           if (set.has(dic.name)) return;
           dic.uninstalled = true;
@@ -301,11 +298,11 @@ const rootApp = createApp({
     }
 
     function resetPackageData() {
-      packageData.value = structuredClone(initTreeDataMap);
+      treeDataMap.value = structuredClone(initTreeDataMap);
     }
 
     function saveIniFile() {
-      console.log(packageData.value);
+      console.log(packageDataMap.value);
     }
 
     function clickNextInput(e) {
@@ -330,8 +327,8 @@ const rootApp = createApp({
       delDupSortType,
 
       setting,
-      packageData,
       treeDataMap,
+      packageDataMap,
 
       fontStyleMap,
       fontFamilySet,
