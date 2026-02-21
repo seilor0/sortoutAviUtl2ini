@@ -182,9 +182,9 @@ const rootApp = createApp({
       initPackageData.forEach(arr => arr.sort((a,b) => a.props.order - b.props.order));
 
       // transform to tree data
-      initPackageData.forEach((value, key) => {
+      initPackageData.forEach((packages, key) => {
         const resultArr = [];
-        value.forEach(packageDic => {
+        packages.forEach(packageDic => {
           let addTarget = resultArr;
           packageDic.props.label.forEach(label => {
             const existFolder = addTarget.find(dic=>dic.name===label);
