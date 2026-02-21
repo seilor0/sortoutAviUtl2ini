@@ -124,6 +124,7 @@ const rootApp = createApp({
     async function readIniFile(e) {
       const file = e.currentTarget.files[0];
       if (!file) return;
+      e.currentTarget.value = null;
 
       // initialize
       initTreeDataMap.forEach(arr=>arr.splice(0));
@@ -301,6 +302,14 @@ const rootApp = createApp({
       treeDataMap.value = structuredClone(initTreeDataMap);
     }
 
+    function clear() {
+      initTreeDataMap.forEach(arr => arr.splice(0));
+      treeDataMap.value.forEach(arr=>arr.splice(0));
+      systemArr.splice(0);
+      fontMap.value.clear();
+      setting.value.previewFont.defFontFamily = '';
+    }
+
     function saveIniFile() {
       console.log(packageDataMap.value);
     }
@@ -338,7 +347,9 @@ const rootApp = createApp({
       readIniFile,
       readInstalledPackage,
       resetPackageData,
+      clear,
       saveIniFile,
+
       clickNextInput,
       toggleToDelete,
       toggleHide,
