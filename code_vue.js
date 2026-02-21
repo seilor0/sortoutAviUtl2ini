@@ -193,8 +193,8 @@ const rootApp = createApp({
               addTarget = newFolder.children;
             }
           });
-          delete packageDic.props.order;
-          delete packageDic.props.label;
+          // delete packageDic.props.order;
+          // delete packageDic.props.label;
           addTarget.push(packageDic);
         });
         initTreeDataMap.set(key, resultArr);
@@ -311,7 +311,26 @@ const rootApp = createApp({
     }
 
     function saveIniFile() {
-      console.log(packageDataMap.value);
+      const resultArr = [...systemArr];
+      packageDataMap.value.forEach((packageArr,key) => {
+        packageArr
+          .filter(dic=>!dic.toDelete)
+          .toSorted((a,b) => a.props.order - b.props.order)
+          .forEach(packageDic=> {
+            resultArr.push(`[${key}.${packageDic.name}]`);
+            Object.entries(packageDic.props).forEach(([key,value]) => {
+              if (key==='label') value = value.join('\\');
+              resultArr.push(`${key}=${value}`);
+            });
+          });
+      });
+
+      // save
+      const blob = new Blob([resultArr.join('\r\n')], {type:'text/plain'});
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'aviutl2.ini';
+      link.click();
     }
 
     function clickNextInput(e) {
