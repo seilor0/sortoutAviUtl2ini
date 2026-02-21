@@ -220,8 +220,9 @@
                 <tr v-for="dic in delDupData" :class="{uninstalled:dic.uninstalled, 'to-delete':dic.toDelete}" @click="toggleToDelete(dic)">
                   <td><input type="checkbox" v-model="dic.toDelete"/></td>
                   <td>{{dic.props.order}}</td>
+                  <td class="see-through">({{dic.initOrder}})</td>
                   <td :style="setting.previewFont.enabled && setting.type==='Font' ? fontStyleMap.get(dic.name) : null">{{dic.name}}</td>
-                  <td>{{dic.props}}</td>
+                  <td class="see-through">{{dic.props}}</td>
                 </tr>
               </tbody>
             </table>

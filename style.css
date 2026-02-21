@@ -322,6 +322,8 @@
 /* 重複を削除　ページ */
 @layer each {
   [data-process=del-dup] {
+    .see-through {color: rgb(0 0 0 /0.4);}
+
     table {
       border-collapse: collapse;
       user-select: none;
@@ -330,16 +332,29 @@
       font-weight: 300;
     }
 
-    tr {cursor: pointer;}
-    tr:nth-child(even) {background-color: #f0f0f0;}
-    tr.uninstalled {
-      background-color: lightpink;
+    thead {white-space: nowrap;}
+    thead input[type=radio] {display: none;}
+    thead label {display: block;}
+    thead th:has(:checked) {
+      color: var(--blue);
+      background-color: lightblue;
+      font-weight: 800;
     }
+
+    tbody input[type="checkbox"] {
+      width: 60%;
+      aspect-ratio: 1 / 1;
+    }
+
+    tbody tr {cursor: pointer;}
+    tr:nth-child(even) {background-color: #f0f0f0;}
+    tr.uninstalled {background-color: lightpink;}
     tr.to-delete {
       color: rgb(0 0 0 /0.4);
       text-decoration: line-through;
     }
 
+    tbody td {border-block: 1px solid rgb(0 0 0 /0.25);}
     th {
       color: white;
       background-color: var(--blue);
@@ -347,15 +362,9 @@
       font-weight: 400;
       text-align: center;
     }
-    th,td {
-      border-block: 1px solid rgb(0 0 0 /0.25);
-      padding: 4px 8px;
-    }
+    th,td {padding: 4px 8px;}
     td:first-child {text-align: center;}
-    td:nth-child(2),
-    td:nth-child(3) {white-space: nowrap;}
-    td:last-child {color: rgb(0 0 0 /0.4);}
-  } 
+  }
 }
 
 /* ラベリング　ページ */
