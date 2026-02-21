@@ -316,10 +316,8 @@ const rootApp = createApp({
       dic.toDelete = !dic.toDelete;
     }
 
-    function toggleHide (name) {
-      const target = packageData.value.get(setting.value.type).find(dic=>dic.name===name);
-      target.props.hide=!target.props.hide;
-      console.log('file-click-event', target);
+    function toggleHide (model) {
+      model.props.hide = Math.abs(model.props.hide - 1);
     }
 
 
