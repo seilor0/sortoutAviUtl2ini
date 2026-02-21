@@ -315,7 +315,7 @@ const rootApp = createApp({
       packageDataMap.value.forEach((packageArr,key) => {
         packageArr
           .filter(dic=>!dic.toDelete)
-          .toSorted((a,b) => a.props.order - b.props.order)
+          .sort((a,b) => a.props.order - b.props.order)
           .forEach(packageDic=> {
             resultArr.push(`[${key}.${packageDic.name}]`);
             Object.entries(packageDic.props).forEach(([key,value]) => {
@@ -333,6 +333,13 @@ const rootApp = createApp({
       link.click();
     }
 
+    function dropInifile (e) {
+      console.log(e.dataTransfer);
+      if (!e.dataTransfer.files[0].name.endsWith('.ini')) return;
+      document.getElementById('iniInput').files = e.dataTransfer.files;
+      document.getElementById('iniInput').dispatchEvent(new Event('change'));
+    }
+
     function clickNextInput(e) {
       e.currentTarget.nextElementSibling?.click();
     }
@@ -348,6 +355,7 @@ const rootApp = createApp({
     function toggleToDelete (dic) {
       dic.toDelete = !dic.toDelete;
     }
+
 
     onMounted(async () => {
       defValJson = await fetch('./defaultValue.json').then(res=>res.json());
@@ -372,6 +380,8 @@ const rootApp = createApp({
       clear,
       saveIniFile,
 
+      dropInifile,
+      
       clickNextInput,
       ungroupFolder,
       toggleHide,
