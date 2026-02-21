@@ -83,7 +83,7 @@
 
         <div v-else-if="setting.process==='labeling'" style="display:flex;gap:4rem;">
           <aside class="sub-sidemenu">
-            <label v-for="name in packageData.keys()" class="select-tag">
+            <label v-for="name in treeDataMap.keys()" class="select-tag">
               <input type="radio" :value="name" v-model="setting.type" />
               {{name}}
             </label>
@@ -163,7 +163,7 @@
 
         <div v-else-if="setting.process==='del-dup'" style="display:flex;gap:3rem;">
           <aside class="sub-sidemenu">
-            <label v-for="name in packageData.keys()" class="select-tag">
+            <label v-for="name in treeDataMap.keys()" class="select-tag">
               <input type="radio" :value="name" v-model="setting.type" />
               {{name}}
             </label>
