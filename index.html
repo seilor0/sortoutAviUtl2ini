@@ -147,6 +147,7 @@
 
                 <p style="font-size: smaller;margin-block-start: 0.25rem;" :class="{disabled: !setting.previewFont.enabled}">デフォルトのフォント：</p>
                 <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled">
+                  <option value="" selected>（指定なし）</option>
                   <option v-for="fontFamily in fontFamilySet">{{fontFamily}}</option>
                 </select>
               </div>
@@ -188,6 +189,7 @@
                 ></toggle-button>
                 <p style="font-size: smaller;margin-block-start: 0.5rem;" :class="{disabled: !setting.previewFont.enabled}">デフォルトのフォント：</p>
                 <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled">
+                  <option value="" selected>（指定なし）</option>
                   <option v-for="fontFamily in fontFamilySet">{{fontFamily}}</option>
                 </select>
               </div>
