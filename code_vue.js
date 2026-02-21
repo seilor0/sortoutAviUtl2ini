@@ -73,44 +73,22 @@ const rootApp = createApp({
     const packageData = computed(() => {
       const resultMap = new Map();
       treeDataMap.value.forEach((treeDatas, key) => {
-        const [count, resultArr] = test(treeDatas, 0, []);
+        const [count, resultArr] = tree2array(treeDatas, 0, []);
         resultMap.set(key, resultArr);
-        console.log(count, resultArr);
       });
       return resultMap;
-    });
-
-    /**
-     * 
-     * @param {Array} labels 
-     */
-    function test (treeDatas, startOrder, labels) {
+  
+      function tree2array (treeDatas, startOrder, labels) {
       let order = startOrder;
       const resultArr = [];
-      console.log(labels);
-      treeDatas.forEach(treeData=> {
+        treeDatas.forEach( treeData => {
         if (!treeData.children) {
-          // console.log(treeData);
-          const dic = {
-            name: treeData.name, 
-            initOrder: treeData.initOrder, 
-            toDelete: treeData.toDelete, 
-            uninstalled: treeData.uninstalled, 
-            props: treeData.props
-          };
-          // const dic = structuredClone(treeData);
-          
-          dic.props.label = labels;
-          dic.props.order = order++;
-          resultArr.push(dic);
-          // console.log(dic);
+            treeData.props.label = labels;
+            treeData.props.order = order++;
+            resultArr.push(treeData);
 
         } else {
-          // console.log(labels, typeof(labels));
-          let labels2 = structuredClone(labels);
-          labels2.push(treeData.name);
-          // console.log(labels2)
-          let [order2, arr] = test(treeData.children, order, labels2);
+            let [order2, arr] = tree2array(treeData.children, order, [...labels, treeData.name]);
           order = order2;
           resultArr.push(...arr);
         }
