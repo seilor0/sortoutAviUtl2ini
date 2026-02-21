@@ -167,8 +167,8 @@ const rootApp = createApp({
         [ 'Movement', [] ],
         [ 'Params',   [] ],
       ]);
-      const text = await file.text();
-      text
+
+      (await file.text())
         .split(/^\[/mg)
         .filter(Boolean)
         .forEach(el => {
@@ -201,9 +201,7 @@ const rootApp = createApp({
           }
         });
       
-      initPackageData.forEach(arr =>
-        arr.sort((a,b) => a.props.order - b.props.order)
-      );
+      initPackageData.forEach(arr => arr.sort((a,b) => a.props.order - b.props.order));
 
       // transform to tree data
       initPackageData.forEach((value, key) => {
