@@ -156,8 +156,9 @@
           </div>
 
           <div class="result">
-            <tree-item v-for="model in treeDataMap.get(setting.type)" :model="model"
-             :file-click-func="toggleHide"
+            <tree-item v-for="(model,index) in treeDataMap.get(setting.type)" :model="model"
+             :file-click-func="toggleHide" 
+             :x-btn-click-func="ungroupFolder" :parent-array="treeDataMap.get(setting.type)" :index="index"
             ></tree-item>
           </div>
         </div>

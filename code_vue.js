@@ -337,14 +337,17 @@ const rootApp = createApp({
       e.currentTarget.nextElementSibling?.click();
     }
 
-    function toggleToDelete (dic) {
-      dic.toDelete = !dic.toDelete;
+    function ungroupFolder (model, parentArray, index) {
+      parentArray.splice(index, 1, ...model.children);
     }
-
+    
     function toggleHide (model) {
       model.props.hide = Math.abs(model.props.hide - 1);
     }
 
+    function toggleToDelete (dic) {
+      dic.toDelete = !dic.toDelete;
+    }
 
     onMounted(async () => {
       defValJson = await fetch('./defaultValue.json').then(res=>res.json());
@@ -370,8 +373,9 @@ const rootApp = createApp({
       saveIniFile,
 
       clickNextInput,
-      toggleToDelete,
+      ungroupFolder,
       toggleHide,
+      toggleToDelete,
     }
   }
 });

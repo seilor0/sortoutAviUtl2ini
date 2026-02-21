@@ -6,6 +6,9 @@ export default {
   props: {
     model: Object,
     fileClickFunc: Function,
+    xBtnClickFunc: Function,
+    parentArray: Array,
+    index: Number,
   },
   components: {
     ButtonCssIcon,
@@ -22,15 +25,20 @@ export default {
       <span class="material-symbols-outlined hover">drag_indicator</span>
       <div>
         <input type="text" v-model="model.name" />
-        <button-css-icon icon-name="icon-close"></button-css-icon>
+        <button-css-icon icon-name="icon-close"
+         @click="xBtnClickFunc(model, parentArray, index)"
+        ></button-css-icon>
       </div>
     </summary>
     <div class="folder-body">
-      <tree-item v-for="model in model.children" :model="model" :file-click-func="fileClickFunc"></tree-item>
+      <tree-item v-for="(childModel, index) in model.children" :model="childModel"
+       :file-click-func="fileClickFunc"
+       :x-btn-click-func="xBtnClickFunc" :parent-array="model.children" :index="index"
+      ></tree-item>
     </div>
   </details>
 
-  <p v-else v-if="!model.toDelete" class="file" :class="{hide: model.props.hide}" draggable="true" @click=fileClickFunc(model)>
+  <p v-else v-if="!model.toDelete" class="file" :class="{hide: model.props.hide}" draggable="true" @click="fileClickFunc(model)">
     <span class="material-symbols-outlined hover">drag_indicator</span>
     {{model.name}}
   </p>
