@@ -30,8 +30,15 @@ const rootApp = createApp({
       type: 'Effect',
       previewFont: {enabled:true, fontSize:1, defFontFamily:''},
       labelSort: {isAsc:true, folderIsBottom:true},
-      delDupSortStyle: 'initOrder'
+      delDupSort: {isAsc:true, style:'initOrder'},
     });
+
+    const delDupSortType = ref([
+      {label:'X', value:'toDelete', isAsc:true},
+      {label:'並び順', value:'order', isAsc:true},
+      {label:'(読込時)', value:'initOrder', isAsc:true},
+      {label:'パッケージ名', value:'name', isAsc:true},
+    ]);
 
     /*
     treeDataMap: [
@@ -112,12 +119,13 @@ const rootApp = createApp({
     }
 
     const delDupData = computed(() => {
-      const sortStyle = setting.value.delDupSortStyle;
-      const target = packageData.value.get(setting.value.type);
+      const sortStyle = setting.value.delDupSort.style;
+      const isAsc = setting.value.delDupSort.isAsc ? 1 : -1;
+      const target = packageDataMap.value.get(setting.value.type);
       if (sortStyle==='order')
-        return target.toSorted((a,b) => a.props.order - b.props.order);
+        return target.toSorted((a,b) => isAsc * (a.props.order - b.props.order));
       else 
-        return target.toSorted((a,b) => a[sortStyle] > b[sortStyle] ? 1 : -1);
+        return target.toSorted((a,b) => isAsc * (a[sortStyle] > b[sortStyle] ? 1 : -1));
     });
 
 
@@ -345,6 +353,8 @@ const rootApp = createApp({
 
 
     return {
+      delDupSortType,
+
       setting,
       packageData,
       treeDataMap,

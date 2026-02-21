@@ -180,18 +180,6 @@
               <input type="file" id="scriptsInput" style="display: none;" @click="readInstalledPackage" multiple webkitdirectory />
 
               <hr style="margin-block: 0.75rem;">
-
-              <div>
-                <p style="font-size: smaller;">ソート：</p>
-                <select v-model="setting.delDupSortStyle">
-                  <option value="initOrder">読み込み時の並び順</option>
-                  <option value="order">変更後の並び順</option>
-                  <option value="name">パッケージ名</option>
-                  <option value="uninstalled">状態</option>
-                </select>
-              </div>
-  
-              <hr style="margin-block: 0.75rem;">
   
               <div>
                 <toggle-button :top-is-slider="false"
@@ -210,9 +198,13 @@
             <table>
               <thead>
                 <tr>
-                  <th>X</th>
-                  <th>order</th>
-                  <th>パッケージ名</th>
+                  <th v-for="dic in delDupSortType">
+                    <label>
+                      <input type="radio" name="del-dup-sort-style" :value="dic.value" v-model="setting.delDupSort.style" @click="()=>{dic.isAsc=!dic.isAsc;setting.delDupSort.isAsc = dic.isAsc;}"/>
+                      {{dic.label}}
+                      <span style="font-size: smaller;padding-inline-start: 8px;">{{dic.isAsc ? '▼' : '▲'}}</span>
+                    </label>
+                  </th>
                   <th>設定</th>
                 </tr>
               </thead>
