@@ -2,7 +2,7 @@ import ButtonCssIcon from "./button-css-icon.js";
 const { computed } = Vue
 
 export default {
-  name: 'TreeItem', // necessary for self-reference
+  name: 'TreeItem',
   props: {
     model: Object,
     fileClickFunc: Function,
@@ -10,10 +10,6 @@ export default {
   components: {
     ButtonCssIcon,
   },
-  emits: [
-    'folder-name-change',
-    // 'file-click',
-  ],
   setup(props) {
     const isFolder = computed(() => props.model.children ? true : false);
     return {
@@ -25,8 +21,7 @@ export default {
     <summary>
       <span class="material-symbols-outlined hover">drag_indicator</span>
       <div>
-        <input type="text" :value="model.name"
-          @change="(e)=>$emit('folder-name-change', e.currentTarget.value)" />
+        <input type="text" v-model="model.name" />
         <button-css-icon icon-name="icon-close"></button-css-icon>
       </div>
     </summary>
@@ -35,7 +30,7 @@ export default {
     </div>
   </details>
 
-  <p v-else class="file" :class="{hide: model.hide}" draggable="true" @click="fileClickFunc(model.name)">
+  <p v-else v-if="!model.toDelete" class="file" :class="{hide: model.props.hide}" draggable="true" @click=fileClickFunc(model)>
     <span class="material-symbols-outlined hover">drag_indicator</span>
     {{model.name}}
   </p>
