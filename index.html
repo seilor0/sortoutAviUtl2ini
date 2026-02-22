@@ -161,9 +161,10 @@
 
           <div class="result">
             <tree-item v-for="(model,index) in treeDataMap.get(setting.type)" :model="model"
+              :setting="{type:setting.type, previewFont: setting.previewFont, labelSort: setting.labelSort}"
              :file-click-func="toggleHide" 
-             :sort-btn-click-func="sortTreeData"
-             :x-btn-click-func="ungroupFolder" :parent-array="treeDataMap.get(setting.type)" :index="index"
+              :toggle-detail-func="test"
+              :parent-array="treeDataMap.get(setting.type)" :index="index"
             ></tree-item>
           </div>
         </div>
