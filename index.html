@@ -222,7 +222,7 @@
                   <td><input type="checkbox" v-model="dic.toDelete"/></td>
                   <td>{{dic.props.order}}</td>
                   <td class="see-through">({{dic.initOrder}})</td>
-                  <td :style="setting.previewFont.enabled && setting.type==='Font' ? fontStyleMap.get(dic.name) : null">{{dic.name}}</td>
+                  <td :style="setting.previewFont.enabled ? dic.fontStyle??null : null">{{dic.name}}</td>
                   <td class="see-through">{{dic.props}}</td>
                 </tr>
               </tbody>

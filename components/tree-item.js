@@ -7,8 +7,7 @@ export default {
     model: Object,
     setting: Object,
     fileClickFunc: Function,
-    sortBtnClickFunc: Function,
-    xBtnClickFunc: Function,
+    toggleDetailFunc: Function,
     parentArray: Array,
     index: Number,
   },
@@ -74,7 +73,11 @@ export default {
     </div>
   </details>
 
-  <p v-else v-if="!model.toDelete" class="file" :class="{hide: model.props.hide}" draggable="true" @click="fileClickFunc(model)">
+  <p v-else v-if="!model.toDelete" draggable="true"
+    class="file" :class="{hide: model.props.hide}"
+    :style="setting.previewFont.enabled && setting.type==='Font' ? [model.fontStyle, {fontSize:setting.previewFont.fontSize+'rem', fontFamily:model.fontStyle.fontFamily+', '+setting.previewFont.defFontFamily}] : null"
+    @click="fileClickFunc(model)"
+  >
     <span class="material-symbols-outlined hover">drag_indicator</span>
     {{model.name}}
   </p>

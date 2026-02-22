@@ -70,8 +70,8 @@ const rootApp = createApp({
         const [count, resultArr] = tree2array(treeDatas, 0, []);
         resultMap.set(key, resultArr);
       });
-      console.log('compute packageDataMap\n', resultMap);
-      console.log('|- treeDataMap\n', treeDataMap.value);
+      console.log('treeDataMap', treeDataMap.value);
+      console.log('--> compute packageDataMap', resultMap);
       return resultMap;
   
       function tree2array (treeDatas, startOrder, labels) {
@@ -103,22 +103,7 @@ const rootApp = createApp({
         return target.toSorted((a,b) => isAsc * (a[sortStyle] > b[sortStyle] ? 1 : -1));
     });
 
-
-    // fontname: {fontFamily, fontWeight, fontStretch}
-    const fontMap = ref(new Map());
-    const fontStyleMap = computed(() => {
-      const map = new Map([]);
-      fontMap.value.forEach((value,key) => {
-        const dic = {...value};
-        dic.fontFamily = `"${value.fontFamily}", "${setting.value.previewFont.defFontFamily}"`
-        map.set(key, dic);
-      });
-      return map;
-    });
-    const fontFamilySet = computed(() => {
-      const arr = Array.from(fontMap.value.values(), dic=>dic.fontFamily).sort();
-      return new Set(arr);
-    });
+    const fontFamilySet = ref(new Set());
 
     
     async function readIniFile(e) {
@@ -130,7 +115,7 @@ const rootApp = createApp({
       initTreeDataMap.forEach(arr=>arr.splice(0));
       treeDataMap.value.forEach(arr=>arr.splice(0));
       systemArr.splice(0);
-      fontMap.value.clear();
+      fontFamilySet.value.clear();
 
       // read file
       /**
@@ -179,30 +164,9 @@ const rootApp = createApp({
       
       initPackageData.forEach(arr => arr.sort((a,b) => a.props.order - b.props.order));
 
-      // transform to tree data
-      initPackageData.forEach((packages, key) => {
-        const resultArr = [];
-        packages.forEach(packageDic => {
-          let addTarget = resultArr;
-          packageDic.props.label.forEach(label => {
-            const existFolder = addTarget.find(dic=>dic.name===label);
-            if (existFolder) addTarget = existFolder.children;
-            else {
-              const newFolder = {name:label, children:[]};
-              addTarget.push(newFolder);
-              addTarget = newFolder.children;
-            }
-          });
-          // delete packageDic.props.order;
-          // delete packageDic.props.label;
-          addTarget.push(packageDic);
-        });
-        initTreeDataMap.set(key, resultArr);
-      });
-      treeDataMap.value = structuredClone(initTreeDataMap);
-      console.log('initPackageData\n', initPackageData);
       
-      // update font map
+      // update fontfamily set and add font style
+      const fontFamilyArr = [];
       initPackageData.get('Font').forEach(dic => {
         let fontFamily = dic.name;
         const fontDic = {fontFamily: null, fontWeight: null, fontStretch: null};
@@ -226,8 +190,34 @@ const rootApp = createApp({
         // font-family
         fontDic.fontFamily = fontFamily;
 
-        fontMap.value.set(dic.name, fontDic);
+        dic.fontStyle = fontDic;
+        fontFamilyArr.push(fontFamily);
       });
+      fontFamilySet.value = new Set(fontFamilyArr.sort());
+
+
+      // transform to tree data
+      initPackageData.forEach((packages, key) => {
+        const resultArr = [];
+        packages.forEach(packageDic => {
+          let addTarget = resultArr;
+          packageDic.props.label.forEach(label => {
+            const existFolder = addTarget.find(dic=>dic.name===label);
+            if (existFolder) addTarget = existFolder.children;
+            else {
+              const newFolder = {name:label, isOpen:true, children:[]};
+              addTarget.push(newFolder);
+              addTarget = newFolder.children;
+            }
+          });
+          // delete packageDic.props.order;
+          // delete packageDic.props.label;
+          addTarget.push(packageDic);
+      });
+        initTreeDataMap.set(key, resultArr);
+      });
+      treeDataMap.value = structuredClone(initTreeDataMap);
+      console.log('initPackageData\n', initPackageData);
 
       if (setting.value.process==='home') setting.value.process = 'labeling';
     }
@@ -389,7 +379,6 @@ const rootApp = createApp({
       treeDataMap,
       packageDataMap,
 
-      fontStyleMap,
       fontFamilySet,
 
       delDupData,
