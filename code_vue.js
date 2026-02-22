@@ -344,26 +344,28 @@ const rootApp = createApp({
       e.currentTarget.nextElementSibling?.click();
     }
 
-    function ungroupFolder (model, parentArray, index) {
-      parentArray.splice(index, 1, ...model.children);
-    }
+    function test (event) {
+      console.log(event, event.currentTarget, event.currentTarget.open);
 
-    function sortTreeData (target) {
-      const sortStyle = setting.value.labelSort.style;
-      const isAsc = setting.value.labelSort.isAsc ? 1 : -1;
-      if (sortStyle==='folderIsMix')
-        target.sort((a,b) => isAsc * (a.name > b.name ? 1 : -1));
-      
-      if (sortStyle==='folderIsTop') {
-        target
-          .sort((a,b) => isAsc * (a.name > b.name ? 1 : -1))
-          .sort((a,b) => Boolean(a.children) > Boolean(b.children) ? -1 : 1);
-          
-        } else if (sortStyle==='folderIsBottom') {
-        target
-          .sort((a,b) => isAsc * (a.name > b.name ? -1 : 1))
-          .sort((a,b) => Boolean(a.children) > Boolean(b.children) ? 1 : -1);
-      }
+      // const target = {sibling: false, children: false};
+      // if (event.ctrlKey) target.sibling = true;
+      // if (event.altKey) target.children = true;
+
+      // if (target.sibling) {
+      //   targetArr
+      //     .filter(model=>model.children)
+      //     .forEach(model=>model.isOpen=setting.value.toggleToOpen);
+      // } else {
+      //   targetArr[index].isOpen = setting.value.toggleToOpen;
+      // }
+
+      // if (target.children) {
+      //   targetArr
+      //     .filter(model=>model.children)
+      //     .forEach(model=>toggleDetail(event, model.chilren, 0))
+      // }
+
+      // setting.value.toggleToOpen = !setting.value.toggleToOpen;
     }
     
     function toggleHide (model) {
@@ -401,8 +403,9 @@ const rootApp = createApp({
       dropInifile,
       
       clickNextInput,
-      ungroupFolder,
-      sortTreeData,
+
+      test,
+
       toggleHide,
       toggleToDelete,
     }
