@@ -18,56 +18,56 @@ fetch('./defaultValue.json').then(res=>res.json()).then(json=>defValJson=json);
 const deleteDupDiv = document.querySelector('[data-process=deleteDup]');
 const labelingDiv  = document.querySelector('[data-process=labeling]');
 
-const prevFontCheckbox_labeling = document.getElementById('previewFont-labeling');
-const prevFontCheckbox_deldup   = document.getElementById('previewFont-delDup');
-const typeRadio_font_labeling = labelingDiv.querySelector('[name=type-labeling][value=Font]');
-const typeRadio_font_deldup   = deleteDupDiv.querySelector('[name=type-delDup][value=Font]');
+// const prevFontCheckbox_labeling = document.getElementById('previewFont-labeling');
+// const prevFontCheckbox_deldup   = document.getElementById('previewFont-delDup');
+// const typeRadio_font_labeling = labelingDiv.querySelector('[name=type-labeling][value=Font]');
+// const typeRadio_font_deldup   = deleteDupDiv.querySelector('[name=type-delDup][value=Font]');
 
 
 // document.querySelectorAll('.clickNextInput').forEach(el =>
 //   el.addEventListener('click', (e) => e.currentTarget.nextElementSibling?.click())
 // );
 
-// iniファイル選択時
-document.getElementById('iniInput').addEventListener('change', async () => {
-  await readIniFile();
-  const process = document.querySelector('input[name=process]:checked').value;
-  if      (process=='home')      document.querySelector('input[name=process][value=labeling]').click();
-  else if (process=='labeling')  showResult_labeling();
-  else if (process=='deleteDup') showResult_delDup();
-});
-// 「読み込み時の設定に戻す」ボタン
-document.getElementById('back2readPt').addEventListener('click', () => {
-  rawDataArr = structuredClone(backupArr);
-  const process = document.querySelector('input[name=process]:checked').value;
-  if      (process=='labeling')  showResult_labeling();
-  else if (process=='deleteDup') showResult_delDup();
-});
-// 「クリア」ボタン
-document.getElementById('clear').addEventListener('click', () => {
-  rawDataArr.splice(0);
-  backupArr.splice(0);
-  systemArr.splice(0);
-  deleteDupDiv.querySelector('table tbody').innerHTML = '';
-  labelingDiv.querySelector('.result').innerHTML = '';
-  document.getElementById('sortStyle').value = 'order';
-  document.getElementById('toggleDetails').dataset.toggle = 'close';
-  document.getElementById('iniInput').value = null;
-  document.getElementById('defFont-labeling').innerHTML = '';
-  document.getElementById('defFont-delDup').innerHTML = '';
-});
-//   結果保存
-document.getElementById('copy').addEventListener('click', updateOrder);
-document.getElementById('copy').addEventListener('click', saveFile);
+// // iniファイル選択時
+// document.getElementById('iniInput').addEventListener('change', async () => {
+//   await readIniFile();
+//   const process = document.querySelector('input[name=process]:checked').value;
+//   if      (process=='home')      document.querySelector('input[name=process][value=labeling]').click();
+//   else if (process=='labeling')  showResult_labeling();
+//   else if (process=='deleteDup') showResult_delDup();
+// });
+// // 「読み込み時の設定に戻す」ボタン
+// document.getElementById('back2readPt').addEventListener('click', () => {
+//   rawDataArr = structuredClone(backupArr);
+//   const process = document.querySelector('input[name=process]:checked').value;
+//   if      (process=='labeling')  showResult_labeling();
+//   else if (process=='deleteDup') showResult_delDup();
+// });
+// // 「クリア」ボタン
+// document.getElementById('clear').addEventListener('click', () => {
+//   rawDataArr.splice(0);
+//   backupArr.splice(0);
+//   systemArr.splice(0);
+//   deleteDupDiv.querySelector('table tbody').innerHTML = '';
+//   labelingDiv.querySelector('.result').innerHTML = '';
+//   document.getElementById('sortStyle').value = 'order';
+//   document.getElementById('toggleDetails').dataset.toggle = 'close';
+//   document.getElementById('iniInput').value = null;
+//   document.getElementById('defFont-labeling').innerHTML = '';
+//   document.getElementById('defFont-delDup').innerHTML = '';
+// });
+// //   結果保存
+// document.getElementById('copy').addEventListener('click', updateOrder);
+// document.getElementById('copy').addEventListener('click', saveFile);
 
 
 // ---------------------
 //   ページ切り替え
 // ---------------------
 
-// order, labelの更新
-document.querySelectorAll('input[name=process]').forEach      (input=>input.addEventListener('change', updateOrder));
-document.querySelectorAll('input[name=type-labeling]').forEach(input=>input.addEventListener('change', updateOrder));
+// // order, labelの更新
+// document.querySelectorAll('input[name=process]').forEach      (input=>input.addEventListener('change', updateOrder));
+// document.querySelectorAll('input[name=type-labeling]').forEach(input=>input.addEventListener('change', updateOrder));
 
 // // ページの表示切替
 // document.querySelectorAll('input[name=process]').forEach(input=>
@@ -115,32 +115,32 @@ document.querySelectorAll('input[name=type-labeling]').forEach(input=>input.addE
 // ---------------------
 //   ラベリング　ページ
 // ---------------------
-// フォントプレビュー
-prevFontCheckbox_labeling.addEventListener('change', (e) => {
-  if (!typeRadio_font_labeling.checked) return;
-  if (e.currentTarget.checked) {
-    labelingDiv.querySelector('.result').style.setProperty('--font-size', document.getElementById('fontSize').value+'rem');
-    const defFont = document.getElementById('defFont-labeling').value;
-    labelingDiv.querySelectorAll('.file').forEach(file=>previewFont(file, file.innerText, defFont));
-  } else {
-    labelingDiv.querySelector('.result').style.setProperty('--font-size', null);
-    labelingDiv.querySelectorAll('.file').forEach(file=>previewFont(file, null));
-  }
-});
+// // フォントプレビュー
+// prevFontCheckbox_labeling.addEventListener('change', (e) => {
+//   if (!typeRadio_font_labeling.checked) return;
+//   if (e.currentTarget.checked) {
+//     labelingDiv.querySelector('.result').style.setProperty('--font-size', document.getElementById('fontSize').value+'rem');
+//     const defFont = document.getElementById('defFont-labeling').value;
+//     labelingDiv.querySelectorAll('.file').forEach(file=>previewFont(file, file.innerText, defFont));
+//   } else {
+//     labelingDiv.querySelector('.result').style.setProperty('--font-size', null);
+//     labelingDiv.querySelectorAll('.file').forEach(file=>previewFont(file, null));
+//   }
+// });
 
-// default font
-document.getElementById('defFont-labeling').addEventListener('change', (e) => {
-  if (!typeRadio_font_labeling.checked) return;
-  if (!prevFontCheckbox_labeling.checked) return;
-  labelingDiv.querySelectorAll('.file').forEach(file=>previewFont(file, file.innerText, e.currentTarget.value));
-});
+// // default font
+// document.getElementById('defFont-labeling').addEventListener('change', (e) => {
+//   if (!typeRadio_font_labeling.checked) return;
+//   if (!prevFontCheckbox_labeling.checked) return;
+//   labelingDiv.querySelectorAll('.file').forEach(file=>previewFont(file, file.innerText, e.currentTarget.value));
+// });
 
-// font size
-document.getElementById('fontSize').addEventListener('change', (e) => {
-  if (!typeRadio_font_labeling.checked) return;
-  if (!prevFontCheckbox_labeling.checked) return;
-  labelingDiv.querySelector('.result').style.setProperty('--font-size',e.currentTarget.value+'rem');
-});
+// // font size
+// document.getElementById('fontSize').addEventListener('change', (e) => {
+//   if (!typeRadio_font_labeling.checked) return;
+//   if (!prevFontCheckbox_labeling.checked) return;
+//   labelingDiv.querySelector('.result').style.setProperty('--font-size',e.currentTarget.value+'rem');
+// });
 
 // new folder
 document.getElementById('newFolder').addEventListener('dragstart', dragStartNewFolder);
@@ -296,40 +296,40 @@ document.getElementById('sortByLabel').addEventListener('click', () => {
 // }
 
 
-function saveFile() {
-  const dataArr = rawDataArr.filter(dic=>!dic.checked);
-  if (!dataArr.length) return;
+// function saveFile() {
+//   const dataArr = rawDataArr.filter(dic=>!dic.checked);
+//   if (!dataArr.length) return;
 
-  // sort
-  const sort = (dataArr, sortStyle, isAsc) => {
-    const sign = isAsc ? 1 : -1;
-    if (sortStyle==='none') return;
-    else if (sortStyle==='order') {
-      dataArr.sort((a, b) => sign * (a.props.order-b.props.order));
-    } else if (['checked','type','name'].includes(sortStyle)) {
-      dataArr.sort((a, b) => sign * (a[sortStyle] > b[sortStyle] ? 1 : -1));
-    }
-  };
-  sort(dataArr, 'order', false);
-  sort(dataArr, 'type', true);
+//   // sort
+//   const sort = (dataArr, sortStyle, isAsc) => {
+//     const sign = isAsc ? 1 : -1;
+//     if (sortStyle==='none') return;
+//     else if (sortStyle==='order') {
+//       dataArr.sort((a, b) => sign * (a.props.order-b.props.order));
+//     } else if (['checked','type','name'].includes(sortStyle)) {
+//       dataArr.sort((a, b) => sign * (a[sortStyle] > b[sortStyle] ? 1 : -1));
+//     }
+//   };
+//   sort(dataArr, 'order', false);
+//   sort(dataArr, 'type', true);
 
-  // result
-  let result = systemArr.join('\n') + '\n';
-  dataArr.forEach(dic => {
-    result += `[${dic.type}.${dic.name}]\n`;
-    for (const key in dic.props) {
-      const value = (key=='label') ? dic.props[key].join('\\') : dic.props[key];
-      result += `${key}=${value}\n`;
-    }
-  });
+//   // result
+//   let result = systemArr.join('\n') + '\n';
+//   dataArr.forEach(dic => {
+//     result += `[${dic.type}.${dic.name}]\n`;
+//     for (const key in dic.props) {
+//       const value = (key=='label') ? dic.props[key].join('\\') : dic.props[key];
+//       result += `${key}=${value}\n`;
+//     }
+//   });
 
-  // save
-  const blob = new Blob([result.trim().replaceAll('\n','\r\n')], {type:'text/plain'});
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'aviutl2.ini';
-  link.click();
-}
+//   // save
+//   const blob = new Blob([result.trim().replaceAll('\n','\r\n')], {type:'text/plain'});
+//   const link = document.createElement('a');
+//   link.href = URL.createObjectURL(blob);
+//   link.download = 'aviutl2.ini';
+//   link.click();
+// }
 
 
 // function showResult_delDup() {
@@ -387,89 +387,89 @@ function saveFile() {
 // }
 
 
-function showResult_labeling() {
-  const type = labelingDiv.querySelector('[name=type-labeling]:checked').value;
-  const previewFontFlag = type=='Font' && prevFontCheckbox_labeling.checked;
+// function showResult_labeling() {
+//   const type = labelingDiv.querySelector('[name=type-labeling]:checked').value;
+//   const previewFontFlag = type=='Font' && prevFontCheckbox_labeling.checked;
 
-  // initialize
-  document.getElementById('toggleDetails').dataset.toggle = 'close';
-  const resultDiv = labelingDiv.querySelector('.result');
-  resultDiv.innerHTML = '';
-  resultDiv.style.setProperty('--font-size', previewFontFlag ? document.getElementById('fontSize').value+'rem' : null);
+//   // initialize
+//   document.getElementById('toggleDetails').dataset.toggle = 'close';
+//   const resultDiv = labelingDiv.querySelector('.result');
+//   resultDiv.innerHTML = '';
+//   resultDiv.style.setProperty('--font-size', previewFontFlag ? document.getElementById('fontSize').value+'rem' : null);
 
-  // sort
-  const dataArr = rawDataArr
-    .filter(dic=>dic.type==type&&!dic.checked)
-    .sort((a,b)=>a.props.order-b.props.order);
+//   // sort
+//   const dataArr = rawDataArr
+//     .filter(dic=>dic.type==type&&!dic.checked)
+//     .sort((a,b)=>a.props.order-b.props.order);
 
-  // add packages
-  dataArr.forEach(dic => {
-    let target = resultDiv;
-    dic.props.label.forEach(label => {
-      target = [...target.querySelectorAll('&>.folder>summary input')].filter(input=>input.value==label)?.[0]?.closest('.folder').lastElementChild || createFolderEl(target, label).lastElementChild;
-    });
+//   // add packages
+//   dataArr.forEach(dic => {
+//     let target = resultDiv;
+//     dic.props.label.forEach(label => {
+//       target = [...target.querySelectorAll('&>.folder>summary input')].filter(input=>input.value==label)?.[0]?.closest('.folder').lastElementChild || createFolderEl(target, label).lastElementChild;
+//     });
 
-    const file = createFileEl(null, dic.name, dic.props.hide===1);
-    if (previewFontFlag) previewFont(file, dic.name, document.getElementById('defFont-labeling').value);
-    target.appendChild(file);
-  });
+//     const file = createFileEl(null, dic.name, dic.props.hide===1);
+//     if (previewFontFlag) previewFont(file, dic.name, document.getElementById('defFont-labeling').value);
+//     target.appendChild(file);
+//   });
 
-  // numbering
-  numbering();
-}
-
-
-let preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
-function updateOrder() {
-  const dataArr = rawDataArr.filter(dic=>dic.type==preType && !dic.checked);
-  [...labelingDiv.querySelectorAll('.result .file')].forEach((file,i) => {
-    const name = file.lastChild.textContent;
-    const dic = dataArr.filter(dic=>dic.name==name)[0];
-
-    const label = [];
-    let target = file;
-    while (target.closest('.folder')) {
-      target = target.closest('.folder');
-      const title = target.querySelector('summary input').value;
-      if (title) label.unshift(title);
-      target = target.parentElement;
-    }
-    dic.props.order = i;
-    dic.props.label = label;
-  });
-  preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
-}
+//   // numbering
+//   numbering();
+// }
 
 
-function sortByLabel (target) {
-  const files   = [...target.querySelectorAll('& > .file')];
-  const folders = [...target.querySelectorAll('& > .folder')];
-  const isAsc = document.getElementById('isAsc').checked ? 1 : -1;
+// let preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
+// function updateOrder() {
+//   const dataArr = rawDataArr.filter(dic=>dic.type==preType && !dic.checked);
+//   [...labelingDiv.querySelectorAll('.result .file')].forEach((file,i) => {
+//     const name = file.lastChild.textContent;
+//     const dic = dataArr.filter(dic=>dic.name==name)[0];
 
-  // sort
-  files.sort((a,b) => {
-    if (a.innerText > b.innerText) return isAsc;
-    else return -isAsc;
-  });
-  folders.sort((a,b)=> {
-    const aLabel = a.querySelector('summary input').value;
-    const bLabel = b.querySelector('summary input').value;
-    if (aLabel > bLabel) return 1;
-    else return -1;
-  });
+//     const label = [];
+//     let target = file;
+//     while (target.closest('.folder')) {
+//       target = target.closest('.folder');
+//       const title = target.querySelector('summary input').value;
+//       if (title) label.unshift(title);
+//       target = target.parentElement;
+//     }
+//     dic.props.order = i;
+//     dic.props.label = label;
+//   });
+//   preType = labelingDiv.querySelector('[name=type-labeling]:checked').value;
+// }
 
-  // insert
-  if (document.getElementById('folderIsBottom').checked) {
-    files.forEach(file=>target.appendChild(file));
-    folders.forEach(folder=>target.appendChild(folder));
-  } else {
-    folders.forEach(folder=>target.appendChild(folder));
-    files.forEach(file=>target.appendChild(file));
-  }
 
-  // sort inner folders
-  folders.forEach(folder=>sortByLabel(folder.lastElementChild));
-}
+// function sortByLabel (target) {
+//   const files   = [...target.querySelectorAll('& > .file')];
+//   const folders = [...target.querySelectorAll('& > .folder')];
+//   const isAsc = document.getElementById('isAsc').checked ? 1 : -1;
+
+//   // sort
+//   files.sort((a,b) => {
+//     if (a.innerText > b.innerText) return isAsc;
+//     else return -isAsc;
+//   });
+//   folders.sort((a,b)=> {
+//     const aLabel = a.querySelector('summary input').value;
+//     const bLabel = b.querySelector('summary input').value;
+//     if (aLabel > bLabel) return 1;
+//     else return -1;
+//   });
+
+//   // insert
+//   if (document.getElementById('folderIsBottom').checked) {
+//     files.forEach(file=>target.appendChild(file));
+//     folders.forEach(folder=>target.appendChild(folder));
+//   } else {
+//     folders.forEach(folder=>target.appendChild(folder));
+//     files.forEach(file=>target.appendChild(file));
+//   }
+
+//   // sort inner folders
+//   folders.forEach(folder=>sortByLabel(folder.lastElementChild));
+// }
 
 
 
@@ -655,19 +655,19 @@ function dropMove(e) {
 }
 
 
-// ungroup
-function ungroupFolder (e) {
-  const targetFolder = e.currentTarget.closest('.folder');
-  const nextElement  = targetFolder.nextElementSibling;
-  if (nextElement) {
-    targetFolder.querySelectorAll('&>:last-child>*').forEach(el=>nextElement.before(el));
-  } else {
-    const parentElement = targetFolder.parentElement;
-    targetFolder.querySelectorAll('&>:last-child>*').forEach(el=>parentElement.appendChild(el));
-  }
-  targetFolder.remove();
-  return;
-}
+// // ungroup
+// function ungroupFolder (e) {
+//   const targetFolder = e.currentTarget.closest('.folder');
+//   const nextElement  = targetFolder.nextElementSibling;
+//   if (nextElement) {
+//     targetFolder.querySelectorAll('&>:last-child>*').forEach(el=>nextElement.before(el));
+//   } else {
+//     const parentElement = targetFolder.parentElement;
+//     targetFolder.querySelectorAll('&>:last-child>*').forEach(el=>parentElement.appendChild(el));
+//   }
+//   targetFolder.remove();
+//   return;
+// }
 
 // function toggleHide (e) {
 //   if (e.ctrlKey) return;
@@ -694,64 +694,64 @@ function numbering () {
   labelingDiv.querySelectorAll('.folder').forEach((el,i) => el.dataset.index=i);
 }
 
-function previewFont (element=null, fontName=null, defFont=null) {
-  if (!fontName) {
-    if (element) {
-      element.style.setProperty('font-family', null);
-      element.style.setProperty('font-weight', null);
-      element.style.setProperty('font-stretch', null);
-    }
-    return null;
-  } else {
-    // weight
-    for (const key in defValJson.fontWeightDic) {
-      const regExp = new RegExp(` ${key}\\b`,'i');
-      if (regExp.test(fontName)) {
-        if (element) element.style.fontWeight = defValJson.fontWeightDic[key];
-        fontName = fontName.replace(regExp,'');
-        break;
-      }
-    }
-    // condensed
-    for (const key in defValJson.fontCondDic) {
-      const regExp = new RegExp(` ${key}\\b`,'i');
-      if (regExp.test(fontName)) {
-        if (element) element.style.fontStretch = defValJson.fontCondDic[key];
-        fontName = fontName.replace(regExp,'');
-        break;
-      }
-    }
-    if (element) element.style.fontFamily = `"${fontName}"` + (defFont ? `, "${defFont}"` : '');
-    return fontName;
-  }
-}
+// function previewFont (element=null, fontName=null, defFont=null) {
+//   if (!fontName) {
+//     if (element) {
+//       element.style.setProperty('font-family', null);
+//       element.style.setProperty('font-weight', null);
+//       element.style.setProperty('font-stretch', null);
+//     }
+//     return null;
+//   } else {
+//     // weight
+//     for (const key in defValJson.fontWeightDic) {
+//       const regExp = new RegExp(` ${key}\\b`,'i');
+//       if (regExp.test(fontName)) {
+//         if (element) element.style.fontWeight = defValJson.fontWeightDic[key];
+//         fontName = fontName.replace(regExp,'');
+//         break;
+//       }
+//     }
+//     // condensed
+//     for (const key in defValJson.fontCondDic) {
+//       const regExp = new RegExp(` ${key}\\b`,'i');
+//       if (regExp.test(fontName)) {
+//         if (element) element.style.fontStretch = defValJson.fontCondDic[key];
+//         fontName = fontName.replace(regExp,'');
+//         break;
+//       }
+//     }
+//     if (element) element.style.fontFamily = `"${fontName}"` + (defFont ? `, "${defFont}"` : '');
+//     return fontName;
+//   }
+// }
 
-function createFileEl(parent=null, label=null, hide=false) {
-  const file = document.createElement('p');
-  file.classList.add('file');
-  if (hide) file.classList.add('hide');
-  file.draggable = true;
+// function createFileEl(parent=null, label=null, hide=false) {
+//   const file = document.createElement('p');
+//   file.classList.add('file');
+//   if (hide) file.classList.add('hide');
+//   file.draggable = true;
 
-  const icon = document.createElement('span');
-  icon.classList.add('material-symbols-outlined','hover');
-  icon.innerText = 'drag_indicator';
+//   const icon = document.createElement('span');
+//   icon.classList.add('material-symbols-outlined','hover');
+//   icon.innerText = 'drag_indicator';
 
-  file.appendChild(icon);
-  file.appendChild(document.createTextNode(label));
+//   file.appendChild(icon);
+//   file.appendChild(document.createTextNode(label));
   
-  file.addEventListener('dragstart', dragStartFile);
-  file.addEventListener('dragend', dragEnd);
-  file.addEventListener('dragenter', dragEnter);
-  file.addEventListener('dragleave', dragLeave);
-  file.addEventListener('dragover', dragOver);
-  file.addEventListener('drop', drop);
+//   file.addEventListener('dragstart', dragStartFile);
+//   file.addEventListener('dragend', dragEnd);
+//   file.addEventListener('dragenter', dragEnter);
+//   file.addEventListener('dragleave', dragLeave);
+//   file.addEventListener('dragover', dragOver);
+//   file.addEventListener('drop', drop);
   
-  file.addEventListener('click',toggleHide);
-  file.addEventListener('click', ctrlClick);
+//   file.addEventListener('click',toggleHide);
+//   file.addEventListener('click', ctrlClick);
 
-  if (parent) parent.appendChild(file);
-  return file;
-}
+//   if (parent) parent.appendChild(file);
+//   return file;
+// }
 
 function createFolderEl(parent=null, label=null) {
   const folder = document.createElement('details');
@@ -805,22 +805,22 @@ function createFolderEl(parent=null, label=null) {
   return folder;
 }
 
-/**
- * 指定のテーブルに行を追加する関数
- * @param {HTMLTableSectionElement} parent 行を追加するエレメント(theader or tbody)
- * @param {Array || Int} content 追加する内容(forEach持ち) or 列数
- * @param {Number} thCol ヘッダーにする列の列数 デフォルトは-1(ヘッダーセルを作らない)
- * @returns {HTMLTableRowElement} 追加した行エレメント
- */
-function addRow(parent, content, thCol=-1) {
-  if (!parent || !content) return;
-  if (Number.isInteger(content)) content = Array(content).fill(null);
-  const row = document.createElement('tr');
-  content.forEach((value,i) => {
-    const cell = document.createElement(i==thCol ? 'th' : 'td');
-    cell.innerHTML = value ?? null;  // nullとundefinedだけ空にする
-    row.appendChild(cell);
-  });
-  parent.appendChild(row);
-  return row;
-}
+// /**
+//  * 指定のテーブルに行を追加する関数
+//  * @param {HTMLTableSectionElement} parent 行を追加するエレメント(theader or tbody)
+//  * @param {Array || Int} content 追加する内容(forEach持ち) or 列数
+//  * @param {Number} thCol ヘッダーにする列の列数 デフォルトは-1(ヘッダーセルを作らない)
+//  * @returns {HTMLTableRowElement} 追加した行エレメント
+//  */
+// function addRow(parent, content, thCol=-1) {
+//   if (!parent || !content) return;
+//   if (Number.isInteger(content)) content = Array(content).fill(null);
+//   const row = document.createElement('tr');
+//   content.forEach((value,i) => {
+//     const cell = document.createElement(i==thCol ? 'th' : 'td');
+//     cell.innerHTML = value ?? null;  // nullとundefinedだけ空にする
+//     row.appendChild(cell);
+//   });
+//   parent.appendChild(row);
+//   return row;
+// }
