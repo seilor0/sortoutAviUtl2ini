@@ -1,5 +1,5 @@
 import ButtonCssIcon from "./button-css-icon.js";
-const { computed } = Vue
+const { ref, computed } = Vue
 
 export default {
   name: 'TreeItem',
@@ -7,7 +7,6 @@ export default {
     model: Object,
     setting: Object,
     fileClickFunc: Function,
-    toggleDetailFunc: Function,
     parentArray: Array,
     index: Number,
   },
@@ -39,6 +38,21 @@ export default {
       }
     });
 
+    // const ctrlKey = ref(null);
+    const altKey = ref(null);
+    const shiftKey = ref(null);
+
+    function recordModifierKeyFlag (e) {
+      // ctrlKey.value = e.ctrlKey;
+      altKey.value = e.altKey;
+      shiftKey.value = e.shiftKey;
+    }
+    function clearModifierKeyFlag () {
+      // ctrlKey.value = null;
+      altKey.value = null;
+      shiftKey.value = null;
+    }
+
     function ungroupFolder (model, parentArray, index) {
       parentArray.splice(index, 1, ...model.children);
     }
@@ -66,31 +80,54 @@ export default {
           .forEach(model => sortTreeData(model.children, true));
       }
     }
-    
+
+    function toggleDetails (status, model, parentArr=[], includeSiblings=false, includeDecendants=false, isStart=false) {
+      model.isOpen = status;
+      // siblings
+      if (includeSiblings) {
+        parentArr
+          .filter(sibling=>sibling.children)
+          .forEach(sibling=>toggleDetails(status, sibling, parentArr, false, includeDecendants, false));
+      }
+      // decendants
+      if (includeDecendants) {
+        model.children
+          .filter(child=>child.children)
+          .forEach(child=>toggleDetails(status, child, model.children, false, includeDecendants, false));
+      }
+      if (isStart) clearModifierKeyFlag();
+    }
+
     return {
       isFolder,
       fileStyle,
+      // ctrlKey,
+      altKey,
+      shiftKey,
       ungroupFolder,
       sortTreeData,
+      toggleDetails,
+      recordModifierKeyFlag,
     }
   },
   template: `
-  <details v-if="isFolder" class="folder" draggable="true"
-    :open="false" @toggle="toggleDetailFunc">
-    <summary>
+  <details v-if="isFolder" class="folder" draggable="true" :open="model.isOpen"
+   @toggle="toggleDetails($event.currentTarget.open, model, parentArray, shiftKey, altKey, true)">
+    <summary @click="recordModifierKeyFlag">
       <span class="material-symbols-outlined hover">drag_indicator</span>
-      <div>
+      <div @click.stop.prevent>
         <input type="text" v-model="model.name" />
-        <span class="material-symbols-outlined" @click.prevent="sortTreeData(model.children, $event.altKey)">sort</span>
+        <span class="material-symbols-outlined" @click="sortTreeData(model.children, $event.altKey)">sort</span>
         <button-css-icon icon-name="icon-close" @click="ungroupFolder(model, parentArray, index)"></button-css-icon>
       </div>
     </summary>
     <div class="folder-body">
-      <tree-item v-for="(childModel, index) in model.children" :model="childModel"
+      <tree-item v-for="(childModel, index) in model.children" 
+        :model="childModel"
         :setting="setting"
         :file-click-func="fileClickFunc"
-        :toggle-detail-func="toggleDetailFunc"
-        :parent-array="model.children" :index="index"
+        :parent-array="model.children" 
+        :index="index"
       ></tree-item>
     </div>
   </details>

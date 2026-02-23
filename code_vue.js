@@ -43,7 +43,7 @@ const rootApp = createApp({
     /*
     treeDataMap: [
       file   ... { name, initOrder, toDelele, uninstalled, props:{ order, hide, ... } }
-      folder ... { name, children }
+      folder ... { name, isOpen, children }
     ]
     */
     const systemArr = [];
@@ -331,30 +331,6 @@ const rootApp = createApp({
     function clickNextInput(e) {
       e.currentTarget.nextElementSibling?.click();
     }
-
-    function test (event) {
-      console.log(event, event.currentTarget, event.currentTarget.open);
-
-      // const target = {sibling: false, children: false};
-      // if (event.ctrlKey) target.sibling = true;
-      // if (event.altKey) target.children = true;
-
-      // if (target.sibling) {
-      //   targetArr
-      //     .filter(model=>model.children)
-      //     .forEach(model=>model.isOpen=setting.value.toggleToOpen);
-      // } else {
-      //   targetArr[index].isOpen = setting.value.toggleToOpen;
-      // }
-
-      // if (target.children) {
-      //   targetArr
-      //     .filter(model=>model.children)
-      //     .forEach(model=>toggleDetail(event, model.chilren, 0))
-      // }
-
-      // setting.value.toggleToOpen = !setting.value.toggleToOpen;
-    }
     
     function toggleHide (model) {
       model.props.hide = Math.abs(model.props.hide - 1);
@@ -390,8 +366,6 @@ const rootApp = createApp({
       dropInifile,
       
       clickNextInput,
-
-      test,
 
       toggleHide,
       toggleToDelete,
