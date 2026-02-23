@@ -296,7 +296,7 @@ const rootApp = createApp({
       initTreeDataMap.forEach(arr => arr.splice(0));
       treeDataMap.value.forEach(arr=>arr.splice(0));
       systemArr.splice(0);
-      fontMap.value.clear();
+      fontFamilySet.value.clear();
       setting.value.previewFont.defFontFamily = '';
     }
 
