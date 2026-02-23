@@ -24,6 +24,21 @@ export default {
   setup(props) {
     const isFolder = computed(() => props.model.children ? true : false);
 
+    const fileStyle = computed(() => {
+      const previewFontFlag = props.setting.previewFont.enabled && props.setting.type==='Font';
+      if (!previewFontFlag) return null;
+      else {
+        const addStyle = {
+          fontSize : props.setting.previewFont.fontSize + 'rem',
+          fontFamily : [
+            props.model.fontStyle.fontFamily, 
+            props.setting.previewFont.defFontFamily
+          ].filter(Boolean).join(','), 
+        };
+        return [props.model.fontStyle, addStyle];
+      }
+    });
+
     function ungroupFolder (model, parentArray, index) {
       parentArray.splice(index, 1, ...model.children);
     }
@@ -48,6 +63,7 @@ export default {
     
     return {
       isFolder,
+      fileStyle,
       ungroupFolder,
       sortTreeData,
     }
@@ -66,7 +82,7 @@ export default {
     <div class="folder-body">
       <tree-item v-for="(childModel, index) in model.children" :model="childModel"
         :setting="setting"
-       :file-click-func="fileClickFunc"
+        :file-click-func="fileClickFunc"
         :toggle-detail-func="toggleDetailFunc"
         :parent-array="model.children" :index="index"
       ></tree-item>
@@ -74,12 +90,9 @@ export default {
   </details>
 
   <p v-else v-if="!model.toDelete" draggable="true"
-    class="file" :class="{hide: model.props.hide}"
-    :style="setting.previewFont.enabled && setting.type==='Font' ? [model.fontStyle, {fontSize:setting.previewFont.fontSize+'rem', fontFamily:model.fontStyle.fontFamily+', '+setting.previewFont.defFontFamily}] : null"
-    @click="fileClickFunc(model)"
-  >
-    <span class="material-symbols-outlined hover">drag_indicator</span>
-    {{model.name}}
+    class="file" :class="{hide: model.props.hide}" :style="fileStyle"
+    @click="fileClickFunc(model)">
+    <span class="material-symbols-outlined hover">drag_indicator</span>{{model.name}}
   </p>
   `
 }

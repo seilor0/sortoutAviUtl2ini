@@ -210,14 +210,12 @@ const rootApp = createApp({
               addTarget = newFolder.children;
             }
           });
-          // delete packageDic.props.order;
-          // delete packageDic.props.label;
           addTarget.push(packageDic);
       });
         initTreeDataMap.set(key, resultArr);
       });
       treeDataMap.value = structuredClone(initTreeDataMap);
-      console.log('initPackageData\n', initPackageData);
+      console.log('initPackageData', initPackageData);
 
       if (setting.value.process==='home') setting.value.process = 'labeling';
     }
@@ -324,7 +322,7 @@ const rootApp = createApp({
     }
 
     function dropInifile (e) {
-      console.log(e.dataTransfer);
+      // console.log(e.dataTransfer);
       if (!e.dataTransfer.files[0].name.endsWith('.ini')) return;
       document.getElementById('iniInput').files = e.dataTransfer.files;
       document.getElementById('iniInput').dispatchEvent(new Event('change'));

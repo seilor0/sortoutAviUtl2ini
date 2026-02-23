@@ -162,7 +162,7 @@
           <div class="result">
             <tree-item v-for="(model,index) in treeDataMap.get(setting.type)" :model="model"
               :setting="{type:setting.type, previewFont: setting.previewFont, labelSort: setting.labelSort}"
-             :file-click-func="toggleHide" 
+              :file-click-func="toggleHide" 
               :toggle-detail-func="test"
               :parent-array="treeDataMap.get(setting.type)" :index="index"
             ></tree-item>
@@ -222,7 +222,7 @@
                   <td><input type="checkbox" v-model="dic.toDelete"/></td>
                   <td>{{dic.props.order}}</td>
                   <td class="see-through">({{dic.initOrder}})</td>
-                  <td :style="setting.previewFont.enabled ? dic.fontStyle??null : null">{{dic.name}}</td>
+                  <td :style="setting.previewFont.enabled && setting.type==='Font' ? [dic.fontStyle, {fontFamily : [dic.fontStyle.fontFamily, setting.previewFont.defFontFamily].filter(Boolean).join(',')}] : null">{{dic.name}}</td>
                   <td class="see-through">{{dic.props}}</td>
                 </tr>
               </tbody>
