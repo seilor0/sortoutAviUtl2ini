@@ -5,7 +5,6 @@
   --light-blue: #a3b7e0;
   --offwhite: #fafafa;
   accent-color: var(--blue);
-  --font-size: 1rem;
 }
 
 .material-symbols-outlined {
@@ -408,7 +407,6 @@
   
   .file {
     border-block-start: 3px solid transparent;
-    font-size: var(--font-size);
     height: 1.5em;
     align-content: center;
     white-space: pre-wrap;
