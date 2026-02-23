@@ -43,7 +43,7 @@ export default {
       parentArray.splice(index, 1, ...model.children);
     }
 
-    function sortTreeData (targetArr) {
+    function sortTreeData (targetArr, recursive=false) {
       const sortStyle = props.setting.labelSort.style;
       const isAsc = props.setting.labelSort.isAsc ? 1 : -1;
       if (sortStyle==='folderIsMix')
@@ -58,6 +58,12 @@ export default {
         targetArr
           .sort((a,b) => isAsc * (a.name > b.name ? -1 : 1))
           .sort((a,b) => Boolean(a.children) > Boolean(b.children) ? 1 : -1);
+      }
+
+      if (recursive) {
+        targetArr
+          .filter (model => model.children)
+          .forEach(model => sortTreeData(model.children, true));
       }
     }
     
@@ -75,7 +81,7 @@ export default {
       <span class="material-symbols-outlined hover">drag_indicator</span>
       <div>
         <input type="text" v-model="model.name" />
-        <span class="material-symbols-outlined" @click.prevent="sortTreeData(model.children)">sort</span>
+        <span class="material-symbols-outlined" @click.prevent="sortTreeData(model.children, $event.altKey)">sort</span>
         <button-css-icon icon-name="icon-close" @click="ungroupFolder(model, parentArray, index)"></button-css-icon>
       </div>
     </summary>
