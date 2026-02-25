@@ -76,6 +76,7 @@ const rootApp = createApp({
   
       function tree2array (treeDatas, startOrder, labels) {
         let order = startOrder;
+        let fraction = -1;
         const resultArr = [];
         treeDatas.forEach( treeData => {
           if (!treeData.children) {
@@ -84,6 +85,8 @@ const rootApp = createApp({
             resultArr.push(treeData);
   
           } else {
+            fraction += 0.01;
+            treeData.order = order + fraction;
             let [order2, arr] = tree2array(treeData.children, order, [...labels, treeData.name]);
             order = order2;
             resultArr.push(...arr);
