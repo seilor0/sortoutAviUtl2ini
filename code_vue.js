@@ -43,7 +43,7 @@ const rootApp = createApp({
     /*
     treeDataMap: [
       file   ... { name, initOrder, toDelele, uninstalled, props:{ order, hide, ... } }
-      folder ... { name, isOpen, children }
+      folder ... { name, isOpen, order, children }
     ]
     */
     const systemArr = [];
@@ -67,32 +67,26 @@ const rootApp = createApp({
     const packageDataMap = computed(() => {
       const resultMap = new Map();
       treeDataMap.value.forEach((treeDatas, key) => {
-        const [count, resultArr] = tree2array(treeDatas, 0, []);
+        orderTreeDatas(treeDatas);
+        const resultArr = tree2array(treeDatas);
         resultMap.set(key, resultArr);
       });
       console.log('treeDataMap', treeDataMap.value);
       console.log('--> compute packageDataMap', resultMap);
       return resultMap;
   
-      function tree2array (treeDatas, startOrder, labels) {
-        let order = startOrder;
-        let fraction = -1;
+      function tree2array (treeDatas, labels=[]) {
         const resultArr = [];
         treeDatas.forEach( treeData => {
           if (!treeData.children) {
             treeData.props.label = labels;
-            treeData.props.order = order++;
             resultArr.push(treeData);
-  
           } else {
-            fraction += 0.01;
-            treeData.order = order + fraction;
-            let [order2, arr] = tree2array(treeData.children, order, [...labels, treeData.name]);
-            order = order2;
+            let arr = tree2array(treeData.children, [...labels, treeData.name]);
             resultArr.push(...arr);
           }
         });
-        return [order, resultArr];
+        return resultArr;
       }
     });
 
@@ -107,6 +101,7 @@ const rootApp = createApp({
     });
 
     const fontFamilySet = ref(new Set());
+
 
     
     async function readIniFile(e) {
@@ -215,6 +210,7 @@ const rootApp = createApp({
           });
           addTarget.push(packageDic);
       });
+        orderTreeDatas(resultArr);
         initTreeDataMap.set(key, resultArr);
       });
       treeDataMap.value = structuredClone(initTreeDataMap);
@@ -325,7 +321,6 @@ const rootApp = createApp({
     }
 
     function dropInifile (e) {
-      // console.log(e.dataTransfer);
       if (!e.dataTransfer.files[0].name.endsWith('.ini')) return;
       document.getElementById('iniInput').files = e.dataTransfer.files;
       document.getElementById('iniInput').dispatchEvent(new Event('change'));
@@ -451,8 +446,10 @@ const rootApp = createApp({
           });
           addTarget.push(packageDic);
       });
+        orderTreeDatas(resultArr);
         initTreeDataMap.set(key, resultArr);
       });
+
       treeDataMap.value = structuredClone(initTreeDataMap);
       console.log('initPackageData', initPackageData);
 
@@ -477,11 +474,9 @@ const rootApp = createApp({
       resetPackageData,
       clear,
       saveIniFile,
-
       dropInifile,
       
       clickNextInput,
-
       toggleHide,
       toggleToDelete,
     }
