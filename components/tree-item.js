@@ -268,10 +268,10 @@ export default {
     
     <summary @click.alt="recordModifierKeyFlag" @click.shift="recordModifierKeyFlag">
       <span class="material-symbols-outlined hover">drag_indicator</span>
-      <div @click.stop.prevent>
+      <div>
         <input type="text" v-model="model.name" />
-        <span class="material-symbols-outlined" @click="sortTreeData(model.children, $event.altKey)">sort</span>
-        <button-css-icon icon-name="icon-close" @click="ungroupFolder(model, parentArray, index)"></button-css-icon>
+        <span class="material-symbols-outlined" @click.stop.prevent="sortTreeData(model.children, $event.altKey)">sort</span>
+        <button-css-icon icon-name="icon-close" @click.stop.prevent="ungroupFolder(model, parentArray, index)"></button-css-icon>
       </div>
     </summary>
   
@@ -282,10 +282,10 @@ export default {
       @dragover.prevent
       @drop.exact.stop="drop"
     >
-      <tree-item v-for="(childModel, index) in model.children" 
+      <tree-item v-for="(childModel, index) in model.children"
         :model="childModel"
         :setting="setting"
-        :parent-array="model.children" 
+        :parent-array="model.children"
         :index="index"
         :file-click-func="fileClickFunc"
         :insert-target="insertTarget"
@@ -295,7 +295,7 @@ export default {
       ></tree-item>
     </div>
   </details>
-
+  
   <p v-else v-if="!model.toDelete" draggable="true"
     class="file" :class="{hide: model.props.hide, ...treeItemClass}" :style="fileStyle"
     @click.exact="fileClickFunc(model)"
