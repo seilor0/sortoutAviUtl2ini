@@ -224,7 +224,6 @@ export default {
 
 
     return {
-      isFolder,
       fileStyle,
       treeItemClass,
       folderBodyClass,
