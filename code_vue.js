@@ -306,7 +306,7 @@ const rootApp = createApp({
           .forEach(packageDic=> {
             resultArr.push(`[${key}.${packageDic.name}]`);
             Object.entries(packageDic.props).forEach(([key,value]) => {
-              if (key==='label') value = value.join('\\');
+              if (key==='label') value = value.filter(Boolean).join('\\');
               resultArr.push(`${key}=${value}`);
             });
           });
