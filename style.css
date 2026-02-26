@@ -17,8 +17,8 @@
   margin-inline-end: 0.25rem;
 }
 
-.folder div .material-symbols-outlined {
-  color: darkgoldenrod;
+.folder summary div .material-symbols-outlined {
+  color: currentColor;
   font-variation-settings: 'wght' 500;
   border-radius: 4px;
 
@@ -81,6 +81,7 @@
   }
 
   .disabled {opacity: 0.3;}
+
 }
 /* ---------------------- */
 
@@ -463,6 +464,7 @@ position: relative;
   }
 
   .folder > summary {
+    color: darkgoldenrod;
     background-color: #f5f3ba;
     padding-inline-start: 0.5rem;
     border-radius: 0.5rem;
@@ -477,7 +479,7 @@ position: relative;
     }
   
     input[type=text]{
-      color: darkgoldenrod;
+      color: currentColor;
       background-color: transparent;
       border: none;
       border-radius: 4px;
@@ -490,7 +492,7 @@ position: relative;
     .icon-frame {
       padding: 0.5rem;
       background-color: transparent;
-      color: darkgoldenrod;
+      color: currentColor;
       border-style: none;
       border-radius: 6px;
       &:hover {
