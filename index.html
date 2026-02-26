@@ -94,7 +94,10 @@
 
           <div class="sub-sidemenu">
             <div class="new-mofism">
-              <div class="new-folder" draggable="true" id="newFolder">
+              <div class="new-folder" draggable="true" id="newFolder"
+                @dragstart="dragStartNewFolder"
+                @dragend="dragEnd"
+              >
                 <span class="material-symbols-outlined hover">drag_indicator</span>
                 <span class="material-symbols-outlined">create_new_folder</span>
                 New Group
@@ -119,9 +122,9 @@
                 <span class="material-symbols-outlined">arrow_left_alt</span>
               </div>
             </div>
+
             <div class="new-mofism" style="margin-block-start: 0.5rem;">
-              <button id="toggleDetails" class="round" data-toggle="close">全グループを開閉</button>
-              <button id="clearChoice" class="round">複数選択をクリア</button>
+              <button id="clearChoice" class="round" @click="insertItems.splice(0)">複数選択をクリア</button>
 
               <hr color="darkgray" size="1" noshade>
 
@@ -165,10 +168,14 @@
           <div class="result">
             <tree-item v-for="(model,index) in treeDataMap.get(setting.type)"
               :model="model"
-              :setting="{type:setting.type, previewFont: setting.previewFont, labelSort: setting.labelSort}"
-              :file-click-func="toggleHide" 
+              :setting="setting"
               :parent-array="treeDataMap.get(setting.type)" 
               :index="index"
+              :file-click-func="toggleHide" 
+              :insert-target="insertTarget"
+              :insert-items="insertItems"
+              :modifier-key-flag="modifierKeyFlag"
+              @switch-tree-data="orderTreeDatas(treeDataMap.get(setting.type))"
             ></tree-item>
           </div>
         </div>

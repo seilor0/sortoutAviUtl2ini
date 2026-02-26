@@ -62,7 +62,7 @@ const rootApp = createApp({
       [ 'Movement', [] ],
       [ 'Params',   [] ],
     ]);
-
+    
     // { name, initOrder, toDelele, uninstalled, props:{ order, hide, ... } } []
     const packageDataMap = computed(() => {
       const resultMap = new Map();
@@ -209,7 +209,7 @@ const rootApp = createApp({
             }
           });
           addTarget.push(packageDic);
-      });
+        });
         orderTreeDatas(resultArr);
         initTreeDataMap.set(key, resultArr);
       });
@@ -329,7 +329,7 @@ const rootApp = createApp({
     function clickNextInput(e) {
       e.currentTarget.nextElementSibling?.click();
     }
-    
+
     function toggleHide (model) {
       model.props.hide = Math.abs(model.props.hide - 1);
     }
@@ -337,6 +337,38 @@ const rootApp = createApp({
     function toggleToDelete (dic) {
       dic.toDelete = !dic.toDelete;
     }
+
+    function orderTreeDatas (treeDatas, startOrder=0) {
+      if (startOrder===0) console.log('order tree datas', treeDatas[0].name);
+      let order = startOrder-1;
+      treeDatas.forEach( treeData => {
+        if (!treeData.children) {
+          order = Math.floor(order) + 1;
+          treeData.props.order = order;
+          
+        } else {
+          order += 0.01;
+          treeData.order = order;
+          order = orderTreeDatas(treeData.children, order+1);
+        }
+      });
+      return order;
+    }
+    
+
+
+    const insertTarget = ref([]); // {parent, index}
+    const insertItems = ref([]); // {model, parent, index}
+    const modifierKeyFlag = ref({ctrl:null, alt:null, shift:null});
+    
+    function dragStartNewFolder () {
+      insertItems.value.push({model: {name:'', isOpen:true, children:[]}, parent:null, index:null});
+    }
+    function dragEnd () {
+      insertTarget.value.splice(0);
+      insertItems.value.splice(0);
+    }
+
 
 
     onMounted(async () => {
@@ -445,7 +477,7 @@ const rootApp = createApp({
             }
           });
           addTarget.push(packageDic);
-      });
+        });
         orderTreeDatas(resultArr);
         initTreeDataMap.set(key, resultArr);
       });
@@ -479,6 +511,15 @@ const rootApp = createApp({
       clickNextInput,
       toggleHide,
       toggleToDelete,
+      orderTreeDatas,
+
+      insertTarget,
+      insertItems,
+      modifierKeyFlag,
+      dragStartNewFolder,
+      dragEnd,
+
+      toTest,
     }
   }
 });
