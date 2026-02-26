@@ -104,7 +104,7 @@
                 <span class="material-symbols-outlined" style="font-size: 1.75rem;
                 margin-inline: 4px 0;">arrow_right_alt</span>
               </div>
-  
+
               <div class="drop-area" id="2topAll">
                 全体の先頭へ
                 <span class="material-symbols-outlined">arrow_left_alt</span>
@@ -128,23 +128,25 @@
 
               <hr color="darkgray" size="1" noshade>
 
-              <p>ソート設定：</p>
+              <p style="display: flex;align-items: center;gap: 2px;">
+                <span class="material-symbols-outlined" style="font-size: 1.5em;">sort</span>
+                <span style="flex-grow: 1;">ソート設定：</span>
+                <toggle-button :top-is-slider="false"
+                  :is-checked="setting.labelSort.isAsc" @checked-toggle="val=>setting.labelSort.isAsc=val"
+                  text-checked="昇順" text-not-checked="降順"
+                ></toggle-button>
+              </p>
 
               <select v-model="setting.labelSort.style">
                 <option value="folderIsTop">グループが先頭</option>
                 <option value="folderIsBottom">グループが末尾</option>
                 <option value="folderIsMix">区別しない</option>
               </select>
-              
-              <toggle-button :top-is-slider="false"
-                :is-checked="setting.labelSort.isAsc" @checked-toggle="val=>setting.labelSort.isAsc=val"
-                text-checked="昇順" text-not-checked="降順"
-              ></toggle-button>
   
               <hr color="darkgray" size="1" noshade>
   
               <div>
-                <toggle-button :top-is-slider="false"
+                <toggle-button :top-is-slider="false" style="display: flex;justify-content: space-between;"
                   :is-checked="setting.previewFont.enabled" @checked-toggle="value=>setting.previewFont.enabled=value"
                   text="フォントをプレビュー"
                 ></toggle-button>
