@@ -13,9 +13,16 @@ const rootApp = createApp({
   
   setup () {
     let defValJson = {};
-    /**
-     * 現在インストールされているパッケージのセット
-     */
+    
+    const setting = ref({
+      process: 'home',
+      type: 'Effect',
+      previewFont: {enabled:true, fontSize:1, defFontFamily:''},
+      labelSort: {isAsc:true, style:'folderIsBottom'},
+      delDupSort: {isAsc:true, style:'initOrder'},
+    });
+
+    /** 現在インストールされているパッケージのセット */
     const installedPackage = {
       loaded: false,
       data: new Map([
@@ -25,14 +32,6 @@ const rootApp = createApp({
       ])
     };
 
-    const setting = ref({
-      process: 'home',
-      type: 'Effect',
-      previewFont: {enabled:true, fontSize:1, defFontFamily:''},
-      labelSort: {isAsc:true, style:'folderIsBottom'},
-      delDupSort: {isAsc:true, style:'initOrder'},
-    });
-
     const delDupSortType = ref([
       {label:'X', value:'toDelete', isAsc:true},
       {label:'並び順', value:'order', isAsc:true},
@@ -40,13 +39,11 @@ const rootApp = createApp({
       {label:'パッケージ名', value:'name', isAsc:true},
     ]);
 
-    /*
-    treeDataMap: [
-      file   ... { name, initOrder, toDelele, uninstalled, props:{ order, hide, ... } }
-      folder ... { name, isOpen, order, children }
-    ]
-    */
     const systemArr = [];
+    /**
+     * folder ... { name, isOpen, order, children }
+     * file   ... { name, initOrder, toDelele, uninstalled, props:{ order, hide, ... } }
+     */
     const treeDataMap = ref(new Map([
       [ 'Color',    [] ],
       [ 'Effect',   [] ],
@@ -54,7 +51,8 @@ const rootApp = createApp({
       [ 'Movement', [] ],
       [ 'Params',   [] ],
     ]));
-    // 読み込み時のpackageData
+
+    /** 読み込み時のtreeDataMap */
     const initTreeDataMap = new Map([
       [ 'Color',    [] ],
       [ 'Effect',   [] ],
@@ -63,7 +61,8 @@ const rootApp = createApp({
       [ 'Params',   [] ],
     ]);
     
-    // { name, initOrder, toDelele, uninstalled, props:{ order, hide, ... } } []
+    /** treeDataMapをflatにしたもの
+     * { name, initOrder, toDelele, uninstalled, props:{ order, hide, ... } } [] */
     const packageDataMap = computed(() => {
       const resultMap = new Map();
       treeDataMap.value.forEach((treeDatas, key) => {
@@ -116,9 +115,7 @@ const rootApp = createApp({
       fontFamilySet.value.clear();
 
       // read file
-      /**
-       * { name, initOrder, toDelele, uninstalled, props:{ order, hide, label:[] } } []
-       */
+      /** { name, initOrder, toDelele, uninstalled, props:{ order, hide, label:[] } } [] */
       const initPackageData = new Map([
         [ 'Color',    [] ],
         [ 'Effect',   [] ],
