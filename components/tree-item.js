@@ -107,13 +107,13 @@ export default {
       if (includeSiblings) {
         parentArr
           .filter(sibling=>sibling.children)
-          .forEach(sibling=>toggleDetails(status, sibling, parentArr, false, includeDecendants, false));
+          .forEach(sibling=>toggleDetails(status, sibling, parentArr, false, includeDecendants));
       }
       // decendants
       if (includeDecendants) {
         model.children
           .filter(child=>child.children)
-          .forEach(child=>toggleDetails(status, child, model.children, false, includeDecendants, false));
+          .forEach(child=>toggleDetails(status, child, model.children, false, includeDecendants));
       }
       if (isStart) clearModifierKeyFlag();
     }
