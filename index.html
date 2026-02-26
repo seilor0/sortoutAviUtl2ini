@@ -53,8 +53,8 @@
         <div v-if="setting.process==='home'">
           以下の2つのことが手軽にできるサイトです。
           <ul>
-            <li>スクリプトetc.のラベル分け</li>
-            <li>アンインストールしたスクリプトetc.の設定の確認・削除</li>
+            <li>スクリプト・フォント・色のラベル分け</li>
+            <li>アンインストール済みスクリプトの設定の一括削除</li>
           </ul>
   
           <h3>使い方</h3>
@@ -131,9 +131,9 @@
               <p>ソート設定：</p>
 
               <select v-model="setting.labelSort.style">
-                <option value="folderIsMix">区別しない</option>
                 <option value="folderIsTop">グループが先頭</option>
                 <option value="folderIsBottom">グループが末尾</option>
+                <option value="folderIsMix">区別しない</option>
               </select>
               
               <toggle-button :top-is-slider="false"
