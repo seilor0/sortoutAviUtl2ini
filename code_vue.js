@@ -336,7 +336,7 @@ const rootApp = createApp({
     }
 
     function orderTreeDatas (treeDatas, startOrder=0) {
-      if (startOrder===0) console.log('order tree datas', treeDatas[0].name);
+      if (startOrder===0) console.log('order tree datas', treeDatas[0]?.name);
       let order = startOrder-1;
       treeDatas.forEach( treeData => {
         if (!treeData.children) {
@@ -361,9 +361,70 @@ const rootApp = createApp({
     function dragStartNewFolder () {
       insertItems.value.push({model: {name:'', isOpen:true, children:[]}, parent:null, index:null});
     }
+
     function dragEnd () {
       insertTarget.value.splice(0);
       insertItems.value.splice(0);
+    }
+
+    function dragLeaveFromDropArea (e) {
+      console.log(e.target, e.currentTarget);
+      if (e.target.classList.contains('material-symbols-outlined')) return;
+      e.currentTarget.classList.remove('target');
+    }
+
+    function dropToDropArea (e, toAll, toTop) {
+      e.currentTarget.classList.remove('target');
+      // 前準備
+      // フォルダに含まれている子要素をinsertItemsから削除
+      deleteChildTreeItem(insertItems.value.map(item=>item.model));
+      function deleteChildTreeItem (modelArr) {
+        modelArr
+          .filter(model => model.children)
+          .forEach(model => {
+            // modelの子modelがinsertModelsにあったら削除
+            model.children.forEach(child => {
+              const i = insertItems.value.findIndex(dic=>dic.model===child);
+              if (i>-1) insertItems.value.splice(i,1);
+              if (child.children) deleteChildTreeItem(child.children);
+            });
+          });
+      }
+
+      // 挿入アイテムのソート ... 選択順で追加されてしまうため
+      insertItems.value
+        .sort((a, b)=>{
+          const aOrder = a.model.children ? a.model.order : a.model.props.order;
+          const bOrder = b.model.children ? b.model.order : b.model.props.order;
+          return aOrder - bOrder;
+        });
+
+      if (toAll) { // 全体の先頭/末尾へ
+        // 大元アイテムの削除
+        insertItems.value.forEach(item=>{
+          if (!item.parent) return;
+          const i = item.parent.findIndex(model=>model===item.model);
+          item.parent.splice(i, 1);
+        });
+        // 挿入
+        const target = treeDataMap.value.get(setting.value.type);
+        const index = toTop ? 0 : target.length;
+        target.splice(index, 0, ...insertItems.value.map(item=>item.model));
+
+      } else { // グループの先頭/末尾へ
+        insertItems.value
+          .forEach(item => {
+            // 大元アイテムの削除
+            if (item.parent) {
+              const i = item.parent.findIndex(model=>model===item.model);
+              item.parent.splice(i, 1);
+            }
+            // 挿入
+            const index = toTop ? 0 : item.parent.length;
+            item.parent.splice(index, 0, item.model);
+          });
+      }
+      orderTreeDatas(treeDataMap.value.get(setting.value.type));
     }
 
 
@@ -515,6 +576,8 @@ const rootApp = createApp({
       modifierKeyFlag,
       dragStartNewFolder,
       dragEnd,
+      dragLeaveFromDropArea,
+      dropToDropArea,
 
       toTest,
     }

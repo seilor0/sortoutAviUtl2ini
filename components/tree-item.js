@@ -159,7 +159,7 @@ export default {
     
     function dragLeaveFromFillFolderBody () {
       const target = props.insertTarget[0];
-      if (target.parent===props.model.children && target.index===props.model.children.length)
+      if (target?.parent===props.model.children && target?.index===props.model.children.length)
         props.insertTarget.shift();
       // console.log('-------------');
       // console.log('leave - fill-folder-body');
@@ -185,28 +185,27 @@ export default {
             });
           });
       }
-
-      const target = props.insertTarget[0];
-      const a = props.insertItems.filter(dic=> dic.parent === target.parent && dic.index < target.index);
       
       // 挿入アイテムのソート ... 選択順で追加されてしまうため
-      const models = props.insertItems
+      props.insertItems
         .sort((a, b)=>{
           const aOrder = a.model.children ? a.model.order : a.model.props.order;
           const bOrder = b.model.children ? b.model.order : b.model.props.order;
           return aOrder - bOrder;
-        })
-        .map(dic=>dic.model);
+        });
+        
+      const target = props.insertTarget[0];
+      const a = props.insertItems.filter(item=> item.parent === target.parent && item.index < target.index);
 
       // 大元アイテムの削除
-      props.insertItems.forEach(dic=>{
-        if (!dic.parent) return;
-        const i = dic.parent.findIndex(model=>model===dic.model);
-        dic.parent.splice(i, 1);
+      props.insertItems.forEach(item=>{
+        if (!item.parent) return;
+        const i = item.parent.findIndex(model=>model===item.model);
+        item.parent.splice(i, 1);
       });
 
       // 挿入
-      target.parent.splice(target.index-a.length, 0, ...models);
+      target.parent.splice(target.index-a.length, 0, ...props.insertItems.map(item=>item.model));
       
       // イベント発行 ... order更新のため
       // console.log('emit switch-tree-data event');

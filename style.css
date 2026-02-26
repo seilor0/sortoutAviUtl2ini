@@ -48,7 +48,7 @@
 /* ---------------------- */
 /*          event         */
 @layer event {
-  .target::before,
+  .target:is(.file,.folder,.folder-body)::before,
   .target-down::before {
     content: '';
     background-color: red;

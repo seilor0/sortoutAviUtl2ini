@@ -104,21 +104,18 @@
                 <span class="material-symbols-outlined" style="font-size: 1.75rem;
                 margin-inline: 4px 0;">arrow_right_alt</span>
               </div>
-
-              <div class="drop-area" id="2topAll">
-                全体の先頭へ
-                <span class="material-symbols-outlined">arrow_left_alt</span>
-              </div>
-              <div class="drop-area" id="2bottomAll">
-                全体の末尾へ
-                <span class="material-symbols-outlined">arrow_left_alt</span>
-              </div>
-              <div class="drop-area" id="2topGroup">
-                グループの先頭へ
-                <span class="material-symbols-outlined">arrow_left_alt</span>
-              </div>
-              <div class="drop-area" id="2bottomGroup">
-                グループの末尾へ
+              <div v-for="dic in [
+                  {label:'全体の先頭へ', toAll:true, toTop:true},
+                  {label:'全体の末尾へ', toAll:true, toTop:false},
+                  {label:'グループの先頭へ', toAll:false, toTop:true},
+                  {label:'グループの末尾へ', toAll:false, toTop:false},
+                ]" class="drop-area"
+                @dragenter="$event.currentTarget.classList.add('target')"
+                @dragleave="dragLeaveFromDropArea"
+                @dragover.prevent
+                @drop="dropToDropArea($event, dic.toAll, dic.toTop)"
+              >
+                {{dic.label}}
                 <span class="material-symbols-outlined">arrow_left_alt</span>
               </div>
             </div>
