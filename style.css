@@ -48,16 +48,39 @@
 /* ---------------------- */
 /*          event         */
 @layer event {
-  .target:is(.file,.folder),
-  .target:not(:has(> :first-child)),
-  .target:not(.file,.folder,.drop-area) > :first-child {
-    border-block-start: 3px solid lightblue;
+  .target::before,
+  .target-down::before {
+    content: '';
+    background-color: red;
+    width: stretch;
+    height: 3px;
+    position: absolute;
   }
-  .target-down:is(.file,.folder),
-  .target-down:not(:has(> :last-child)),
-  .target-down:not(.file,.folder,.drop-area) > :last-child {
-    border-block-end: 3px solid lightblue;
+  .target.file::before {top: -1px;}
+  .target.folder::before {top: -6px;}
+  .target.folder-body::before {
+    width: calc(100% - 2.25rem);
+    top: 8px;
   }
+  .target-down.folder-body::before {
+    width: calc(100% - 2.25rem);
+    bottom: 8px;
+  }
+
+  .target.file {background-color: #ffcdd5;}
+  .target.folder {
+    border-color: red;
+    & > summary {
+      color: #db1010;
+      background-color: #ffcdd5;
+      border-color: red;
+      &::marker {color: #db1010;}
+    }
+  }
+  
+  .target.folder-body,
+  .target-down.folder-body {background-color: #ffcdd5;}
+
   
   .drop-area.target {
     color: white;
@@ -73,7 +96,15 @@
 
   .choice {
     background-color: rgb(114 190 214 / 33%);
+    border-color: var(--blue);
+    & > summary {
+      color: var(--blue);
+      background-color: lightblue;
+      border-color: var(--blue);
+      &::marker {color: var(--blue)}
+    }
   }
+
   .hide {
     color: rgb(0 0 0 /0.33);
     &::before {content: '(';}
@@ -407,15 +438,11 @@
   }
   
   .file {
-    border-block-start: 3px solid transparent;
     height: 1.5em;
     align-content: center;
     white-space: pre-wrap;
     position: relative;
     cursor: pointer;
-  }
-  .file:last-child {
-    border-block-end: 3px solid transparent;
   }
 
   .toggle-button {
@@ -458,7 +485,7 @@
     margin-block: 0.5rem;
     box-shadow: 0px 4px 5px rgb(0 0 0 / 0.1);
     border-radius: 0.5rem;
-position: relative;
+    position: relative;
     min-inline-size: max-content;
     cursor: pointer;
   }
@@ -517,10 +544,9 @@ position: relative;
     min-height: 1.5rem;
     padding-block: 0.5rem;
     padding-inline: 1.5rem 0.75rem;
-    
-    &:not(:has(:first-child)) {
-      border-block: 3px solid transparent;
-    }
+    border-end-start-radius: 0.5rem;
+    border-end-end-radius: 0.5rem;
+    position: relative;
   }
 }
 
