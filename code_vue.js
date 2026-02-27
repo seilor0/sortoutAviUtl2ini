@@ -331,10 +331,6 @@ const rootApp = createApp({
       model.props.hide = Math.abs(model.props.hide - 1);
     }
 
-    function toggleToDelete (dic) {
-      dic.toDelete = !dic.toDelete;
-    }
-
     function orderTreeDatas (treeDatas, startOrder=0) {
       if (startOrder===0) console.log('order tree datas', treeDatas[0]?.name);
       let order = startOrder-1;
@@ -361,8 +357,7 @@ const rootApp = createApp({
     function dragStartNewFolder () {
       insertItems.value.push({model: {name:'', isOpen:true, children:[]}, parent:null, index:null});
     }
-
-    function dragEnd () {
+    function dragEndNewFolder () {
       insertTarget.value.splice(0);
       insertItems.value.splice(0);
     }
@@ -568,14 +563,14 @@ const rootApp = createApp({
       
       clickNextInput,
       toggleHide,
-      toggleToDelete,
       orderTreeDatas,
 
       insertTarget,
       insertItems,
       modifierKeyFlag,
       dragStartNewFolder,
-      dragEnd,
+      dragEndNewFolder,
+
       dragLeaveFromDropArea,
       dropToDropArea,
 

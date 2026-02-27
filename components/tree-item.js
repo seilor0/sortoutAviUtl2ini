@@ -179,7 +179,7 @@ export default {
           .forEach(model => {
             // modelの子modelがinsertModelsにあったら削除
             model.children.forEach(child => {
-              const i = props.insertItems.findIndex(dic=>dic.model===child);
+              const i = props.insertItems.findIndex(item=>item.model===child);
               if (i>-1) props.insertItems.splice(i,1);
               if (child.children) deleteChildTreeItem(child.children);
             });

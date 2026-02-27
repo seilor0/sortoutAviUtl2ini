@@ -84,7 +84,7 @@
           </p>
         </div>
 
-        <div v-else-if="setting.process==='labeling'" style="display:flex;gap:4rem;">
+        <div v-else-if="setting.process==='labeling'" style="display:flex;gap:3rem;">
           <aside class="sub-sidemenu">
             <label v-for="name in treeDataMap.keys()" class="select-tag">
               <input type="radio" :value="name" v-model="setting.type" />
@@ -96,7 +96,7 @@
             <div class="new-mofism">
               <div class="new-folder" draggable="true" id="newFolder"
                 @dragstart="dragStartNewFolder"
-                @dragend="dragEnd"
+                @dragend="dragEndNewFolder"
               >
                 <span class="material-symbols-outlined hover">drag_indicator</span>
                 <span class="material-symbols-outlined">create_new_folder</span>
@@ -219,7 +219,7 @@
                 <tr>
                   <th v-for="dic in delDupSortType">
                     <label>
-                      <input type="radio" name="del-dup-sort-style" :value="dic.value" v-model="setting.delDupSort.style" @click="()=>{dic.isAsc=!dic.isAsc;setting.delDupSort.isAsc = dic.isAsc;}"/>
+                      <input type="radio" name="del-dup-sort-style" :value="dic.value" v-model="setting.delDupSort.style" @click="dic.isAsc=!dic.isAsc;setting.delDupSort.isAsc = dic.isAsc;"/>
                       {{dic.label}}
                       <span style="font-size: smaller;padding-inline-start: 8px;">{{dic.isAsc ? '▼' : '▲'}}</span>
                     </label>
@@ -228,7 +228,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="dic in delDupData" :class="{uninstalled:dic.uninstalled, 'to-delete':dic.toDelete}" @click="toggleToDelete(dic)">
+                <tr v-for="dic in delDupData" :class="{uninstalled:dic.uninstalled, 'to-delete':dic.toDelete}" @click="dic.toDelete=!dic.toDelete">
                   <td><input type="checkbox" v-model="dic.toDelete"/></td>
                   <td>{{dic.props.order}}</td>
                   <td class="see-through">({{dic.initOrder}})</td>
