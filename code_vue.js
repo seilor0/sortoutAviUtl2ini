@@ -2,7 +2,7 @@ import ButtonCssIcon from './components/button-css-icon.js';
 import ToggleButton from './components/toggle-button.js'
 import TreeItem from './components/tree-item.js';
 
-const {createApp, ref, computed, onMounted} = Vue;
+const {createApp, ref, computed, onMounted, toRaw} = Vue;
 
 const rootApp = createApp({
   components: {
@@ -353,6 +353,19 @@ const rootApp = createApp({
     const insertTarget = ref([]); // {parent, index}
     const insertItems = ref([]); // {model, parent, index}
     const modifierKeyFlag = ref({ctrl:null, alt:null, shift:null});
+
+    function deleteChildTreeItem (modelArr) {
+      modelArr
+        .filter(model => model.children)
+        .forEach(model => {
+          // modelの子modelがinsertModelsにあったら削除
+          model.children.forEach(child => {
+            const i = insertItems.value.findIndex(item=>item.model===child);
+            if (i>-1) insertItems.value.splice(i,1);
+            if (child.children) deleteChildTreeItem(child.children);
+          });
+        });
+    }
     
     function dragStartNewFolder () {
       insertItems.value.push({model: {name:'', isOpen:true, children:[]}, parent:null, index:null});
@@ -367,24 +380,11 @@ const rootApp = createApp({
       if (e.target.classList.contains('material-symbols-outlined')) return;
       e.currentTarget.classList.remove('target');
     }
-
     function dropToDropArea (e, toAll, toTop) {
       e.currentTarget.classList.remove('target');
       // 前準備
       // フォルダに含まれている子要素をinsertItemsから削除
       deleteChildTreeItem(insertItems.value.map(item=>item.model));
-      function deleteChildTreeItem (modelArr) {
-        modelArr
-          .filter(model => model.children)
-          .forEach(model => {
-            // modelの子modelがinsertModelsにあったら削除
-            model.children.forEach(child => {
-              const i = insertItems.value.findIndex(dic=>dic.model===child);
-              if (i>-1) insertItems.value.splice(i,1);
-              if (child.children) deleteChildTreeItem(child.children);
-            });
-          });
-      }
 
       // 挿入アイテムのソート ... 選択順で追加されてしまうため
       insertItems.value
@@ -420,6 +420,55 @@ const rootApp = createApp({
           });
       }
       orderTreeDatas(treeDataMap.value.get(setting.value.type));
+    }
+
+    const resultDivClass = computed(() => {
+      const target = treeDataMap.value.get(setting.value.type);
+      const targetDownFlag = 
+        insertTarget.value[0]?.parent === target && 
+        insertTarget.value[0]?.index === target.length;
+      return {'target-down': targetDownFlag, };
+    });
+    function dragEnterToResultDiv (e) {
+      if (e.offsetY > e.currentTarget.getBoundingClientRect().height-150) {
+        const target = treeDataMap.value.get(setting.value.type);
+        insertTarget.value.push({parent: target, index: target.length});
+        console.log('add result div');
+      }
+    }
+    function dragLeaveFromResultDiv () {
+      const target = insertTarget.value[0];
+      const modelData = treeDataMap.value.get(setting.value.type);
+      if (target?.parent===modelData && target?.index===modelData.length) {
+        console.log('leave result div');
+        insertTarget.value.shift();
+      }
+    }
+    function dropToResultDiv () {
+      console.log('-------------');
+      console.log('drop for :', toRaw(insertTarget.value[0]));
+
+      // フォルダに含まれている子要素をinsertItemsから削除
+      deleteChildTreeItem(insertItems.value.map(item=>item.model));
+      
+      // 挿入アイテムのソート ... 選択順で追加されてしまうため
+      insertItems.value
+        .sort((a, b)=>{
+          const aOrder = a.model.children ? a.model.order : a.model.props.order;
+          const bOrder = b.model.children ? b.model.order : b.model.props.order;
+          return aOrder - bOrder;
+        });
+        
+      // 大元アイテムの削除
+      insertItems.value.forEach(item=>{
+        if (!item.parent) return;
+        const i = item.parent.findIndex(model=>model===item.model);
+        item.parent.splice(i, 1);
+      });
+      
+      // 挿入
+      const target = insertTarget.value[0];
+      target.parent.splice(target.index, 0, ...insertItems.value.map(item=>item.model));
     }
 
 
@@ -573,6 +622,11 @@ const rootApp = createApp({
 
       dragLeaveFromDropArea,
       dropToDropArea,
+
+      resultDivClass,
+      dragEnterToResultDiv,
+      dragLeaveFromResultDiv,
+      dropToResultDiv,
 
       toTest,
     }
