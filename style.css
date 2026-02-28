@@ -472,7 +472,7 @@
     align-items: center;
   }
 
-  .settingDiv {
+  .setting-div {
     margin-block: 1rem;
     display: grid;
     align-items: center;
@@ -481,11 +481,12 @@
 
     > :nth-child(odd) {
       color: white;
-      background-color: var(--blue);
+      background-color: var(--light-blue);
       font-size: calc(1rem - 1px);
       border-radius: 4px;
       padding: 4px 0.5rem;
       text-align: center;
+      align-content: center;
     }
   }
 }
@@ -570,13 +571,14 @@
     box-shadow: 0px 6px 20px rgb(0 0 0 / 0.2);
     border-radius: 0.75rem;
     padding: 0;
-    width: min(50rem,90dvw);
+    width: max-content;
+    max-width: min(50rem,90dvw);
     max-height: 90dvh;
     user-select: none;
 
     header {
       color: white;
-      background-color: var(--light-blue);
+      background-color: var(--blue);
       border-block-end: 1px solid var(--blue);
       padding: 0.5rem;
       padding-inline-start: 2rem;
