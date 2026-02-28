@@ -166,7 +166,7 @@
             @dragenter="dragEnterToResultDiv"
             @dragleave="dragLeaveFromResultDiv"
             @dragover.stop.prevent
-            @drop="dropToResultDiv"
+            @drop.self="dropToResultDiv"
           >
             <tree-item v-for="(model,index) in treeDataMap.get(setting.type)"
               :model="model"
