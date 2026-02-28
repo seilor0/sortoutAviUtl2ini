@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>sort out AviUtl2.ini</title>
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_left_alt,arrow_right_alt,create_new_folder,drag_indicator" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,100..700,1,0&icon_names=arrow_left_alt,arrow_right_alt,create_new_folder,drag_indicator,sort" />
   <link rel="stylesheet" href="../__utility/style.css" />
   <link rel="stylesheet" href="./style.css" />
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -15,14 +15,15 @@
 <body>
   <div id="root">
 
-    <div class="sidemenu">
+    <div class="sidemenu" @dragover.prevent @drop.prevent="dropInifile">
       <h1>sort out<br>AviUtl2.ini</h1>
+
       <button class="round blue" @click="clickNextInput">aviutl2.iniを読み込む</button>
       <input type="file" id="iniInput" accept=".ini" style="display: none;" @change="readIniFile">
 
       <button class="round blue" @click="saveIniFile">iniファイルを保存</button>
       <button class="round" @click="resetPackageData">読み込み時の設定に戻す</button>
-      <button id="clear" class="round">クリア</button>
+      <button class="round" @click="clear">クリア</button>
 
       <div>
         <button class="link" command="show-modal" commandfor="modal">使い方</button>
@@ -46,12 +47,12 @@
         </label>
       </div>
 
-      <div>
-        <div data-process="home" v-if="setting.process==='home'">
+      <div :data-process="setting.process">
+        <div v-if="setting.process==='home'">
           以下の2つのことが手軽にできるサイトです。
           <ul>
-            <li>スクリプトetc.のラベル分け</li>
-            <li>アンインストールしたスクリプトetc.の設定の確認・削除</li>
+            <li>スクリプト・フォント・色のラベル分け</li>
+            <li>アンインストール済みスクリプトの設定の一括削除</li>
           </ul>
   
           <h3>使い方</h3>
@@ -81,9 +82,9 @@
           </p>
         </div>
 
-        <div data-process="labeling" class="column" v-if="setting.process==='labeling'">
+        <div v-else-if="setting.process==='labeling'" style="display:flex;gap:4rem;">
           <aside class="sub-sidemenu">
-            <label v-for="name in packageData.keys()" class="select-tag">
+            <label v-for="name in treeDataMap.keys()" class="select-tag">
               <input type="radio" :value="name" v-model="setting.type" />
               {{name}}
             </label>
@@ -91,62 +92,69 @@
 
           <div class="sub-sidemenu">
             <div class="new-mofism">
-              <div class="new-folder" draggable="true" id="newFolder">
+              <div class="new-folder" draggable="true" id="newFolder"
+                @dragstart="dragStartNewFolder"
+                @dragend="dragEndNewFolder"
+              >
                 <span class="material-symbols-outlined hover">drag_indicator</span>
                 <span class="material-symbols-outlined">create_new_folder</span>
                 New Group
                 <span class="material-symbols-outlined" style="font-size: 1.75rem;
                 margin-inline: 4px 0;">arrow_right_alt</span>
               </div>
-  
-              <div class="drop-area" id="2topAll">
-                全体の先頭へ
-                <span class="material-symbols-outlined">arrow_left_alt</span>
-              </div>
-              <div class="drop-area" id="2bottomAll">
-                全体の末尾へ
-                <span class="material-symbols-outlined">arrow_left_alt</span>
-              </div>
-              <div class="drop-area" id="2topGroup">
-                グループの先頭へ
-                <span class="material-symbols-outlined">arrow_left_alt</span>
-              </div>
-              <div class="drop-area" id="2bottomGroup">
-                グループの末尾へ
+              <div v-for="dic in [
+                  {label:'全体の先頭へ', toAll:true, toTop:true},
+                  {label:'全体の末尾へ', toAll:true, toTop:false},
+                  {label:'グループの先頭へ', toAll:false, toTop:true},
+                  {label:'グループの末尾へ', toAll:false, toTop:false},
+                ]" class="drop-area"
+                @dragenter="$event.currentTarget.classList.add('target')"
+                @dragleave="dragLeaveFromDropArea"
+                @dragover.prevent
+                @drop="dropToDropArea($event, dic.toAll, dic.toTop)"
+              >
+                {{dic.label}}
                 <span class="material-symbols-outlined">arrow_left_alt</span>
               </div>
             </div>
+
             <div class="new-mofism" style="margin-block-start: 0.5rem;">
-              <button id="toggleDetails" class="round" data-toggle="close">全グループを開閉</button>
-              <button id="clearChoice" class="round">複数選択をクリア</button>
-              <button id="sortByLabel" class="round">ラベルでソート</button>
+              <button id="clearChoice" class="round" @click="insertItems.splice(0)">複数選択をクリア</button>
 
-              <toggle-button :top-is-slider="false" style="justify-content: flex-end;"
-                :is-checked="setting.labelSort.isAsc" @checked-toggle="val=>setting.labelSort.isAsc=val"
-                text-checked="昇順" text-not-checked="降順"
-              ></toggle-button>
+              <hr color="darkgray" size="1" noshade>
 
-              <toggle-button :top-is-slider="false" style="justify-content: flex-end;"
-                :is-checked="setting.labelSort.folderIsBottom" @checked-toggle="val=>setting.labelSort.folderIsBottom=val"
-                text-checked="グループが末尾" text-not-checked="グループが先頭"
-              ></toggle-button>
+              <p style="display: flex;align-items: center;gap: 2px;">
+                <span class="material-symbols-outlined" style="font-size: 1.5em;">sort</span>
+                <span style="flex-grow: 1;">ソート設定：</span>
+                <toggle-button :top-is-slider="false"
+                  :is-checked="setting.labelSort.isAsc" @checked-toggle="val=>setting.labelSort.isAsc=val"
+                  text-checked="昇順" text-not-checked="降順"
+                ></toggle-button>
+              </p>
+
+              <select v-model="setting.labelSort.style">
+                <option value="folderIsTop">グループが先頭</option>
+                <option value="folderIsBottom">グループが末尾</option>
+                <option value="folderIsMix">区別しない</option>
+              </select>
   
               <hr color="darkgray" size="1" noshade>
   
               <div>
-                <toggle-button :top-is-slider="false"
+                <toggle-button :top-is-slider="false" style="display: flex;justify-content: space-between;"
                   :is-checked="setting.previewFont.enabled" @checked-toggle="value=>setting.previewFont.enabled=value"
                   text="フォントをプレビュー"
                 ></toggle-button>
 
-                <p style="font-size: smaller;margin-block-start: 0.75rem;" :class="{disabled: !setting.previewFont.enabled}">フォントサイズ：</p>
+                <p style="margin-block-start: 0.75rem;" :class="{disabled: !setting.previewFont.enabled}">フォントサイズ：</p>
                 <input type="range" min="1" max="3" step="0.1" style="width: stretch;" 
                   v-model="setting.previewFont.fontSize" 
                   :disabled="!setting.previewFont.enabled"
                 />
 
-                <p style="font-size: smaller;margin-block-start: 0.25rem;" :class="{disabled: !setting.previewFont.enabled}">デフォルトのフォント：</p>
+                <p style="margin-block-start: 0.25rem;" :class="{disabled: !setting.previewFont.enabled}">デフォルトのフォント：</p>
                 <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled">
+                  <option value="" selected>（指定なし）</option>
                   <option v-for="fontFamily in fontFamilySet">{{fontFamily}}</option>
                 </select>
               </div>
@@ -154,16 +162,29 @@
             </div>
           </div>
 
-          <div class="result">
-            <tree-item v-for="model in treeData" :model="model"
-             :file-click-func="toggleHide"
+          <div class="result" :class="resultDivClass"
+            @dragenter="dragEnterToResultDiv"
+            @dragleave="dragLeaveFromResultDiv"
+            @dragover.stop.prevent
+            @drop="dropToResultDiv"
+          >
+            <tree-item v-for="(model,index) in treeDataMap.get(setting.type)"
+              :model="model"
+              :setting="setting"
+              :parent-array="treeDataMap.get(setting.type)" 
+              :index="index"
+              :file-click-func="toggleHide" 
+              :insert-target="insertTarget"
+              :insert-items="insertItems"
+              :modifier-key-flag="modifierKeyFlag"
+              @switch-tree-data="orderTreeDatas(treeDataMap.get(setting.type))"
             ></tree-item>
           </div>
         </div>
 
-        <div data-process="del-dup" class="column" v-if="setting.process==='del-dup'">
+        <div v-else-if="setting.process==='del-dup'" style="display:flex;gap:3rem;">
           <aside class="sub-sidemenu">
-            <label v-for="name in packageData.keys()" class="select-tag">
+            <label v-for="name in treeDataMap.keys()" class="select-tag">
               <input type="radio" :value="name" v-model="setting.type" />
               {{name}}
             </label>
@@ -180,18 +201,6 @@
               <input type="file" id="scriptsInput" style="display: none;" @click="readInstalledPackage" multiple webkitdirectory />
 
               <hr style="margin-block: 0.75rem;">
-
-              <div>
-                <p style="font-size: smaller;">ソート：</p>
-                <select v-model="setting.delDupSortStyle">
-                  <option value="initOrder">読み込み時の並び順</option>
-                  <option value="order">変更後の並び順</option>
-                  <option value="name">パッケージ名</option>
-                  <option value="uninstalled">状態</option>
-                </select>
-              </div>
-  
-              <hr style="margin-block: 0.75rem;">
   
               <div>
                 <toggle-button :top-is-slider="false"
@@ -200,6 +209,7 @@
                 ></toggle-button>
                 <p style="font-size: smaller;margin-block-start: 0.5rem;" :class="{disabled: !setting.previewFont.enabled}">デフォルトのフォント：</p>
                 <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled">
+                  <option value="" selected>（指定なし）</option>
                   <option v-for="fontFamily in fontFamilySet">{{fontFamily}}</option>
                 </select>
               </div>
@@ -210,18 +220,23 @@
             <table>
               <thead>
                 <tr>
-                  <th>X</th>
-                  <th>order</th>
-                  <th>パッケージ名</th>
+                  <th v-for="dic in delDupSortType">
+                    <label>
+                      <input type="radio" name="del-dup-sort-style" :value="dic.value" v-model="setting.delDupSort.style" @click="dic.isAsc=!dic.isAsc;setting.delDupSort.isAsc = dic.isAsc;"/>
+                      {{dic.label}}
+                      <span style="font-size: smaller;padding-inline-start: 8px;">{{dic.isAsc ? '▼' : '▲'}}</span>
+                    </label>
+                  </th>
                   <th>設定</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="dic in delDupData" :class="{uninstalled:dic.uninstalled, 'to-delete':dic.toDelete}" @click="toggleToDelete(dic)">
+                <tr v-for="dic in delDupData" :class="{uninstalled:dic.uninstalled, 'to-delete':dic.toDelete}" @click="dic.toDelete=!dic.toDelete">
                   <td><input type="checkbox" v-model="dic.toDelete"/></td>
                   <td>{{dic.props.order}}</td>
-                  <td :style="setting.previewFont.enabled && setting.type==='Font' ? fontStyleMap.get(dic.name) : null">{{dic.name}}</td>
-                  <td>{{dic.props}}</td>
+                  <td class="see-through">({{dic.initOrder}})</td>
+                  <td :style="setting.previewFont.enabled && setting.type==='Font' ? [dic.fontStyle, {fontFamily : [dic.fontStyle.fontFamily, setting.previewFont.defFontFamily].filter(Boolean).join(',')}] : null">{{dic.name}}</td>
+                  <td class="see-through">{{dic.props}}</td>
                 </tr>
               </tbody>
             </table>
@@ -296,7 +311,6 @@
     </dialog>
 
   </div>
-  <!-- <script src="code.js"></script> -->
   <script type="module" src="code_vue.js"></script>
 </body>
 

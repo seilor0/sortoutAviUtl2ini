@@ -2,7 +2,7 @@ import ButtonCssIcon from './components/button-css-icon.js';
 import ToggleButton from './components/toggle-button.js'
 import TreeItem from './components/tree-item.js';
 
-const {createApp, ref, computed, onMounted} = Vue;
+const {createApp, ref, computed, onMounted, toRaw} = Vue;
 
 const rootApp = createApp({
   components: {
@@ -13,9 +13,16 @@ const rootApp = createApp({
   
   setup () {
     let defValJson = {};
-    /**
-     * 現在インストールされているパッケージのセット
-     */
+    
+    const setting = ref({
+      process: 'home',
+      type: 'Effect',
+      previewFont: {enabled:true, fontSize:1, defFontFamily:''},
+      labelSort: {isAsc:true, style:'folderIsBottom'},
+      delDupSort: {isAsc:true, style:'initOrder'},
+    });
+
+    /** 現在インストールされているパッケージのセット */
     const installedPackage = {
       loaded: false,
       data: new Map([
@@ -25,102 +32,99 @@ const rootApp = createApp({
       ])
     };
 
-    const setting = ref({
-      process: 'home',
-      type: 'Effect',
-      previewFont: {enabled:true, fontSize:1, defFontFamily:''},
-      labelSort: {isAsc:true, folderIsBottom:true},
-      delDupSortStyle: 'initOrder'
-    });
+    const delDupSortType = ref([
+      {label:'X', value:'toDelete', isAsc:true},
+      {label:'並び順', value:'order', isAsc:true},
+      {label:'(読込時)', value:'initOrder', isAsc:true},
+      {label:'パッケージ名', value:'name', isAsc:true},
+    ]);
 
+    const systemArr = [];
     /**
-     * { name, initOrder, toDelele, uninstalled, props:{ order:Number, hide:Boolean, label:[] } } []
+     * folder ... { name, isOpen, order, children }
+     * file   ... { name, initOrder, toDelele, uninstalled, props:{ order, hide, ... } }
      */
-    const packageData = ref(new Map([
+    const treeDataMap = ref(new Map([
       [ 'Color',    [] ],
       [ 'Effect',   [] ],
       [ 'Font',     [] ],
       [ 'Movement', [] ],
       [ 'Params',   [] ],
     ]));
-    const packageInitData = new Map([
+
+    /** 読み込み時のtreeDataMap */
+    const initTreeDataMap = new Map([
       [ 'Color',    [] ],
       [ 'Effect',   [] ],
       [ 'Font',     [] ],
       [ 'Movement', [] ],
       [ 'Params',   [] ],
-    ]); // 読み込み時のpackageData
-    const systemArr = [];
-
-    /*
-    treeData: [
-     {name:String, hide:Boolean} ... file
-     {name:String, children:[]} ... folder
-    ]
-    */
-    const treeData = computed(() => {
-      const resultArr = [];
-      packageData.value
-        .get(setting.value.type)
-        .filter(dic=>!dic.toDelete)
-        // .sort((a,b)=>a.props.order-b.props.order)
-        .forEach(packageDic=> {
-          let addTarget = resultArr;
-          packageDic.props.label.forEach(label => {
-            const existFolder = addTarget.find(dic=>dic.name===label);
-            if (existFolder) addTarget = existFolder.children;
-            else {
-              addTarget.push({name:label, children:[]});
-              addTarget = addTarget.at(-1).children;
-            }
-          });
-          addTarget.push({name: packageDic.name, hide: packageDic.props.hide});
-        });
-
-      console.log('compute treeData', resultArr);
-      return resultArr;
-    });
-
-
-    // fontname: {fontFamily, fontWeight, fontStretch}
-    const fontMap = ref(new Map());
-    const fontStyleMap = computed(() => {
-      const map = new Map([]);
-      fontMap.value.forEach((value,key) => {
-        const dic = {...value};
-        dic.fontFamily = `"${value.fontFamily}", "${setting.value.previewFont.defFontFamily}"`
-        map.set(key, dic);
+    ]);
+    
+    /** treeDataMapをflatにしたもの
+     * { name, initOrder, toDelele, uninstalled, props:{ order, hide, ... } } [] */
+    const packageDataMap = computed(() => {
+      const resultMap = new Map();
+      treeDataMap.value.forEach((treeDatas, key) => {
+        orderTreeDatas(treeDatas);
+        const resultArr = tree2array(treeDatas);
+        resultMap.set(key, resultArr);
       });
-      return map;
-    });
-    const fontFamilySet = computed(() => {
-      const arr = Array.from(fontMap.value.values(), dic=>dic.fontFamily).sort();
-      return new Set(arr);
+      console.log('treeDataMap', treeDataMap.value);
+      console.log('--> compute packageDataMap', resultMap);
+      return resultMap;
+  
+      function tree2array (treeDatas, labels=[]) {
+        const resultArr = [];
+        treeDatas.forEach( treeData => {
+          if (!treeData.children) {
+            treeData.props.label = labels;
+            resultArr.push(treeData);
+          } else {
+            let arr = tree2array(treeData.children, [...labels, treeData.name]);
+            resultArr.push(...arr);
+          }
+        });
+        return resultArr;
+      }
     });
 
     const delDupData = computed(() => {
-      const sortStyle = setting.value.delDupSortStyle;
-      const target = packageData.value.get(setting.value.type);
+      const sortStyle = setting.value.delDupSort.style;
+      const isAsc = setting.value.delDupSort.isAsc ? 1 : -1;
+      const target = packageDataMap.value.get(setting.value.type);
       if (sortStyle==='order')
-        return target.toSorted((a,b) => a.props.order - b.props.order);
+        return target.toSorted((a,b) => isAsc * (a.props.order - b.props.order));
       else 
-        return target.toSorted((a,b) => a[sortStyle] > b[sortStyle] ? 1 : -1);
+        return target.toSorted((a,b) => isAsc * (a[sortStyle] > b[sortStyle] ? 1 : -1));
     });
+
+    const fontFamilySet = ref(new Set());
+
 
     
     async function readIniFile(e) {
       const file = e.currentTarget.files[0];
       if (!file) return;
+      e.currentTarget.value = null;
 
       // initialize
-      packageData.value.values().forEach(arr=>arr.splice(0));
-      packageInitData.values().forEach(arr=>arr.splice(0));
+      initTreeDataMap.forEach(arr=>arr.splice(0));
+      treeDataMap.value.forEach(arr=>arr.splice(0));
       systemArr.splice(0);
-      fontMap.value.clear();
+      fontFamilySet.value.clear();
 
       // read file
-      const text = await file.text();
-      text
+      /** { name, initOrder, toDelele, uninstalled, props:{ order, hide, label:[] } } [] */
+      const initPackageData = new Map([
+        [ 'Color',    [] ],
+        [ 'Effect',   [] ],
+        [ 'Font',     [] ],
+        [ 'Movement', [] ],
+        [ 'Params',   [] ],
+      ]);
+
+      (await file.text())
         .split(/^\[/mg)
         .filter(Boolean)
         .forEach(el => {
@@ -146,20 +150,19 @@ const rootApp = createApp({
               dic.props[key] = value;
             });
             dic.initOrder = dic.props.order;
-            packageInitData.get(type).push(dic);
+            initPackageData.get(type).push(dic);
           }
           else {
             systemArr.push('[' + el.trim());
           }
         });
       
-      packageInitData.values().forEach(arr =>
-        arr.sort((a,b) => a.props.order - b.props.order)
-      );
-      packageData.value = structuredClone(packageInitData);
+      initPackageData.forEach(arr => arr.sort((a,b) => a.props.order - b.props.order));
+
       
-      // update font map
-      packageInitData.get('Font').forEach(dic => {
+      // update fontfamily set and add font style
+      const fontFamilyArr = [];
+      initPackageData.get('Font').forEach(dic => {
         let fontFamily = dic.name;
         const fontDic = {fontFamily: null, fontWeight: null, fontStretch: null};
 
@@ -182,8 +185,33 @@ const rootApp = createApp({
         // font-family
         fontDic.fontFamily = fontFamily;
 
-        fontMap.value.set(dic.name, fontDic);
+        dic.fontStyle = fontDic;
+        fontFamilyArr.push(fontFamily);
       });
+      fontFamilySet.value = new Set(fontFamilyArr.sort());
+
+
+      // transform to tree data
+      initPackageData.forEach((packages, key) => {
+        const resultArr = [];
+        packages.forEach(packageDic => {
+          let addTarget = resultArr;
+          packageDic.props.label.forEach(label => {
+            const existFolder = addTarget.find(dic=>dic.name===label);
+            if (existFolder) addTarget = existFolder.children;
+            else {
+              const newFolder = {name:label, isOpen:true, children:[]};
+              addTarget.push(newFolder);
+              addTarget = newFolder.children;
+            }
+          });
+          addTarget.push(packageDic);
+        });
+        orderTreeDatas(resultArr);
+        initTreeDataMap.set(key, resultArr);
+      });
+      treeDataMap.value = structuredClone(initTreeDataMap);
+      console.log('initPackageData', initPackageData);
 
       if (setting.value.process==='home') setting.value.process = 'labeling';
     }
@@ -245,7 +273,7 @@ const rootApp = createApp({
 
       // reflect to packageData
       installedPackage.data.forEach((set, key) => {
-        const target = packageData.value.get(key);
+        const target = packageDataMap.get(key);
         target.forEach(dic => {
           if (set.has(dic.name)) return;
           dic.uninstalled = true;
@@ -255,26 +283,194 @@ const rootApp = createApp({
     }
 
     function resetPackageData() {
-      packageData.value = structuredClone(packageInitData);
+      treeDataMap.value = structuredClone(initTreeDataMap);
+    }
+
+    function clear() {
+      initTreeDataMap.forEach(arr => arr.splice(0));
+      treeDataMap.value.forEach(arr=>arr.splice(0));
+      systemArr.splice(0);
+      fontFamilySet.value.clear();
+      setting.value.previewFont.defFontFamily = '';
     }
 
     function saveIniFile() {
-      console.log(packageData.value);
+      const resultArr = [...systemArr];
+      packageDataMap.value.forEach((packageArr,key) => {
+        packageArr
+          .filter(dic=>!dic.toDelete)
+          .sort((a,b) => a.props.order - b.props.order)
+          .forEach(packageDic=> {
+            resultArr.push(`[${key}.${packageDic.name}]`);
+            Object.entries(packageDic.props).forEach(([key,value]) => {
+              if (key==='label') value = value.filter(Boolean).join('\\');
+              resultArr.push(`${key}=${value}`);
+            });
+          });
+      });
+
+      // save
+      const blob = new Blob([resultArr.join('\r\n')], {type:'text/plain'});
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'aviutl2.ini';
+      link.click();
+    }
+
+    function dropInifile (e) {
+      if (!e.dataTransfer.files[0].name.endsWith('.ini')) return;
+      document.getElementById('iniInput').files = e.dataTransfer.files;
+      document.getElementById('iniInput').dispatchEvent(new Event('change'));
     }
 
     function clickNextInput(e) {
       e.currentTarget.nextElementSibling?.click();
     }
 
-    function toggleToDelete (dic) {
-      dic.toDelete = !dic.toDelete;
+    function toggleHide (model) {
+      model.props.hide = Math.abs(model.props.hide - 1);
     }
 
-    function toggleHide (name) {
-      const target = packageData.value.get(setting.value.type).find(dic=>dic.name===name);
-      target.props.hide=!target.props.hide;
-      console.log('file-click-event', target);
+    function orderTreeDatas (treeDatas, startOrder=0) {
+      if (startOrder===0) console.log('order tree datas', treeDatas[0]?.name);
+      let order = startOrder-1;
+      treeDatas.forEach( treeData => {
+        if (!treeData.children) {
+          order = Math.floor(order) + 1;
+          treeData.props.order = order;
+          
+        } else {
+          order += 0.01;
+          treeData.order = order;
+          order = orderTreeDatas(treeData.children, order+1);
+        }
+      });
+      return order;
     }
+    
+
+
+    const insertTarget = ref([]); // {parent, index}
+    const insertItems = ref([]); // {model, parent, index}
+    const modifierKeyFlag = ref({ctrl:null, alt:null, shift:null});
+
+    function deleteChildTreeItem (modelArr) {
+      modelArr
+        .filter(model => model.children)
+        .forEach(model => {
+          // modelの子modelがinsertModelsにあったら削除
+          model.children.forEach(child => {
+            const i = insertItems.value.findIndex(item=>item.model===child);
+            if (i>-1) insertItems.value.splice(i,1);
+            if (child.children) deleteChildTreeItem(child.children);
+          });
+        });
+    }
+    
+    function dragStartNewFolder () {
+      insertItems.value.push({model: {name:'', isOpen:true, children:[]}, parent:null, index:null});
+    }
+    function dragEndNewFolder () {
+      insertTarget.value.splice(0);
+      insertItems.value.splice(0);
+    }
+
+    function dragLeaveFromDropArea (e) {
+      console.log(e.target, e.currentTarget);
+      if (e.target.classList.contains('material-symbols-outlined')) return;
+      e.currentTarget.classList.remove('target');
+    }
+    function dropToDropArea (e, toAll, toTop) {
+      e.currentTarget.classList.remove('target');
+      // 前準備
+      // フォルダに含まれている子要素をinsertItemsから削除
+      deleteChildTreeItem(insertItems.value.map(item=>item.model));
+
+      // 挿入アイテムのソート ... 選択順で追加されてしまうため
+      insertItems.value
+        .sort((a, b)=>{
+          const aOrder = a.model.children ? a.model.order : a.model.props.order;
+          const bOrder = b.model.children ? b.model.order : b.model.props.order;
+          return aOrder - bOrder;
+        });
+
+      if (toAll) { // 全体の先頭/末尾へ
+        // 大元アイテムの削除
+        insertItems.value.forEach(item=>{
+          if (!item.parent) return;
+          const i = item.parent.findIndex(model=>model===item.model);
+          item.parent.splice(i, 1);
+        });
+        // 挿入
+        const target = treeDataMap.value.get(setting.value.type);
+        const index = toTop ? 0 : target.length;
+        target.splice(index, 0, ...insertItems.value.map(item=>item.model));
+
+      } else { // グループの先頭/末尾へ
+        insertItems.value
+          .forEach(item => {
+            // 大元アイテムの削除
+            if (item.parent) {
+              const i = item.parent.findIndex(model=>model===item.model);
+              item.parent.splice(i, 1);
+            }
+            // 挿入
+            const index = toTop ? 0 : item.parent.length;
+            item.parent.splice(index, 0, item.model);
+          });
+      }
+      orderTreeDatas(treeDataMap.value.get(setting.value.type));
+    }
+
+    const resultDivClass = computed(() => {
+      const target = treeDataMap.value.get(setting.value.type);
+      const targetDownFlag = 
+        insertTarget.value[0]?.parent === target && 
+        insertTarget.value[0]?.index === target.length;
+      return {'target-down': targetDownFlag, };
+    });
+    function dragEnterToResultDiv (e) {
+      if (e.offsetY > e.currentTarget.getBoundingClientRect().height-150) {
+        const target = treeDataMap.value.get(setting.value.type);
+        insertTarget.value.push({parent: target, index: target.length});
+        console.log('add result div');
+      }
+    }
+    function dragLeaveFromResultDiv () {
+      const target = insertTarget.value[0];
+      const modelData = treeDataMap.value.get(setting.value.type);
+      if (target?.parent===modelData && target?.index===modelData.length) {
+        console.log('leave result div');
+        insertTarget.value.shift();
+      }
+    }
+    function dropToResultDiv () {
+      console.log('-------------');
+      console.log('drop for :', toRaw(insertTarget.value[0]));
+
+      // フォルダに含まれている子要素をinsertItemsから削除
+      deleteChildTreeItem(insertItems.value.map(item=>item.model));
+      
+      // 挿入アイテムのソート ... 選択順で追加されてしまうため
+      insertItems.value
+        .sort((a, b)=>{
+          const aOrder = a.model.children ? a.model.order : a.model.props.order;
+          const bOrder = b.model.children ? b.model.order : b.model.props.order;
+          return aOrder - bOrder;
+        });
+        
+      // 大元アイテムの削除
+      insertItems.value.forEach(item=>{
+        if (!item.parent) return;
+        const i = item.parent.findIndex(model=>model===item.model);
+        item.parent.splice(i, 1);
+      });
+      
+      // 挿入
+      const target = insertTarget.value[0];
+      target.parent.splice(target.index, 0, ...insertItems.value.map(item=>item.model));
+    }
+
 
 
     onMounted(async () => {
@@ -282,12 +478,14 @@ const rootApp = createApp({
     });
 
 
-    return {
-      setting,
-      packageData,
-      treeData,
 
-      fontStyleMap,
+    return {
+      delDupSortType,
+
+      setting,
+      treeDataMap,
+      packageDataMap,
+
       fontFamilySet,
 
       delDupData,
@@ -295,10 +493,27 @@ const rootApp = createApp({
       readIniFile,
       readInstalledPackage,
       resetPackageData,
+      clear,
       saveIniFile,
+      dropInifile,
+      
       clickNextInput,
-      toggleToDelete,
       toggleHide,
+      orderTreeDatas,
+
+      insertTarget,
+      insertItems,
+      modifierKeyFlag,
+      dragStartNewFolder,
+      dragEndNewFolder,
+
+      dragLeaveFromDropArea,
+      dropToDropArea,
+
+      resultDivClass,
+      dragEnterToResultDiv,
+      dragLeaveFromResultDiv,
+      dropToResultDiv,
     }
   }
 });
