@@ -2,6 +2,18 @@
 
 ## Change Log
 
+### 2026/02/28
+- 変更：vue.jsを使用するようにサイト全体をリファクタリング
+- 追加：グループごとのパッケージのソート
+- 追加：グループの一括開閉
+- 変更：「設定を削除」ページのソート設定を、左メニュー → テーブルのヘッダーから選択する形式に変更
+- 変更：GitHubページを新規タブで開くように変更
+- 変更：「使い方」画面の記載を、各ページごとの内容が表示されるように変更
+- 削除：「全グループの開閉」ボタン
+  …グループの一括開閉機能で代替可能なため
+- 削除：全体でのパッケージのソート
+  …グループごとでのソートで代替可能なため
+
 ### 2025/12/02
 - 修正：パッケージ名に`]`が含まれると正しくラベル分けできない不具合
 
@@ -255,3 +267,4 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+</details>
