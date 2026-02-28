@@ -158,6 +158,8 @@
   [data-process] {
     padding-block-start: 2rem;
     padding-inline: 5rem;
+    height: calc(100dvh - 5rem);
+    overflow-block: auto;
   }
 
   input[type=checkbox] {cursor: pointer;}
@@ -193,7 +195,10 @@
     top: 0;
     width: 20rem;
 
-    button.round {width: 75%;}
+    button.round {
+      width: 75%;
+      white-space: nowrap;
+    }
 
     > :last-child {
       flex-grow: 1;
@@ -211,6 +216,7 @@
     border: 1px solid var(--light-blue);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     height: 2.5rem;
+    min-width: fit-content;
     border-radius: 2.5rem;
     font-weight: 600;
 
@@ -260,11 +266,7 @@
   .tab-ribbon {
     color: white;
     background-color: var(--blue);
-    box-shadow: 0px -3px 3px 0px rgb(0 0 0 /0.15);
     height: 2.5rem;
-    position: sticky;
-    top: 0;
-    z-index: 10;
     
     display: flex;
     padding-inline: 2.5rem 1rem;
@@ -272,7 +274,7 @@
     
     label {
       border: 1px solid transparent;
-      border-radius: 0.5rem 0.5rem 0 0;
+      border-radius: 0.75rem 0.75rem 0 0;
       align-content: center;
       padding: 0.375rem 1rem;
       min-width: 3rem;
@@ -299,7 +301,7 @@
     height: max-content;
     min-width: 7rem;
     position: sticky;
-    top: 5rem;
+    top: 0;
   }
 
   .new-mofism{

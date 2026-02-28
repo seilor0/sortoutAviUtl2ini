@@ -84,7 +84,7 @@
           </p>
         </div>
 
-        <div v-else-if="setting.process==='labeling'" style="display:flex;gap:3rem;">
+        <div v-else-if="setting.process==='labeling'" style="display:flex;gap:4rem;">
           <aside class="sub-sidemenu">
             <label v-for="name in treeDataMap.keys()" class="select-tag">
               <input type="radio" :value="name" v-model="setting.type" />
