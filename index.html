@@ -18,8 +18,6 @@
     <div class="sidemenu" @dragover.prevent @drop.prevent="dropInifile">
       <h1>sort out<br>AviUtl2.ini</h1>
 
-      <button class="round blue" @click="toTest">テスト用</button>
-
       <button class="round blue" @click="clickNextInput">aviutl2.iniを読み込む</button>
       <input type="file" id="iniInput" accept=".ini" style="display: none;" @change="readIniFile">
 

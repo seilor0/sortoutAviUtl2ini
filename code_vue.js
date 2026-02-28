@@ -477,119 +477,6 @@ const rootApp = createApp({
       defValJson = await fetch('./defaultValue.json').then(res=>res.json());
     });
 
-    
-
-    async function toTest() {
-      const iniFile = await fetch('./aviutl2.ini').then(res=>res.text());
-      
-      // initialize
-      initTreeDataMap.forEach(arr=>arr.splice(0));
-      treeDataMap.value.forEach(arr=>arr.splice(0));
-      systemArr.splice(0);
-      fontFamilySet.value.clear();
-
-      // read file
-      const initPackageData = new Map([
-        [ 'Color',    [] ],
-        [ 'Effect',   [] ],
-        [ 'Font',     [] ],
-        [ 'Movement', [] ],
-        [ 'Params',   [] ],
-      ]);
-
-      iniFile
-        .split(/^\[/mg)
-        .filter(Boolean)
-        .forEach(el => {
-          if (/^(?:Color|Effect|Font|Movement|Params)\..+/.test(el)) {
-            const splitArr = el.trim().split('\r\n');
-            const {type, name} = splitArr.shift().match(/(?<type>.+?)\.(?<name>.+?)]$/).groups;
-
-            const dic = {name:name, initOrder:null, toDelete:false, uninstalled:false, props:{}};
-            
-            if (
-               installedPackage.loaded &&
-               installedPackage.data.has(type) &&
-              !installedPackage.data.get(type).has(name)
-            ) {
-              dic.toDelete = true;
-              dic.uninstalled = true;
-            }
-      
-            splitArr.forEach(row => {
-              let {key, value} = row.match(/(?<key>.+?)=(?<value>.*)/).groups;
-              if (key=='label') value=value.split('\\').filter(Boolean);
-              else if (key=='hide'||key=='order') value = parseInt(value);
-              dic.props[key] = value;
-            });
-            dic.initOrder = dic.props.order;
-            initPackageData.get(type).push(dic);
-          }
-          else {
-            systemArr.push('[' + el.trim());
-          }
-        });
-      
-      initPackageData.forEach(arr => arr.sort((a,b) => a.props.order - b.props.order));
-
-      
-      // update fontfamily set and add font style
-      const fontFamilyArr = [];
-      initPackageData.get('Font').forEach(dic => {
-        let fontFamily = dic.name;
-        const fontDic = {fontFamily: null, fontWeight: null, fontStretch: null};
-
-        // weight
-        for (const key in defValJson.fontWeightDic) {
-          const regExp = new RegExp(` ${key}\\b`,'i');
-          if (!regExp.test(fontFamily)) continue;
-          fontDic.fontWeight = defValJson.fontWeightDic[key];
-          fontFamily = fontFamily.replace(regExp,'');
-          break;
-        }
-        // condensed
-        for (const key in defValJson.fontCondDic) {
-          const regExp = new RegExp(` ${key}\\b`,'i');
-          if (!regExp.test(fontFamily)) continue;
-          fontDic.fontStretch = defValJson.fontCondDic[key];
-          fontFamily = fontFamily.replace(regExp,'');
-          break;
-        }
-        // font-family
-        fontDic.fontFamily = fontFamily;
-
-        dic.fontStyle = fontDic;
-        fontFamilyArr.push(fontFamily);
-      });
-      fontFamilySet.value = new Set(fontFamilyArr.sort());
-
-
-      // transform to tree data
-      initPackageData.forEach((packages, key) => {
-        const resultArr = [];
-        packages.forEach(packageDic => {
-          let addTarget = resultArr;
-          packageDic.props.label.forEach(label => {
-            const existFolder = addTarget.find(dic=>dic.name===label);
-            if (existFolder) addTarget = existFolder.children;
-            else {
-              const newFolder = {name:label, isOpen:true, children:[]};
-              addTarget.push(newFolder);
-              addTarget = newFolder.children;
-            }
-          });
-          addTarget.push(packageDic);
-        });
-        orderTreeDatas(resultArr);
-        initTreeDataMap.set(key, resultArr);
-      });
-
-      treeDataMap.value = structuredClone(initTreeDataMap);
-      console.log('initPackageData', initPackageData);
-
-      if (setting.value.process==='home') setting.value.process = 'labeling';
-    }
-    
 
 
     return {
@@ -627,8 +514,6 @@ const rootApp = createApp({
       dragEnterToResultDiv,
       dragLeaveFromResultDiv,
       dropToResultDiv,
-
-      toTest,
     }
   }
 });
