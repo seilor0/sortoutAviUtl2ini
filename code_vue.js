@@ -449,6 +449,10 @@ const rootApp = createApp({
     }
     function dropToResultDiv () {
       console.log('-------------');
+      if (!insertTarget.value[0]) {
+        console.log('drop target is NOT exist.');
+        return;
+      }
       console.log('drop for :', toRaw(insertTarget.value[0]));
 
       // フォルダに含まれている子要素をinsertItemsから削除

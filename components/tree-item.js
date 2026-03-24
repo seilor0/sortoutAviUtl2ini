@@ -167,8 +167,11 @@ export default {
     
     function drop () {
       console.log('-------------');
+      if (!props.insertTarget[0]) {
+        console.log('drop target is NOT exist.');
+        return;
+      }
       console.log('drop for :', toRaw(props.insertTarget[0]));
-      // console.log('insert items:', [...toRaw(props.insertItems)]);
 
       // フォルダに含まれている子要素をinsertItemsから削除
       deleteChildTreeItem(props.insertItems.map(item=>item.model));
