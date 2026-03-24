@@ -518,17 +518,6 @@
       width: calc(100% - 2ch);
     }
   
-    input[type=text]{
-      color: currentColor;
-      background-color: transparent;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      font-family: auto;
-      padding: 0.25rem 0.5rem;
-      flex-grow: 1;
-    }
-
     .icon-frame {
       padding: 0.5rem;
       background-color: transparent;
@@ -551,6 +540,28 @@
     border-block-end: 1px solid darkgoldenrod;
     border-end-end-radius: 0;
     border-end-start-radius: 0;
+  }
+
+  .folder-name-wrap {
+    display: inline-flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .folder-name {
+    color: currentColor;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: auto;
+    padding: 0.25rem 0.5rem;
+    flex: 0 1 auto;
+    field-sizing: content;
+  }
+  .folder-name::placeholder {
+    color: currentColor;
+    opacity: 0.5;
   }
 
   .folder-body {

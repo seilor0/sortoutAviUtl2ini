@@ -271,7 +271,9 @@ export default {
     <summary @click.alt="recordModifierKeyFlag" @click.shift="recordModifierKeyFlag">
       <span class="material-symbols-outlined hover">drag_indicator</span>
       <div>
-        <input type="text" v-model="model.name" />
+        <span class="folder-name-wrap">
+          <input type="text" v-model="model.name" class="folder-name" placeholder="グループ名を入力" />
+        </span>
         <span class="material-symbols-outlined" @click.stop.prevent="sortTreeData(model.children, $event.altKey)">sort</span>
         <button-css-icon icon-name="icon-close" @click.stop.prevent="ungroupFolder(model, parentArray, index)"></button-css-icon>
       </div>
