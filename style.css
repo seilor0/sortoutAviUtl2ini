@@ -1,4 +1,4 @@
-@layer default, each, event;
+@layer base, component, state;
 
 :root {
   --blue: #326cc2;
@@ -47,7 +47,7 @@
 
 /* ---------------------- */
 /*          event         */
-@layer event {
+@layer state {
   .target:is(.file,.folder,.folder-body)::before,
   .target-down.folder-body::before {
     content: '';
@@ -128,7 +128,7 @@
 
 /* ---------------------- */
 /*        汎用設定        */
-@layer default {
+@layer base {
   label {cursor: pointer;}
   button {cursor: pointer;}
   p {margin: 0;}
@@ -169,7 +169,7 @@
 
 /* ---------------------- */
 /*          each          */
-@layer each {
+@layer component {
   body {
     margin: 0;
     background-color: var(--offwhite);
@@ -352,7 +352,7 @@
 }
 
 /*   ホーム　ページ   */
-@layer each {
+@layer component {
   [data-process=home] {
     h2 {margin: 0;}
     h3 {
@@ -370,7 +370,7 @@
 }
 
 /* 重複を削除　ページ */
-@layer each {
+@layer component {
   [data-process=del-dup] {
     .see-through {color: rgb(0 0 0 /0.4);}
 
@@ -418,7 +418,7 @@
 }
 
 /* ラベリング　ページ */
-@layer each {
+@layer component {
   .new-folder {
     color: #a29d13;
     border: 1px solid #d7d02b;
@@ -492,7 +492,7 @@
 }
 
 /* folder */
-@layer each {
+@layer component {
   .folder {
     border: 1px solid darkgoldenrod;
     margin-block: 0.5rem;
@@ -575,7 +575,7 @@
 }
 
 /* modal */
-@layer each {
+@layer component {
   dialog {
     border: 1px solid var(--blue);
     background-color: var(--offwhite);
