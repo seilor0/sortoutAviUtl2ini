@@ -232,7 +232,7 @@ const rootApp = createApp({
 
       // add packages to installedPackage
       await Promise.all(Array.from(files, async file => {
-        const {filename, extension} = file.name.match(/(?<filename>.+)\.(?<extension>.+?)$/)?.groups;
+        const {filename, extension} = file.name.match(/(?<filename>.+)\.(?<extension>.+?)$/)?.groups ?? {};
 
         if (!/^(?:anm2?|cam2?|scn2?|obj2?|tra2?|object|effect|params)$/.test(extension)) return;
 
