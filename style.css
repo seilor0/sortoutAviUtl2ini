@@ -224,22 +224,21 @@
     min-width: fit-content;
     padding: 4px 0.5rem;
 
-    &:hover {
-      text-decoration: underline;
-    }
-
-    &:active {
-      color: white;
-      background-color: var(--blue);
-      border-color: white;
-    }
-
     &.blue {
       color: white;
       background-color: var(--blue);
       border-color: white;
     }
-  
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  button.round {
+    &:active {
+      color: white;
+      background-color: var(--blue);
+      border-color: white;
+    }
     &.blue:active {
       color: var(--blue);
       background-color: var(--offwhite);
