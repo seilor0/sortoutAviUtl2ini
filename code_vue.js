@@ -13,15 +13,7 @@ const rootApp = createApp({
   
   setup () {
     let defValJson = {};
-    
-    const setting = ref({
-      process: 'home',
-      type: 'Effect',
-      previewFont: {enabled:true, fontSize:1, defFontFamily:''},
-      labelSort: {isAsc:true, style:'folderIsBottom'},
-      delDupSort: {isAsc:true, style:'initOrder'},
-      setToHide: true,
-    });
+    const setting = ref({});
 
     /** 現在インストールされているパッケージのセット */
     const installedPackage = {
@@ -490,7 +482,8 @@ const rootApp = createApp({
 
 
     onMounted(async () => {
-      defValJson = await fetch('./defaultValue.json').then(res=>res.json());
+      setting.value = await fetch('./data/setting.json').then(res=>res.json());
+      defValJson = await fetch('./data/defaultValue.json').then(res=>res.json());
     });
 
 

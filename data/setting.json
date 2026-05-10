@@ -1,0 +1,18 @@
+{
+  "process": "home",
+  "type": "Effect",
+  "previewFont": {
+    "enabled": true,
+    "fontSize": 1,
+    "defFontFamily": ""
+  },
+  "labelSort": {
+    "isAsc": true,
+    "style": "folderIsBottom"
+  },
+  "delDupSort": {
+    "isAsc": true,
+    "style": "initOrder"
+  },
+  "setToHide": true
+}
