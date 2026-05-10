@@ -20,6 +20,7 @@ const rootApp = createApp({
       previewFont: {enabled:true, fontSize:1, defFontFamily:''},
       labelSort: {isAsc:true, style:'folderIsBottom'},
       delDupSort: {isAsc:true, style:'initOrder'},
+      setToHide: true,
     });
 
     /** 現在インストールされているパッケージのセット */
@@ -368,6 +369,14 @@ const rootApp = createApp({
           });
         });
     }
+
+    function bulkSetHide (model, newState, includeDecendant=false) {
+      // フォルダの場合
+      if ('children' in model) {
+        if (includeDecendant) model.children.forEach(child=>bulkSetHide(child, newState));
+      // パッケージの場合
+      } else model.props.hide = newState;
+    }
     
     function dragStartNewFolder () {
       insertItems.value.push({model: {name:'', isOpen:true, children:[]}, parent:null, index:null});
@@ -511,6 +520,7 @@ const rootApp = createApp({
       insertTarget,
       insertItems,
       modifierKeyFlag,
+      bulkSetHide,
       dragStartNewFolder,
       clearInsertChoice,
 
