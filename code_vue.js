@@ -121,9 +121,10 @@ const rootApp = createApp({
         .split(/^\[/mg)
         .filter(Boolean)
         .forEach(el => {
-          if (/^(?:Color|Effect|Font|Movement|Params)\..+/.test(el)) {
+          if (/^(?:Color|Effect|Font|Movement|Params)\..+\](?:\r\n|\n|$)/.test(el)) {
             const splitArr = el.trim().split('\r\n');
-            const {type, name} = splitArr.shift().match(/(?<type>.+?)\.(?<name>.+?)]$/).groups;
+            const {type, name} = splitArr.shift().match(/(?<type>.+?)\.(?<name>.+?)]$/)?.groups ?? {};
+            if (!type) return;
 
             const dic = {name:name, initOrder:null, toDelete:false, uninstalled:false, props:{}};
             
@@ -137,7 +138,8 @@ const rootApp = createApp({
             }
       
             splitArr.forEach(row => {
-              let {key, value} = row.match(/(?<key>.+?)=(?<value>.*)/).groups;
+              let {key, value} = row.match(/(?<key>.+?)=(?<value>.*)/)?.groups ?? {};
+              if (!key) return;
               if (key=='label') value=value.split('\\').filter(Boolean);
               else if (key=='hide'||key=='order') value = parseInt(value);
               dic.props[key] = value;
