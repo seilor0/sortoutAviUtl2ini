@@ -325,7 +325,7 @@ const rootApp = createApp({
     }
 
     function toggleHide (model) {
-      model.props.hide = Math.abs(model.props.hide - 1);
+      model.props.hide = 1 - model.props.hide;
     }
 
     function orderTreeDatas (treeDatas, startOrder=0) {
@@ -369,7 +369,7 @@ const rootApp = createApp({
       if ('children' in model) {
         if (includeDecendant) model.children.forEach(child=>bulkSetHide(child, newState));
       // パッケージの場合
-      } else model.props.hide = newState;
+      } else model.props.hide = newState ? 1 : 0;
     }
     
     function dragStartNewFolder () {
