@@ -4,6 +4,7 @@
   --blue: #326cc2;
   --light-blue: #a3b7e0;
   --offwhite: #fafafa;
+  --blue-gradient: linear-gradient(90deg, #1a5bbd 60%, #1089d3 100%);
   accent-color: var(--blue);
 }
 
@@ -48,7 +49,7 @@
 /* ---------------------- */
 /*          event         */
 @layer state {
-  .target:is(.file,.folder,.folder-body)::before,
+  .target:is(.package,.folder,.folder-body)::before,
   .target-down.folder-body::before {
     content: '';
     background-color: red;
@@ -56,7 +57,7 @@
     height: 3px;
     position: absolute;
   }
-  .target.file::before {top: -1px;}
+  .target.package::before {top: -1px;}
   .target.folder::before {top: -6px;}
   .target.folder-body::before {
     width: calc(100% - 2.25rem);
@@ -76,7 +77,7 @@
     bottom: -6px;
   }
 
-  .target.file {background-color: #ffcdd5;}
+  .target.package {background-color: #ffcdd5;}
   .target.folder {
     border-color: red;
     & > summary {
@@ -226,7 +227,7 @@
 
     &.blue {
       color: white;
-      background-color: var(--blue);
+      background: var(--blue-gradient);
       border-color: white;
     }
     &:hover {
@@ -236,7 +237,7 @@
   button.round {
     &:active {
       color: white;
-      background-color: var(--blue);
+      background: var(--blue-gradient);
       border-color: white;
     }
     &.blue:active {
@@ -268,7 +269,7 @@
   
   .tab-ribbon {
     color: white;
-    background-color: var(--blue);
+    background: var(--blue-gradient);
     height: 2.5rem;
     
     display: flex;
@@ -337,7 +338,7 @@
     
     &:has(:checked) {
       color: white;
-      background-color: var(--blue);
+      background: var(--blue-gradient);
       border-color: white;
     }
     input {display: none;}
@@ -452,7 +453,7 @@
     user-select: none;
   }
   
-  .file {
+  .package {
     height: 1.5em;
     align-content: center;
     white-space: pre-wrap;
@@ -592,7 +593,7 @@
 
     header {
       color: white;
-      background-color: var(--blue);
+      background: var(--blue-gradient);
       border-block-end: 1px solid var(--blue);
       padding: 0.5rem;
       padding-inline-start: 2rem;

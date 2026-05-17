@@ -173,16 +173,16 @@
             @dragover.stop.prevent
             @drop.self="dropToResultDiv"
           >
-            <tree-item v-for="(model,index) in treeDataMap.get(setting.type)"
+            <tree-item v-for="(model,index) in shownTreeData"
               :model="model"
               :setting="setting"
-              :parent-array="treeDataMap.get(setting.type)" 
+              :parent-array="shownTreeData" 
               :index="index"
-              :file-click-func="toggleHide" 
+              :package-click-func="toggleHide" 
               :insert-target="insertTarget"
               :insert-items="insertItems"
               :modifier-key-flag="modifierKeyFlag"
-              @switch-tree-data="orderTreeDatas(treeDataMap.get(setting.type))"
+              @switch-tree-data="orderTreeDatas(shownTreeData)"
             ></tree-item>
           </div>
         </div>

@@ -1,72 +1,5 @@
 {
-  "fontWeightDic": {
-    "UltraThin": 50,
-    "Ultra Thin": 50,
-
-    "Thin": 100,
-
-    "ExtraLight": 200,
-    "Extra Light": 200,
-    "UltraLight": 200,
-    "Ultra Light": 200,
-    "EL": 200,
-
-    "Light": 300,
-    "Lt": 300,
-    "L": 300,
-    "W3": 300,
-
-    "SemiLight": 350,
-    "Semi Light": 350,
-    "DemiLight": 350,
-    "Demi Light": 350,
-
-    "Normal": 400,
-    "R": 400,
-    "W4": 400,
-
-    "Medium": 500,
-    "M": 500,
-
-    "SemiBold": 600,
-    "Semi Bold": 600,
-    "DemiBold": 600,
-    "Demi Bold": 600,
-    "Demi": 600,
-    "DB": 600,
-    "W6": 600,
-
-    "ExtraBold": 800,
-    "Extra Bold": 800,
-    "EB": 800,
-    "XBd": 800,
-    "UltraBold": 800,
-    "Ultra Bold": 800,
-    "W8": 800,
-
-    "Black": 900,
-    "Heavy": 900,
-
-    "Bold": 700,
-    "B": 700
-  },
-  "fontCondDic": {
-    "ExtraCondensed": "extra-condensed",
-    "Extra Condensed": "extra-condensed",
-    "Ext Condensed": "extra-condensed",
-    "SemiCondensed": "semi-condensed",
-    "Semi Condensed": "semi-condensed",
-    "DemiCondensed": "semi-condensed",
-    "Demi Condensed": "semi-condensed",
-    "Demi Cond": "semi-condensed",
-    "Condensed": "condensed",
-    "Cond": "condensed",
-    "Compressed": "condensed",
-    "Narrow": "condensed",
-    "Extended": "expanded"
-  },
-
-  "defMovement": [
+  "Movement": [
     "瞬間移動",
     "補間移動(時間制御)",
     "移動無し",
@@ -81,13 +14,13 @@
     "直線移動(回転)",
     "補間移動(回転)"
   ],
-  "defParams": [
+  "Params": [
     "等速移動",
     "加速移動",
     "減速移動",
     "加減速移動"
   ],
-  "defEffect": [
+  "Effect": [
     "動画ファイル",
     "画像ファイル",
     "音声ファイル",

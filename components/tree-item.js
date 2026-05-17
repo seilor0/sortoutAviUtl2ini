@@ -8,7 +8,7 @@ export default {
     setting: Object,
     parentArray: Array,
     index: Number,
-    fileClickFunc: Function,
+    packageClickFunc: Function,
 
     insertTarget: Array,
     insertItems: Array,
@@ -19,7 +19,7 @@ export default {
   emits: ['switch-tree-data'],
 
   setup(props, {emit}) {
-    const fileStyle = computed(() => {
+    const packageStyle = computed(() => {
       const previewFontFlag = props.setting.previewFont.enabled && props.setting.type==='Font';
       if (!previewFontFlag) return null;
       else {
@@ -88,7 +88,7 @@ export default {
           .sort((a,b) => isAsc * (a.name > b.name ? 1 : -1))
           .sort((a,b) => Boolean(a.children) > Boolean(b.children) ? -1 : 1);
           
-        } else if (sortStyle==='folderIsBottom') {
+      } else if (sortStyle==='folderIsBottom') {
         targetArr
           .sort((a,b) => isAsc * (a.name > b.name ? -1 : 1))
           .sort((a,b) => Boolean(a.children) > Boolean(b.children) ? 1 : -1);
@@ -135,7 +135,7 @@ export default {
     function dragEnterToTreeItem () {
       props.insertTarget.push({parent: props.parentArray, index: props.index});
       // console.log('-------------');
-      // console.log('enter - file / folder');
+      // console.log('enter - package / folder');
     }
 
     function dragEnterToEmptyFolderBody () {
@@ -226,7 +226,7 @@ export default {
 
 
     return {
-      fileStyle,
+      packageStyle,
       treeItemClass,
       folderBodyClass,
       
@@ -291,7 +291,7 @@ export default {
         :setting="setting"
         :parent-array="model.children"
         :index="index"
-        :file-click-func="fileClickFunc"
+        :package-click-func="packageClickFunc"
         :insert-target="insertTarget"
         :insert-items="insertItems"
         :modifier-key-flag="modifierKeyFlag"
@@ -301,8 +301,8 @@ export default {
   </details>
   
   <p v-else v-if="!model.toDelete" draggable="true"
-    class="file" :class="{hide: model.props.hide, ...treeItemClass}" :style="fileStyle"
-    @click.exact="fileClickFunc(model)"
+    class="package" :class="{hide: model.props.hide, ...treeItemClass}" :style="packageStyle"
+    @click.exact="packageClickFunc(model)"
     @click.ctrl.stop="toggleInsertModels"
     
     @dragstart.exact.stop="addInsertModels"
