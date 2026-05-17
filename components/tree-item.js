@@ -19,7 +19,7 @@ export default {
   emits: ['switch-tree-data'],
 
   setup(props, {emit}) {
-    const fileStyle = computed(() => {
+    const packageStyle = computed(() => {
       const previewFontFlag = props.setting.previewFont.enabled && props.setting.type==='Font';
       if (!previewFontFlag) return null;
       else {
@@ -135,7 +135,7 @@ export default {
     function dragEnterToTreeItem () {
       props.insertTarget.push({parent: props.parentArray, index: props.index});
       // console.log('-------------');
-      // console.log('enter - file / folder');
+      // console.log('enter - package / folder');
     }
 
     function dragEnterToEmptyFolderBody () {
@@ -226,7 +226,7 @@ export default {
 
 
     return {
-      fileStyle,
+      packageStyle,
       treeItemClass,
       folderBodyClass,
       
@@ -301,7 +301,7 @@ export default {
   </details>
   
   <p v-else v-if="!model.toDelete" draggable="true"
-    class="package" :class="{hide: model.props.hide, ...treeItemClass}" :style="fileStyle"
+    class="package" :class="{hide: model.props.hide, ...treeItemClass}" :style="packageStyle"
     @click.exact="packageClickFunc(model)"
     @click.ctrl.stop="toggleInsertModels"
     
