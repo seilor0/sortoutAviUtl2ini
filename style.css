@@ -4,6 +4,7 @@
   --blue: #326cc2;
   --light-blue: #a3b7e0;
   --offwhite: #fafafa;
+  --blue-gradient: linear-gradient(90deg, #1a5bbd 60%, #1089d3 100%);
   accent-color: var(--blue);
 }
 
@@ -226,7 +227,7 @@
 
     &.blue {
       color: white;
-      background-color: var(--blue);
+      background: var(--blue-gradient);
       border-color: white;
     }
     &:hover {
@@ -236,7 +237,7 @@
   button.round {
     &:active {
       color: white;
-      background-color: var(--blue);
+      background: var(--blue-gradient);
       border-color: white;
     }
     &.blue:active {
@@ -268,7 +269,7 @@
   
   .tab-ribbon {
     color: white;
-    background-color: var(--blue);
+    background: var(--blue-gradient);
     height: 2.5rem;
     
     display: flex;
@@ -337,7 +338,7 @@
     
     &:has(:checked) {
       color: white;
-      background-color: var(--blue);
+      background: var(--blue-gradient);
       border-color: white;
     }
     input {display: none;}
@@ -592,7 +593,7 @@
 
     header {
       color: white;
-      background-color: var(--blue);
+      background: var(--blue-gradient);
       border-block-end: 1px solid var(--blue);
       padding: 0.5rem;
       padding-inline-start: 2rem;
