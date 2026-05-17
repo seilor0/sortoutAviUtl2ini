@@ -15,7 +15,7 @@ const rootApp = createApp({
   
   setup () {
     let defPackageDic = {};
-    let fontStyleSettingDic = {};
+    let fontEquivDic = {};
 
     const setting = ref({
       process: "home",
@@ -73,6 +73,8 @@ const rootApp = createApp({
       [ 'Movement', [] ],
       [ 'Params',   [] ],
     ]);
+
+    const shownTreeData = computed(()=>treeDataMap.value.get(setting.value.type));
     
     /** treeDataMapをflatにしたもの
      * PackageModel [] */
@@ -185,21 +187,20 @@ const rootApp = createApp({
         const fontDic = {fontFamily: null, fontWeight: null, fontStretch: null};
 
         // weight
-        const weightKey = [...Object.keys(fontStyleSettingDic.fontWeight)].find(key => new RegExp(` ${key}\\b`,'i').test(fontFamily));
+        const weightKey = [...Object.keys(fontEquivDic.fontWeight)].find(key => new RegExp(` ${key}\\b`,'i').test(fontFamily));
         if (weightKey) {
-          fontDic.fontWeight = fontStyleSettingDic.fontWeight[weightKey];
+          fontDic.fontWeight = fontEquivDic.fontWeight[weightKey];
           fontFamily = fontFamily.replace(new RegExp(` ${weightKey}\\b`,'i'),'');
         }
         // condensed
-        const stretchKey = [...Object.keys(fontStyleSettingDic.fontStretch)].find(key => new RegExp(` ${key}\\b`,'i').test(fontFamily));
+        const stretchKey = [...Object.keys(fontEquivDic.fontStretch)].find(key => new RegExp(` ${key}\\b`,'i').test(fontFamily));
         if (stretchKey) {
-          fontDic.fontStretch = fontStyleSettingDic.fontStretch[stretchKey];
+          fontDic.fontStretch = fontEquivDic.fontStretch[stretchKey];
           fontFamily = fontFamily.replace(new RegExp(` ${stretchKey}\\b`,'i'),'');
         }
         // font-family
         fontDic.fontFamily = fontFamily;
         fontFamilyArr.push(fontFamily);
-
         model.fontStyle = fontDic;
       });
       fontFamilySet.value = new Set(fontFamilyArr.sort());
@@ -215,7 +216,6 @@ const rootApp = createApp({
             if (existFolder) addTarget = existFolder.children;
             else {
               const newFolder = new FolderModel({name:label});
-              // const newFolder = {name:label, isOpen:true, children:[]};
               addTarget.push(newFolder);
               addTarget = newFolder.children;
             }
@@ -223,10 +223,9 @@ const rootApp = createApp({
           addTarget.push(packageModel);
         });
         orderTreeDatas(resultArr);
-        initTreeDataMap.set(key, resultArr.map(model=>model.clone()));
         treeDataMap.value.set(key, resultArr);
+        initTreeDataMap.set(key, resultArr.map(model=>model.clone()));
       });
-      // treeDataMap.value = structuredClone(initTreeDataMap);
       console.log('read aviutl2.ini.');
       console.log('init-tree-data-map : ', initTreeDataMap);
 
@@ -245,9 +244,6 @@ const rootApp = createApp({
       Object.keys(defPackageDic).forEach(key=>
         installedPackage.data.set(key, new Set(defPackageDic[key]))
       );
-      // ['Movement', 'Params', 'Effect'].forEach(key=>
-      //   defPackageDic[key].forEach(name => installedPackage.data.get(key).add(name))
-      // );
 
       // add packages to installedPackage
       await Promise.all(Array.from(files, async file => {
@@ -294,7 +290,6 @@ const rootApp = createApp({
 
       // reflect to packageData
       installedPackage.data.forEach((set, key) => {
-        // const target = packageDataMap.value.get(key);
         packageDataMap.value.get(key).forEach(pacakgeModel => {
           if (set.has(pacakgeModel.name)) return;
           pacakgeModel.uninstalled = true;
@@ -307,7 +302,6 @@ const rootApp = createApp({
       treeDataMap.value.keys().forEach(key => 
         treeDataMap.value.set(key, initTreeDataMap.get(key).map(model=>model.clone()))
       );
-      // treeDataMap.value = structuredClone(initTreeDataMap);
     }
 
     function clear() {
@@ -347,13 +341,9 @@ const rootApp = createApp({
       document.getElementById('iniInput').dispatchEvent(new Event('change'));
     }
 
-    function clickNextInput(e) {
-      e.currentTarget.nextElementSibling?.click();
-    }
+    function clickNextInput(e) {e.currentTarget.nextElementSibling?.click();}
 
-    function toggleHide (model) {
-      model.props.hide = 1 - model.props.hide;
-    }
+    function toggleHide (model) {model.props.hide = 1 - model.props.hide;}
 
     function orderTreeDatas (modelDatas, startOrder=0) {
       if (startOrder===0) console.log('order tree datas', modelDatas[0]?.name);
@@ -375,10 +365,15 @@ const rootApp = createApp({
     
 
 
-    const insertTarget = ref([]); // {parent, index}
-    const insertItems = ref([]); // {model, parent, index}
+    /** { parent, index } */
+    const insertTarget = ref([]);
+    /** { model, parent, index } */
+    const insertItems = ref([]);
     const modifierKeyFlag = ref({ctrl:null, alt:null, shift:null});
 
+    /** 選択フォルダ内の要素をInsertItemsから除く
+     * これをしないと要素がフォルダ外に出てしまう
+     */
     function deleteChildTreeItem (modelArr) {
       modelArr
         .filter(model => model.children)
@@ -393,15 +388,14 @@ const rootApp = createApp({
     }
 
     function bulkSetHide (model, newState, includeDecendant=false) {
-      // フォルダの場合
-      if ('children' in model) {
-        if (includeDecendant) model.children.forEach(child=>bulkSetHide(child, newState));
       // パッケージの場合
-      } else model.props.hide = newState ? 1 : 0;
+      if (!model.children) model.props.hide = newState ? 1 : 0;
+      // フォルダの場合
+      else if (includeDecendant) model.children.forEach(child=>bulkSetHide(child, newState));
     }
     
     function dragStartNewFolder () {
-      insertItems.value.push({model: {name:'', isOpen:true, children:[]}, parent:null, index:null});
+      insertItems.value.push({model: new FolderModel(), parent:null, index:null});
     }
     function clearInsertChoice () {
       insertTarget.value.splice(0);
@@ -436,9 +430,8 @@ const rootApp = createApp({
           item.parent.splice(i, 1);
         });
         // 挿入
-        const target = treeDataMap.value.get(setting.value.type);
-        const index = toTop ? 0 : target.length;
-        target.splice(index, 0, ...insertItems.value.map(item=>item.model));
+        const index = toTop ? 0 : shownTreeData.value.length;
+        shownTreeData.value.splice(index, 0, ...insertItems.value.map(item=>item.model));
 
       } else { // グループの先頭/末尾へ
         insertItems.value
@@ -453,27 +446,24 @@ const rootApp = createApp({
             item.parent.splice(index, 0, item.model);
           });
       }
-      orderTreeDatas(treeDataMap.value.get(setting.value.type));
+      orderTreeDatas(shownTreeData.value);
     }
 
     const resultDivClass = computed(() => {
-      const target = treeDataMap.value.get(setting.value.type);
       const targetDownFlag = 
-        insertTarget.value[0]?.parent === target && 
-        insertTarget.value[0]?.index === target.length;
+        insertTarget.value[0]?.parent === shownTreeData.value && 
+        insertTarget.value[0]?.index === shownTreeData.value.length;
       return {'target-down': targetDownFlag, };
     });
     function dragEnterToResultDiv (e) {
       if (e.offsetY > e.currentTarget.getBoundingClientRect().height-150) {
-        const target = treeDataMap.value.get(setting.value.type);
-        insertTarget.value.push({parent: target, index: target.length});
+        insertTarget.value.push({parent: shownTreeData.value, index: shownTreeData.value.length});
         console.log('add result div');
       }
     }
     function dragLeaveFromResultDiv () {
       const target = insertTarget.value[0];
-      const modelData = treeDataMap.value.get(setting.value.type);
-      if (target?.parent===modelData && target?.index===modelData.length) {
+      if (target?.parent===shownTreeData.value && target?.index===shownTreeData.value.length) {
         console.log('leave result div');
         insertTarget.value.shift();
       }
@@ -496,7 +486,7 @@ const rootApp = createApp({
           const bOrder = b.model.children ? b.model.order : b.model.props.order;
           return aOrder - bOrder;
         });
-        
+
       // 大元アイテムの削除
       insertItems.value.forEach(item=>{
         if (!item.parent) return;
@@ -514,8 +504,7 @@ const rootApp = createApp({
     onMounted(async () => {
       setting.value = await fetch('./data/setting.json').then(res=>res.json());
       defPackageDic = await fetch('./data/default-packages.json').then(res=>res.json());
-      fontStyleSettingDic = await fetch('./data/font-style.json').then(res=>res.json());
-      // defPackageDic = await fetch('./data/defaultValue.json').then(res=>res.json());
+      fontEquivDic  = await fetch('./data/font-style.json').then(res=>res.json());
     });
 
 
@@ -525,6 +514,7 @@ const rootApp = createApp({
 
       setting,
       treeDataMap,
+      shownTreeData,
       packageDataMap,
 
       fontFamilySet,
