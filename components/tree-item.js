@@ -36,8 +36,8 @@ export default {
 
     const treeItemClass = computed(() => {
       const targetFlag = 
-        props.insertTarget[0]?.parent === props.parentArray && 
-        props.insertTarget[0]?.index === props.index;
+        props.insertTarget.at(-1)?.parent === props.parentArray && 
+        props.insertTarget.at(-1)?.index === props.index;
 
       return {
         target: targetFlag, 
@@ -48,12 +48,12 @@ export default {
     const folderBodyClass = computed(() => {
       const targetFlag = 
         props.model.children.length === 0 &&
-        props.insertTarget[0]?.parent === props.model.children;
+        props.insertTarget.at(-1)?.parent === props.model.children;
 
       const targetDownFlag = 
         props.model.children.length &&
-        props.insertTarget[0]?.parent === props.model.children && 
-        props.insertTarget[0]?.index === props.model.children.length;
+        props.insertTarget.at(-1)?.parent === props.model.children && 
+        props.insertTarget.at(-1)?.index === props.model.children.length;
 
       return { 'target': targetFlag, 'target-down': targetDownFlag, };
     });
@@ -225,6 +225,31 @@ export default {
     }
 
 
+    // -----------------------
+    //         test
+    // -----------------------
+    function mouseEnterToTreeItem (e) {
+      props.insertTarget.push({parent: props.parentArray, index: props.index, isBody: false});
+    }
+    function mouseEnterToFolderBody (e) {
+      const bodyHeight = e.currentTarget.getBoundingClientRect();
+      const index = e.offsetY > bodyHeight/2 ? props.model.children.length : 0;
+      props.insertTarget.push({parent: props.model.children, index: index, isBody: true});
+    }
+    function mouseLeaveFromTreeItem (e) {
+      props.insertTarget.pop();
+      if (props.insertTarget.length) {
+        const bodyRect = e.currentTarget.parentElement.getBoundingClientRect();
+        const bodyCenter = (bodyRect.top + bodyRect.bottom) / 2;
+        const index = e.pageY > bodyCenter ? props.parentArray.length : 0;
+        props.insertTarget.at(-1).index = index;
+      }
+    }
+    function mouseLeaveFromFolderBody (e) {
+      props.insertTarget.pop();
+    }
+
+
     return {
       packageStyle,
       treeItemClass,
@@ -247,11 +272,16 @@ export default {
 
       dragEnd,
       drop,
+
+      mouseEnterToTreeItem,
+      mouseEnterToFolderBody,
+      mouseLeaveFromTreeItem,
+      mouseLeaveFromFolderBody,
     }
   },
 
   template: `
-  <details v-if="Boolean(model.children)" draggable="true" :open="model.isOpen"
+  <details v-if="Boolean(model.children)" :open="model.isOpen"
     class="folder" :class="treeItemClass"
     @toggle="toggleDetails($event.currentTarget.open, model, parentArray, modifierKeyFlag.shift, modifierKeyFlag.alt, true)"
     @click.ctrl.stop.prevent="toggleInsertModels"
@@ -266,6 +296,9 @@ export default {
   
     @dragover.prevent
     @drop.exact.stop="drop"
+
+    @mouseenter="mouseEnterToTreeItem"
+    @mouseleave="mouseLeaveFromTreeItem"
   >
     
     <summary @click.alt="recordModifierKeyFlag" @click.shift="recordModifierKeyFlag">
@@ -285,6 +318,9 @@ export default {
       @dragenter.ctrl.stop
       @dragover.prevent
       @drop.exact.stop="drop"
+
+      @mouseenter="mouseEnterToFolderBody"
+      @mouseleave="mouseLeaveFromFolderBody"
     >
       <tree-item v-for="(childModel, index) in model.children"
         :model="childModel"
@@ -300,7 +336,7 @@ export default {
     </div>
   </details>
   
-  <p v-else v-if="!model.toDelete" draggable="true"
+  <p v-else v-if="!model.toDelete"
     class="package" :class="{hide: model.props.hide, ...treeItemClass}" :style="packageStyle"
     @click.exact="packageClickFunc(model)"
     @click.ctrl.stop="toggleInsertModels"
@@ -315,6 +351,9 @@ export default {
   
     @dragover.prevent
     @drop.exact.stop="drop"
+    
+    @mouseenter="mouseEnterToTreeItem"
+    @mouseleave="mouseLeaveFromTreeItem"
   >
     <span class="material-symbols-outlined hover">drag_indicator</span>{{model.name}}
   </p>
