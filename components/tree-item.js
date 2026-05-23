@@ -5,14 +5,14 @@ export default {
   name: 'TreeItem',
   props: {
     model: Object,
-    setting: Object,
     parentArray: Array,
     index: Number,
-    packageClickFunc: Function,
 
     insertTarget: Array,
     insertItems: Array,
-    modifierKeyFlag: Object,
+
+    setting: Object,
+    dragData: Object,
   },
 
   components: {ButtonCssIcon},
@@ -59,20 +59,6 @@ export default {
     });
 
 
-    function recordModifierKeyFlag (e) {
-      // console.log('modifier key is recorded.');
-      props.modifierKeyFlag.ctrl = e.ctrlKey;
-      props.modifierKeyFlag.alt = e.altKey;
-      props.modifierKeyFlag.shift = e.shiftKey;
-    }
-
-    function clearModifierKeyFlag () {
-      // console.log('modifier key is cleared.');
-      props.modifierKeyFlag.ctrl = null;
-      props.modifierKeyFlag.alt = null;
-      props.modifierKeyFlag.shift = null;
-    }
-
     function ungroupFolder (model, parentArray, index) {
       parentArray.splice(index, 1, ...model.children);
     }
@@ -115,9 +101,9 @@ export default {
           .filter(child=>child.children)
           .forEach(child=>toggleDetails(status, child, model.children, false, includeDecendants));
       }
-      if (isStart) clearModifierKeyFlag();
     }
 
+    function toggleHide (model) {model.props.hide = 1-model.props.hide;}
 
     function addInsertModels () {
       if (props.insertItems.some(dic=>dic.model===props.model)) return;
@@ -219,14 +205,19 @@ export default {
       emit('switch-tree-data');
     }
 
-    function dragEnd () {
-      // console.log('drag end', props.modifierKeyFlag.ctrl);
-      if (!props.modifierKeyFlag.ctrl) {
+    function dragEnd (e) {
+      if (e.ctrlKey) return;
         props.insertTarget.splice(0);
         props.insertItems.splice(0);
       }
-      clearModifierKeyFlag();
-    }
+    // function dragEnd () {
+    //   // console.log('drag end', props.modifierKeyFlag.ctrl);
+    //   if (!props.modifierKeyFlag.ctrl) {
+    //     props.insertTarget.splice(0);
+    //     props.insertItems.splice(0);
+    //   }
+    //   clearModifierKeyFlag();
+    // }
 
 
     // -----------------------
@@ -273,7 +264,7 @@ export default {
       ungroupFolder,
       sortTreeData,
       toggleDetails,
-      recordModifierKeyFlag,
+      toggleHide,
 
       addInsertModels,
       toggleInsertModels,
@@ -303,11 +294,10 @@ export default {
   template: `
   <details v-if="Boolean(model.children)" :open="model.isOpen"
     class="folder" :class="treeItemClass"
-    @toggle="toggleDetails($event.currentTarget.open, model, parentArray, modifierKeyFlag.shift, modifierKeyFlag.alt, true)"
     @click.ctrl.stop.prevent="toggleInsertModels"
   
     @dragstart.exact.stop="addInsertModels"
-    @dragstart.ctrl.stop="recordModifierKeyFlag"
+    @dragstart.ctrl.stop
     @dragend.stop="dragEnd"
     
     @dragenter.exact.stop="dragEnterToTreeItem"
@@ -318,14 +308,11 @@ export default {
     @drop.exact.stop="drop"
   >
     
-    <summary 
-      @click.alt="recordModifierKeyFlag" 
-      @click.shift="recordModifierKeyFlag"
-    >
+    <summary @click.stop.prevent="toggleDetails(!model.isOpen, model, parentArray, $event.shiftKey, $event.altKey)">
       <span class="material-symbols-outlined hover">drag_indicator</span>
       <div>
         <span class="folder-name-wrap">
-          <input type="text" v-model="model.name" class="folder-name" placeholder="グループ名を入力" />
+          <input type="text" v-model="model.name" class="folder-name" placeholder="グループ名を入力" @click.exact.stop />
         </span>
         <span class="material-symbols-outlined" @click.stop.prevent="sortTreeData(model.children, $event.altKey)">sort</span>
         <button-css-icon icon-name="icon-close" @click.stop.prevent="ungroupFolder(model, parentArray, index)"></button-css-icon>
@@ -341,13 +328,12 @@ export default {
     >
       <tree-item v-for="(childModel, index) in model.children"
         :model="childModel"
-        :setting="setting"
         :parent-array="model.children"
         :index="index"
-        :package-click-func="packageClickFunc"
         :insert-target="insertTarget"
         :insert-items="insertItems"
-        :modifier-key-flag="modifierKeyFlag"
+        :setting="setting"
+        :drag-data="dragData"
         @switch-tree-data="$emit('switch-tree-data')"
       ></tree-item>
     </div>
@@ -355,11 +341,11 @@ export default {
   
   <p v-else v-if="!model.toDelete"
     class="package" :class="{hide: model.props.hide, ...treeItemClass}" :style="packageStyle"
-    @click.exact="packageClickFunc(model)"
+    @click.exact="toggleHide(model)"
     @click.ctrl.stop="toggleInsertModels"
     
     @dragstart.exact.stop="addInsertModels"
-    @dragstart.ctrl.stop="recordModifierKeyFlag"
+    @dragstart.ctrl.stop
     @dragend.stop="dragEnd"
   
     @dragenter.exact.stop="dragEnterToTreeItem"

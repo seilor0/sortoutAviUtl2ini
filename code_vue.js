@@ -369,7 +369,6 @@ const rootApp = createApp({
     const insertTarget = ref([]);
     /** { model, parent, index } */
     const insertItems = ref([]);
-    const modifierKeyFlag = ref({ctrl:null, alt:null, shift:null});
     const dragData = ref({isDragging: false, start: null})
 
     /** 選択フォルダ内の要素をInsertItemsから除く
@@ -515,12 +514,12 @@ const rootApp = createApp({
     function mousedown (e) {
       console.log('down : ', e.target, e);
       dragData.value.isDragging = true;
-      dragData.value.timestamp = e.timestamp;
+      dragData.value.start = e.timestamp;
     }
     function mouseup (e) {
       console.log('up : ', e.target, e);
       dragData.value.isDragging = false;
-      dragData.value.timestamp = null;
+      dragData.value.start = null;
     }
 
 
@@ -558,7 +557,7 @@ const rootApp = createApp({
 
       insertTarget,
       insertItems,
-      modifierKeyFlag,
+      dragData,
       bulkSetHide,
       dragStartNewFolder,
       clearInsertChoice,

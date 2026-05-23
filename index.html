@@ -184,13 +184,12 @@
           >
             <tree-item v-for="(model,index) in shownTreeData"
               :model="model"
-              :setting="setting"
               :parent-array="shownTreeData" 
               :index="index"
-              :package-click-func="toggleHide" 
               :insert-target="insertTarget"
               :insert-items="insertItems"
-              :modifier-key-flag="modifierKeyFlag"
+              :setting="setting"
+              :drag-data="dragData"
               @switch-tree-data="orderTreeDatas(shownTreeData)"
             ></tree-item>
           </div>
