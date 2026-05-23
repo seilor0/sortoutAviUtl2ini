@@ -143,11 +143,11 @@ export default {
     
     function drop () {
       console.log('-------------');
-      if (!props.insertTarget[0]) {
+      if (!props.insertTarget.length) {
         console.log('drop target is NOT exist.');
         return;
       }
-      console.log('drop for :', toRaw(props.insertTarget[0]));
+      console.log('drop for :', toRaw(props.insertTarget.at(-1)));
 
       // フォルダに含まれている子要素をinsertItemsから削除
       deleteChildTreeItem(props.insertItems.map(item=>item.model));
@@ -173,7 +173,7 @@ export default {
           return aOrder - bOrder;
         });
         
-      const target = props.insertTarget[0];
+      const target = props.insertTarget.at(-1);
       const a = props.insertItems.filter(item=> item.parent === target.parent && item.index < target.index);
 
       // 大元アイテムの削除

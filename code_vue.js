@@ -470,11 +470,11 @@ const rootApp = createApp({
     }
     function dropToResultDiv () {
       console.log('-------------');
-      if (!insertTarget.value[0]) {
+      if (!insertTarget.value.length) {
         console.log('drop target is NOT exist.');
         return;
       }
-      console.log('drop for :', toRaw(insertTarget.value[0]));
+      console.log('drop for :', toRaw(insertTarget.value.at(-1)));
 
       // フォルダに含まれている子要素をinsertItemsから削除
       deleteChildTreeItem(insertItems.value.map(item=>item.model));
@@ -495,7 +495,7 @@ const rootApp = createApp({
       });
       
       // 挿入
-      const target = insertTarget.value[0];
+      const target = insertTarget.value.at(-1);
       target.parent.splice(target.index, 0, ...insertItems.value.map(item=>item.model));
     }
 
