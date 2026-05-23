@@ -134,35 +134,39 @@ export default {
 
     function dragEnterToTreeItem () {
       props.insertTarget.push({parent: props.parentArray, index: props.index});
-      // console.log('-------------');
-      // console.log('enter - package / folder');
     }
-
     function dragEnterToEmptyFolderBody () {
       props.insertTarget.push({parent: props.model.children, index: 0});
-      // console.log('-------------');
-      // console.log('enter - empty-folder-body');
     }
-    
     function dragEnterToFillFolderBody (e) {
       if (e.offsetY > e.currentTarget.getBoundingClientRect().height-8)
         props.insertTarget.push({parent: props.model.children, index: props.model.children.length});
-      // console.log('-------------');
-      // console.log('enter - fill-folder-body');
+    }
+    function dragEnterToFolderBody (e) {
+      if (props.model.children?.length) {
+        if (e.offsetY > e.currentTarget.getBoundingClientRect().height-8)
+          props.insertTarget.push({parent: props.model.children, index: props.model.children.length});
+      } else {
+        props.insertTarget.push({parent: props.model.children, index: 0});
+      }
     }
     
     function dragLeave () {
       props.insertTarget.shift();
-      // console.log('-------------');
-      // console.log('leave', e.currentTarget);
     }
-    
     function dragLeaveFromFillFolderBody () {
       const target = props.insertTarget[0];
       if (target?.parent===props.model.children && target?.index===props.model.children.length)
         props.insertTarget.shift();
-      // console.log('-------------');
-      // console.log('leave - fill-folder-body');
+    }
+    function dragLeaveFromFolderBody () {
+      if (props.model.children?.length) {
+        const target = props.insertTarget[0];
+        if (target?.parent===props.model.children && target?.index===props.model.children.length)
+          props.insertTarget.shift();  
+      } else {
+        props.insertTarget.shift();
+      }
     }
     
     function drop () {
@@ -229,24 +233,35 @@ export default {
     //         test
     // -----------------------
     function mouseEnterToTreeItem (e) {
-      props.insertTarget.push({parent: props.parentArray, index: props.index, isBody: false});
+      props.insertTarget.push({parent: props.parentArray, index: props.index});
     }
     function mouseEnterToFolderBody (e) {
-      const bodyHeight = e.currentTarget.getBoundingClientRect();
+      const bodyHeight = e.currentTarget.getBoundingClientRect().height;
       const index = e.offsetY > bodyHeight/2 ? props.model.children.length : 0;
-      props.insertTarget.push({parent: props.model.children, index: index, isBody: true});
+      props.insertTarget.push({parent: props.model.children, index: index});
     }
     function mouseLeaveFromTreeItem (e) {
       props.insertTarget.pop();
-      if (props.insertTarget.length) {
-        const bodyRect = e.currentTarget.parentElement.getBoundingClientRect();
-        const bodyCenter = (bodyRect.top + bodyRect.bottom) / 2;
-        const index = e.pageY > bodyCenter ? props.parentArray.length : 0;
-        props.insertTarget.at(-1).index = index;
-      }
+      // folder-body or result-divがドロップ対象になるので、
+      // indexをマウス位置に応じて修正
+      const bodyRect = e.currentTarget.parentElement.getBoundingClientRect();
+      const bodyCenter = (bodyRect.top + bodyRect.bottom) / 2;
+      const index = e.pageY > bodyCenter ? props.parentArray.length : 0;
+      props.insertTarget.at(-1).index = index;
     }
     function mouseLeaveFromFolderBody (e) {
       props.insertTarget.pop();
+    }
+
+    // drag-start相当
+    function mousedown (e) {
+      console.log('mouse-down : ', e.currentTarget);
+      console.log(e);
+    }
+    // drop, drag-end相当
+    function mouseup (e) {
+      console.log('mouse-up : ', e.currentTarget);
+      console.log(e);
     }
 
 
@@ -266,9 +281,11 @@ export default {
       dragEnterToTreeItem,
       dragEnterToEmptyFolderBody,
       dragEnterToFillFolderBody,
+      dragEnterToFolderBody,
       
       dragLeave,
       dragLeaveFromFillFolderBody,
+      dragLeaveFromFolderBody,
 
       dragEnd,
       drop,
@@ -277,6 +294,9 @@ export default {
       mouseEnterToFolderBody,
       mouseLeaveFromTreeItem,
       mouseLeaveFromFolderBody,
+
+      mousedown,
+      mouseup,
     }
   },
 
@@ -296,12 +316,12 @@ export default {
   
     @dragover.prevent
     @drop.exact.stop="drop"
-
-    @mouseenter="mouseEnterToTreeItem"
-    @mouseleave="mouseLeaveFromTreeItem"
   >
     
-    <summary @click.alt="recordModifierKeyFlag" @click.shift="recordModifierKeyFlag">
+    <summary 
+      @click.alt="recordModifierKeyFlag" 
+      @click.shift="recordModifierKeyFlag"
+    >
       <span class="material-symbols-outlined hover">drag_indicator</span>
       <div>
         <span class="folder-name-wrap">
@@ -313,14 +333,11 @@ export default {
     </summary>
   
     <div class="folder-body" :class="folderBodyClass"
-      @dragenter.exact.stop="model.children.length ? dragEnterToFillFolderBody($event) : dragEnterToEmptyFolderBody()"
-      @dragleave.exact.stop="model.children.length ? dragLeaveFromFillFolderBody() : dragLeave()"
+      @dragenter.exact.stop="dragEnterToFolderBody"
+      @dragleave.exact.stop="dragLeaveFromFolderBody"
       @dragenter.ctrl.stop
       @dragover.prevent
       @drop.exact.stop="drop"
-
-      @mouseenter="mouseEnterToFolderBody"
-      @mouseleave="mouseLeaveFromFolderBody"
     >
       <tree-item v-for="(childModel, index) in model.children"
         :model="childModel"
@@ -351,9 +368,6 @@ export default {
   
     @dragover.prevent
     @drop.exact.stop="drop"
-    
-    @mouseenter="mouseEnterToTreeItem"
-    @mouseleave="mouseLeaveFromTreeItem"
   >
     <span class="material-symbols-outlined hover">drag_indicator</span>{{model.name}}
   </p>

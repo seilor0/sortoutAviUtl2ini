@@ -82,7 +82,10 @@
           </p>
         </div>
 
-        <div v-else-if="setting.process==='labeling'" style="display:flex;gap:4rem;">
+        <div v-else-if="setting.process==='labeling'" style="display:flex;gap:4rem;"
+          @mousedown="mousedown"
+          @mouseup="mouseup"
+        >
           <aside class="sub-sidemenu">
             <label v-for="name in treeDataMap.keys()" class="select-tag">
               <input type="radio" :value="name" v-model="setting.type" />
@@ -112,6 +115,9 @@
                 @dragleave="dragLeaveFromDropArea"
                 @dragover.prevent
                 @drop="dropToDropArea($event, dic.toAll, dic.toTop)"
+
+                @mouseenter.exact="mouseEnterToDropArea"
+                @mouseleave.exact="mouseLeaveFromDropArea"
               >
                 {{dic.label}}
                 <span class="material-symbols-outlined">arrow_left_alt</span>
@@ -172,6 +178,9 @@
             @dragleave="dragLeaveFromResultDiv"
             @dragover.stop.prevent
             @drop.self="dropToResultDiv"
+
+            @mouseenter.exact="mouseEnterToResultDiv"
+            @mouseleave.exact="mouseLeaveFromResultDiv"
           >
             <tree-item v-for="(model,index) in shownTreeData"
               :model="model"

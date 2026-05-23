@@ -370,6 +370,7 @@ const rootApp = createApp({
     /** { model, parent, index } */
     const insertItems = ref([]);
     const modifierKeyFlag = ref({ctrl:null, alt:null, shift:null});
+    const dragData = ref({isDragging: false, start: null})
 
     /** 選択フォルダ内の要素をInsertItemsから除く
      * これをしないと要素がフォルダ外に出てしまう
@@ -451,8 +452,8 @@ const rootApp = createApp({
 
     const resultDivClass = computed(() => {
       const targetDownFlag = 
-        insertTarget.value[0]?.parent === shownTreeData.value && 
-        insertTarget.value[0]?.index === shownTreeData.value.length;
+        insertTarget.value.at(-1)?.parent === shownTreeData.value && 
+        insertTarget.value.at(-1)?.index === shownTreeData.value.length;
       return {'target-down': targetDownFlag, };
     });
     function dragEnterToResultDiv (e) {
@@ -497,6 +498,29 @@ const rootApp = createApp({
       // 挿入
       const target = insertTarget.value[0];
       target.parent.splice(target.index, 0, ...insertItems.value.map(item=>item.model));
+    }
+
+    // -----------------------
+    //         test
+    // -----------------------
+    function mouseEnterToDropArea (e) {e.currentTarget.classList.add('target');}
+    function mouseLeaveFromDropArea (e) {e.currentTarget.classList.remove('target');}
+    function mouseEnterToResultDiv (e) {
+      const bodyHeight = e.currentTarget.getBoundingClientRect().height;
+      const index = e.offsetY > bodyHeight/2 ? shownTreeData.value.length : 0;
+      insertTarget.value.push({parent: shownTreeData.value, index: index});
+    }
+    function mouseLeaveFromResultDiv (e) {insertTarget.value.pop();}
+
+    function mousedown (e) {
+      console.log('down : ', e.target, e);
+      dragData.value.isDragging = true;
+      dragData.value.timestamp = e.timestamp;
+    }
+    function mouseup (e) {
+      console.log('up : ', e.target, e);
+      dragData.value.isDragging = false;
+      dragData.value.timestamp = null;
     }
 
 
@@ -546,6 +570,13 @@ const rootApp = createApp({
       dragEnterToResultDiv,
       dragLeaveFromResultDiv,
       dropToResultDiv,
+
+      mouseEnterToDropArea,
+      mouseLeaveFromDropArea,
+      mouseEnterToResultDiv,
+      mouseLeaveFromResultDiv,
+      mousedown,
+      mouseup,
     }
   }
 });
