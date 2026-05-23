@@ -121,13 +121,6 @@ export default {
     function dragEnterToTreeItem () {
       props.insertTarget.push({parent: props.parentArray, index: props.index});
     }
-    function dragEnterToEmptyFolderBody () {
-      props.insertTarget.push({parent: props.model.children, index: 0});
-    }
-    function dragEnterToFillFolderBody (e) {
-      if (e.offsetY > e.currentTarget.getBoundingClientRect().height-8)
-        props.insertTarget.push({parent: props.model.children, index: props.model.children.length});
-    }
     function dragEnterToFolderBody (e) {
       if (props.model.children?.length) {
         if (e.offsetY > e.currentTarget.getBoundingClientRect().height-8)
@@ -137,14 +130,7 @@ export default {
       }
     }
     
-    function dragLeave () {
-      props.insertTarget.shift();
-    }
-    function dragLeaveFromFillFolderBody () {
-      const target = props.insertTarget[0];
-      if (target?.parent===props.model.children && target?.index===props.model.children.length)
-        props.insertTarget.shift();
-    }
+    function dragLeave () {props.insertTarget.shift();}
     function dragLeaveFromFolderBody () {
       if (props.model.children?.length) {
         const target = props.insertTarget[0];
@@ -270,12 +256,9 @@ export default {
       toggleInsertModels,
 
       dragEnterToTreeItem,
-      dragEnterToEmptyFolderBody,
-      dragEnterToFillFolderBody,
       dragEnterToFolderBody,
       
       dragLeave,
-      dragLeaveFromFillFolderBody,
       dragLeaveFromFolderBody,
 
       dragEnd,
