@@ -501,6 +501,18 @@ const rootApp = createApp({
 
       // フォルダに含まれている子要素をinsertItemsから削除
       deleteChildTreeItem(insertItems.value.map(item=>item.model));
+
+      const target = insertTarget.value.at(-1);
+      const a = insertItems.value.filter(item=> item.parent === target.parent && item.index < target.index);
+
+      // folderをfolder内部にドロップすると消える対策
+      const isContainingTarget = insertItems.value
+        .filter(item => item.model.children)
+        .some(item => item.model.has(target.parent[target.index]));
+      if (isContainingTarget) {
+        console.log('target is contained in selected folder.');
+        return;
+      }
       
       // 挿入アイテムのソート ... 選択順で追加されてしまうため
       insertItems.value
@@ -518,8 +530,6 @@ const rootApp = createApp({
       });
       
       // 挿入
-      const target = insertTarget.value.at(-1);
-      const a = insertItems.value.filter(item=> item.parent === target.parent && item.index < target.index);
       target.parent.splice(target.index-a.length, 0, ...insertItems.value.map(item=>item.model));
 
       orderTreeDatas(shownTreeData.value);
