@@ -373,7 +373,7 @@ const rootApp = createApp({
     const insertTarget = ref([]);
     /** { model, parent, index } */
     const insertItems = ref([]);
-    const dragData = ref({isDragging: false, start: null})
+    const dragData = ref({isDragging: false, startModel: null});
 
     /** 選択フォルダ内の要素をInsertItemsから除く
      * これをしないと要素がフォルダ外に出てしまう
@@ -397,24 +397,55 @@ const rootApp = createApp({
       // フォルダの場合
       else if (includeDecendant) model.children.forEach(child=>bulkSetHide(child, newState));
     }
-    
-    // function dragStartNewFolder () {
-    //   insertItems.value.push({model:new FolderModel(), parent:null, index:null});
-    // }
+
     function clearInsertChoice () {
       insertTarget.value.splice(0);
       insertItems.value.splice(0);
     }
     watch(()=>[setting.value.process, setting.value.type], clearInsertChoice);
 
-    function dragLeaveFromDropArea (e) {
-      console.log(e.target, e.currentTarget);
-      if (e.target.classList.contains('material-symbols-outlined')) return;
+    const resultDivClass = computed(() => {
+      const targetDownFlag = 
+        dragData.value.startModel === null &&
+        insertTarget.value.at(-1)?.parent === shownTreeData.value && 
+        insertTarget.value.at(-1)?.index === shownTreeData.value.length;
+      return {'target-down': targetDownFlag, };
+    });
+
+    // -----------------------
+    //         test
+    // -----------------------
+    function mouseEnterToDropArea (e) {
+      if (!dragData.value.isDragging) return;
+      e.currentTarget.classList.add('target');
+    }
+    function mouseLeaveFromDropArea (e) {
+      if (!dragData.value.isDragging) return;
       e.currentTarget.classList.remove('target');
     }
-    function dropToDropArea (e, toAll, toTop) {
+    function mouseEnterToResultDiv (e) {
+      if (!dragData.value.isDragging) return;
+      const bodyHeight = e.currentTarget.getBoundingClientRect().height;
+      const index = e.offsetY > bodyHeight/2 ? shownTreeData.value.length : 0;
+      insertTarget.value.push({parent: shownTreeData.value, index: index});
+    }
+    function mouseLeaveFromResultDiv (e) {
+      if (!dragData.value.isDragging) return;
+      insertTarget.value.pop();
+    }
+
+    function mouseDownAll (e) {
+      dragData.value.isDragging = true;
+    }
+    function mouseUpAll (e) {
+      dragData.value.isDragging = false;
+      dragData.value.startModel = null;
+      if (!e.ctrlKey) clearInsertChoice();
+    }
+    
+    function mouseUpDropArea (e, toAll, toTop) {
       e.currentTarget.classList.remove('target');
-      // 前準備
+
       // フォルダに含まれている子要素をinsertItemsから削除
       deleteChildTreeItem(insertItems.value.map(item=>item.model));
 
@@ -453,27 +484,15 @@ const rootApp = createApp({
       orderTreeDatas(shownTreeData.value);
     }
 
-    const resultDivClass = computed(() => {
-      const targetDownFlag = 
-        insertTarget.value.at(-1)?.parent === shownTreeData.value && 
-        insertTarget.value.at(-1)?.index === shownTreeData.value.length;
-      return {'target-down': targetDownFlag, };
-    });
-    function dragEnterToResultDiv (e) {
-      if (e.offsetY > e.currentTarget.getBoundingClientRect().height-150) {
-        insertTarget.value.push({parent: shownTreeData.value, index: shownTreeData.value.length});
-        console.log('add result div');
-      }
+    function mouseDownResultDiv () {
+      insertTarget.value.unshift({parent: shownTreeData.value, index: 0});
     }
-    function dragLeaveFromResultDiv () {
-      const target = insertTarget.value[0];
-      if (target?.parent===shownTreeData.value && target?.index===shownTreeData.value.length) {
-        console.log('leave result div');
-        insertTarget.value.shift();
+    // drop, drag-end相当
+    function mouseUpResultDiv () {
+      if (dragData.value.startModel) {
+        console.log('this is CLICK, not DROP');
+        return;
       }
-    }
-    function dropToResultDiv () {
-      console.log('-------------');
       if (!insertTarget.value.length) {
         console.log('drop target is NOT exist.');
         return;
@@ -500,8 +519,17 @@ const rootApp = createApp({
       
       // 挿入
       const target = insertTarget.value.at(-1);
-      target.parent.splice(target.index, 0, ...insertItems.value.map(item=>item.model));
+      const a = insertItems.value.filter(item=> item.parent === target.parent && item.index < target.index);
+      target.parent.splice(target.index-a.length, 0, ...insertItems.value.map(item=>item.model));
+
+      orderTreeDatas(shownTreeData.value);
     }
+
+    function mouseDownNewFolder () {
+      insertItems.value.push({model:new FolderModel(), parent:null, index:null});
+    }
+
+
 
     // ----------------------
     //       code test
@@ -551,21 +579,24 @@ const rootApp = createApp({
       insertItems,
       dragData,
       bulkSetHide,
-      // dragStartNewFolder,
       clearInsertChoice,
 
-      dragLeaveFromDropArea,
-      dropToDropArea,
-
       resultDivClass,
-      dragEnterToResultDiv,
-      dragLeaveFromResultDiv,
-      dropToResultDiv,
 
       mouseEnterToDropArea,
       mouseLeaveFromDropArea,
       mouseEnterToResultDiv,
       mouseLeaveFromResultDiv,
+
+      mouseDownAll,
+      mouseUpAll,
+
+      mouseUpDropArea,
+
+      mouseDownResultDiv,
+      mouseUpResultDiv,
+      mouseDownNewFolder,
+
       readTestIniFile,
     }
   }
