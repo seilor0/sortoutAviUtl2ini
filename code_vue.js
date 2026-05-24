@@ -126,7 +126,12 @@ const rootApp = createApp({
       const file = e.currentTarget.files[0];
       if (!file) return;
       e.currentTarget.value = null;
-
+      console.log('read aviutl2.ini.');
+      const string = await file.text();
+      createTreeDataFromString(string);
+      if (setting.value.process==='home') setting.value.process = 'labeling';
+    }
+    function createTreeDataFromString (string) {
       // initialize
       initTreeDataMap.forEach(arr=>arr.splice(0));
       treeDataMap.value.forEach(arr=>arr.splice(0));
@@ -143,7 +148,7 @@ const rootApp = createApp({
         [ 'Params',   [] ],
       ]);
 
-      (await file.text())
+      string
         .split(/^\[/mg)
         .filter(Boolean)
         .forEach(el => {
@@ -228,10 +233,7 @@ const rootApp = createApp({
         treeDataMap.value.set(key, resultArr);
         initTreeDataMap.set(key, resultArr.map(model=>model.clone()));
       });
-      console.log('read aviutl2.ini.');
       console.log('init-tree-data-map : ', initTreeDataMap);
-
-      if (setting.value.process==='home') setting.value.process = 'labeling';
     }
 
     async function readInstalledPackage(e) {
@@ -501,27 +503,14 @@ const rootApp = createApp({
       target.parent.splice(target.index, 0, ...insertItems.value.map(item=>item.model));
     }
 
-    // -----------------------
-    //         test
-    // -----------------------
-    function mouseEnterToDropArea (e) {e.currentTarget.classList.add('target');}
-    function mouseLeaveFromDropArea (e) {e.currentTarget.classList.remove('target');}
-    function mouseEnterToResultDiv (e) {
-      const bodyHeight = e.currentTarget.getBoundingClientRect().height;
-      const index = e.offsetY > bodyHeight/2 ? shownTreeData.value.length : 0;
-      insertTarget.value.push({parent: shownTreeData.value, index: index});
-    }
-    function mouseLeaveFromResultDiv (e) {insertTarget.value.pop();}
-
-    function mousedown (e) {
-      console.log('down : ', e.target, e);
-      dragData.value.isDragging = true;
-      dragData.value.start = e.timestamp;
-    }
-    function mouseup (e) {
-      console.log('up : ', e.target, e);
-      dragData.value.isDragging = false;
-      dragData.value.start = null;
+    // ----------------------
+    //       code test
+    // ----------------------
+    async function readTestIniFile() {
+      const string = await fetch("./_test/aviutl2.ini").then(res=>res.text());
+      console.log('read test-aviutl2.ini.');
+      createTreeDataFromString(string);
+      if (setting.value.process==='home') setting.value.process = 'labeling';
     }
 
 
@@ -530,6 +519,7 @@ const rootApp = createApp({
       setting.value = await fetch('./data/setting.json').then(res=>res.json());
       defPackageDic = await fetch('./data/default-packages.json').then(res=>res.json());
       fontEquivDic  = await fetch('./data/font-style.json').then(res=>res.json());
+      await readTestIniFile();
     });
 
 
@@ -576,8 +566,7 @@ const rootApp = createApp({
       mouseLeaveFromDropArea,
       mouseEnterToResultDiv,
       mouseLeaveFromResultDiv,
-      mousedown,
-      mouseup,
+      readTestIniFile,
     }
   }
 });
