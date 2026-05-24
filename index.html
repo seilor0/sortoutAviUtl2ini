@@ -95,15 +95,12 @@
 
           <div class="sub-sidemenu">
             <div class="new-mofism">
-              <div class="new-folder" draggable="true" id="newFolder"
-                @dragstart="dragStartNewFolder"
-                @dragend="clearInsertChoice"
-              >
-                <span class="material-symbols-outlined hover">drag_indicator</span>
-                <span class="material-symbols-outlined">create_new_folder</span>
+              <div class="new-folder" @mousedown="mouseDownNewFolder">
+                
+                <google-icon class="hover">drag_indicator</google-icon>
+                <google-icon>create_new_folder</google-icon>
                 New Group
-                <span class="material-symbols-outlined" style="font-size: 1.75rem;
-                margin-inline: 4px 0;">arrow_right_alt</span>
+                <google-icon style="font-size: 1.75em;">arrow_right_alt</google-icon>
               </div>
               <div v-for="dic in [
                   {label:'全体の先頭へ', toAll:true, toTop:true},
@@ -120,7 +117,7 @@
                 @mouseleave.exact="mouseLeaveFromDropArea"
               >
                 {{dic.label}}
-                <span class="material-symbols-outlined">arrow_left_alt</span>
+                <google-icon>arrow_left_alt</google-icon>
               </div>
             </div>
 
@@ -135,7 +132,7 @@
               <hr color="darkgray" size="1" noshade>
 
               <p style="display: flex;align-items: center;gap: 2px;">
-                <span class="material-symbols-outlined" style="font-size: 1.5em;">sort</span>
+                <google-icon style="font-size: 1.5em;">sort</google-icon>
                 <span style="flex-grow: 1;">ソート設定：</span>
                 <toggle-button :top-is-slider="false"
                   :is-checked="setting.labelSort.isAsc" @checked-toggle="val=>setting.labelSort.isAsc=val"
@@ -287,7 +284,7 @@
             <span>グループ追加</span>
             <div style="display: flex;align-items: center;gap: 0.5rem;">
               <span class="mark">
-                <span class="material-symbols-outlined">create_new_folder</span>
+                <google-icon>create_new_folder</google-icon>
                 New Group
               </span>
               を挿入したい箇所にD&D
@@ -300,7 +297,7 @@
             <div>
               <P style="display: flex;line-height: 2;align-items: center;">
                 グループ右上の
-                <span class="material-symbols-outlined" style="color: darkgoldenrod;font-variation-settings: &quot;wght&quot; 500;padding-inline: 0.25rem;">sort</span>
+                <google-icon style="color: darkgoldenrod;font-variation-settings: &quot;wght&quot; 500;padding-inline: 0.25rem;">sort</google-icon>
                 ボタン
               </P>
               <p class="annotation"><code>alt+クリック</code> … 子孫グループ内のパッケージも一緒にソート</p>

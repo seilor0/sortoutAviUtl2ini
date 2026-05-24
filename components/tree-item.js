@@ -1,4 +1,6 @@
 import ButtonCssIcon from "./button-css-icon.js";
+import GoogleIcon from './google-icon.js';
+
 const { computed, toRaw } = Vue
 
 export default {
@@ -15,7 +17,10 @@ export default {
     dragData: Object,
   },
 
-  components: {ButtonCssIcon},
+  components: {
+    ButtonCssIcon,
+    GoogleIcon,
+  },
   emits: ['switch-tree-data'],
 
   setup(props, {emit}) {
@@ -291,13 +296,15 @@ export default {
     @drop.exact.stop="drop"
   >
     
-    <summary @click.stop.prevent="toggleDetails(!model.isOpen, model, parentArray, $event.shiftKey, $event.altKey)">
-      <span class="material-symbols-outlined hover">drag_indicator</span>
+    <summary 
+      @click.exact.stop.prevent="toggleDetails(!model.isOpen, model, parentArray, $event.shiftKey, $event.altKey)"
+    >
+      <google-icon class="hover">drag_indicator</google-icon>
       <div>
         <span class="folder-name-wrap">
           <input type="text" v-model="model.name" class="folder-name" placeholder="グループ名を入力" @click.exact.stop />
         </span>
-        <span class="material-symbols-outlined" @click.stop.prevent="sortTreeData(model.children, $event.altKey)">sort</span>
+        <google-icon @click.stop.prevent="sortTreeData(model.children, $event.altKey)">sort</google-icon>
         <button-css-icon icon-name="icon-close" @click.stop.prevent="ungroupFolder(model, parentArray, index)"></button-css-icon>
       </div>
     </summary>
@@ -338,7 +345,7 @@ export default {
     @dragover.prevent
     @drop.exact.stop="drop"
   >
-    <span class="material-symbols-outlined hover">drag_indicator</span>{{model.name}}
+    <google-icon class="hover">drag_indicator</google-icon>{{model.name}}
   </p>
   `
 }

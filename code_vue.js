@@ -1,6 +1,7 @@
 import ButtonCssIcon from './components/button-css-icon.js';
 import ToggleButton from './components/toggle-button.js'
 import TreeItem from './components/tree-item.js';
+import GoogleIcon from './components/google-icon.js';
 
 import {PackageModel, FolderModel} from './components/class.js'
 
@@ -11,6 +12,7 @@ const rootApp = createApp({
     ButtonCssIcon,
     ToggleButton,
     TreeItem,
+    GoogleIcon,
   },
   
   setup () {
