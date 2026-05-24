@@ -396,9 +396,9 @@ const rootApp = createApp({
       else if (includeDecendant) model.children.forEach(child=>bulkSetHide(child, newState));
     }
     
-    function dragStartNewFolder () {
-      insertItems.value.push({model: new FolderModel(), parent:null, index:null});
-    }
+    // function dragStartNewFolder () {
+    //   insertItems.value.push({model:new FolderModel(), parent:null, index:null});
+    // }
     function clearInsertChoice () {
       insertTarget.value.splice(0);
       insertItems.value.splice(0);
@@ -561,7 +561,7 @@ const rootApp = createApp({
       insertItems,
       dragData,
       bulkSetHide,
-      dragStartNewFolder,
+      // dragStartNewFolder,
       clearInsertChoice,
 
       dragLeaveFromDropArea,
