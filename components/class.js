@@ -60,4 +60,17 @@ export class FolderModel extends Model {
       // children : [...this.children],
     });
   }
+  has(model) {
+    const result = this.children.some(child => {
+      // folder
+      if (child.children) {
+        return child.has(model)
+
+      // package
+      } else {
+        return child===model;
+      }
+    });
+    return result;
+  }
 }

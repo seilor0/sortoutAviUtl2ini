@@ -1,6 +1,7 @@
 import ButtonCssIcon from './components/button-css-icon.js';
 import ToggleButton from './components/toggle-button.js'
 import TreeItem from './components/tree-item.js';
+import GoogleIcon from './components/google-icon.js';
 
 import {PackageModel, FolderModel} from './components/class.js'
 
@@ -11,6 +12,7 @@ const rootApp = createApp({
     ButtonCssIcon,
     ToggleButton,
     TreeItem,
+    GoogleIcon,
   },
   
   setup () {
@@ -124,7 +126,12 @@ const rootApp = createApp({
       const file = e.currentTarget.files[0];
       if (!file) return;
       e.currentTarget.value = null;
-
+      console.log('read aviutl2.ini.');
+      const string = await file.text();
+      createTreeDataFromString(string);
+      if (setting.value.process==='home') setting.value.process = 'labeling';
+    }
+    function createTreeDataFromString (string) {
       // initialize
       initTreeDataMap.forEach(arr=>arr.splice(0));
       treeDataMap.value.forEach(arr=>arr.splice(0));
@@ -141,7 +148,7 @@ const rootApp = createApp({
         [ 'Params',   [] ],
       ]);
 
-      (await file.text())
+      string
         .split(/^\[/mg)
         .filter(Boolean)
         .forEach(el => {
@@ -226,10 +233,7 @@ const rootApp = createApp({
         treeDataMap.value.set(key, resultArr);
         initTreeDataMap.set(key, resultArr.map(model=>model.clone()));
       });
-      console.log('read aviutl2.ini.');
       console.log('init-tree-data-map : ', initTreeDataMap);
-
-      if (setting.value.process==='home') setting.value.process = 'labeling';
     }
 
     async function readInstalledPackage(e) {
@@ -341,9 +345,34 @@ const rootApp = createApp({
       document.getElementById('iniInput').dispatchEvent(new Event('change'));
     }
 
+
+    /** { parent, index } */
+    const insertTarget = ref([]);
+    /** { model, parent, index } */
+    const insertItems = ref([]);
+    const dragData = ref({isDragging: false, startModel: null});
+    const resultDivClass = computed(() => {
+      const targetDownFlag = 
+        dragData.value.startModel === null &&
+        insertTarget.value.at(-1)?.parent === shownTreeData.value && 
+        insertTarget.value.at(-1)?.index === shownTreeData.value.length;
+      return {'target-down': targetDownFlag, };
+    });
+
+    function clearInsertChoice () {
+      insertTarget.value.splice(0);
+      insertItems.value.splice(0);
+    }
+    watch(()=>[setting.value.process, setting.value.type], clearInsertChoice);
+
     function clickNextInput(e) {e.currentTarget.nextElementSibling?.click();}
 
-    function toggleHide (model) {model.props.hide = 1 - model.props.hide;}
+    function bulkSetHide (model, newState, includeDecendant=false) {
+      // パッケージの場合
+      if (!model.children) model.props.hide = newState ? 1 : 0;
+      // フォルダの場合
+      else if (includeDecendant) model.children.forEach(child=>bulkSetHide(child, newState));
+    }
 
     function orderTreeDatas (modelDatas, startOrder=0) {
       if (startOrder===0) console.log('order tree datas', modelDatas[0]?.name);
@@ -362,14 +391,6 @@ const rootApp = createApp({
       });
       return order;
     }
-    
-
-
-    /** { parent, index } */
-    const insertTarget = ref([]);
-    /** { model, parent, index } */
-    const insertItems = ref([]);
-    const modifierKeyFlag = ref({ctrl:null, alt:null, shift:null});
 
     /** 選択フォルダ内の要素をInsertItemsから除く
      * これをしないと要素がフォルダ外に出てしまう
@@ -387,30 +408,45 @@ const rootApp = createApp({
         });
     }
 
-    function bulkSetHide (model, newState, includeDecendant=false) {
-      // パッケージの場合
-      if (!model.children) model.props.hide = newState ? 1 : 0;
-      // フォルダの場合
-      else if (includeDecendant) model.children.forEach(child=>bulkSetHide(child, newState));
+
+
+    // -----------------------
+    //      drag and click
+    // -----------------------
+    function mouseDownNewFolder () {
+      insertItems.value.push({model:new FolderModel(), parent:null, index:null});
+    }
+    function mouseEnterToDropArea (e) {
+      if (!dragData.value.isDragging) return;
+      e.currentTarget.classList.add('target');
+    }
+    function mouseLeaveFromDropArea (e) {
+      if (!dragData.value.isDragging) return;
+      e.currentTarget.classList.remove('target');
+    }
+    function mouseEnterToResultDiv (e) {
+      if (!dragData.value.isDragging) return;
+      const bodyHeight = e.currentTarget.getBoundingClientRect().height;
+      const index = e.offsetY > bodyHeight/2 ? shownTreeData.value.length : 0;
+      insertTarget.value.push({parent: shownTreeData.value, index: index});
+    }
+    function mouseLeaveFromResultDiv (e) {
+      if (!dragData.value.isDragging) return;
+      insertTarget.value.pop();
+    }
+
+    function mouseDownAll (e) {
+      dragData.value.isDragging = true;
+    }
+    function mouseUpAll (e) {
+      dragData.value.isDragging = false;
+      dragData.value.startModel = null;
+      if (!e.ctrlKey) clearInsertChoice();
     }
     
-    function dragStartNewFolder () {
-      insertItems.value.push({model: new FolderModel(), parent:null, index:null});
-    }
-    function clearInsertChoice () {
-      insertTarget.value.splice(0);
-      insertItems.value.splice(0);
-    }
-    watch(()=>[setting.value.process, setting.value.type], clearInsertChoice);
+    function mouseUpDropArea (e, toAll, toTop) {
+      e.currentTarget.classList.remove('target');
 
-    function dragLeaveFromDropArea (e) {
-      console.log(e.target, e.currentTarget);
-      if (e.target.classList.contains('material-symbols-outlined')) return;
-      e.currentTarget.classList.remove('target');
-    }
-    function dropToDropArea (e, toAll, toTop) {
-      e.currentTarget.classList.remove('target');
-      // 前準備
       // フォルダに含まれている子要素をinsertItemsから削除
       deleteChildTreeItem(insertItems.value.map(item=>item.model));
 
@@ -449,35 +485,35 @@ const rootApp = createApp({
       orderTreeDatas(shownTreeData.value);
     }
 
-    const resultDivClass = computed(() => {
-      const targetDownFlag = 
-        insertTarget.value[0]?.parent === shownTreeData.value && 
-        insertTarget.value[0]?.index === shownTreeData.value.length;
-      return {'target-down': targetDownFlag, };
-    });
-    function dragEnterToResultDiv (e) {
-      if (e.offsetY > e.currentTarget.getBoundingClientRect().height-150) {
-        insertTarget.value.push({parent: shownTreeData.value, index: shownTreeData.value.length});
-        console.log('add result div');
-      }
+    function mouseDownResultDiv () {
+      insertTarget.value.unshift({parent: shownTreeData.value, index: 0});
     }
-    function dragLeaveFromResultDiv () {
-      const target = insertTarget.value[0];
-      if (target?.parent===shownTreeData.value && target?.index===shownTreeData.value.length) {
-        console.log('leave result div');
-        insertTarget.value.shift();
+    // drop, drag-end相当
+    function mouseUpResultDiv () {
+      if (dragData.value.startModel) {
+        console.log('this is CLICK, not DROP');
+        return;
       }
-    }
-    function dropToResultDiv () {
-      console.log('-------------');
-      if (!insertTarget.value[0]) {
+      if (!insertTarget.value.length) {
         console.log('drop target is NOT exist.');
         return;
       }
-      console.log('drop for :', toRaw(insertTarget.value[0]));
+      console.log('drop for :', toRaw(insertTarget.value.at(-1)));
 
       // フォルダに含まれている子要素をinsertItemsから削除
       deleteChildTreeItem(insertItems.value.map(item=>item.model));
+
+      const target = insertTarget.value.at(-1);
+      const a = insertItems.value.filter(item=> item.parent === target.parent && item.index < target.index);
+
+      // folderをfolder内部にドロップすると消える対策
+      const isContainingTarget = insertItems.value
+        .filter(item => item.model.children)
+        .some(item => item.model.has(target.parent[target.index]));
+      if (isContainingTarget) {
+        console.log('target is contained in selected folder.');
+        return;
+      }
       
       // 挿入アイテムのソート ... 選択順で追加されてしまうため
       insertItems.value
@@ -495,8 +531,9 @@ const rootApp = createApp({
       });
       
       // 挿入
-      const target = insertTarget.value[0];
-      target.parent.splice(target.index, 0, ...insertItems.value.map(item=>item.model));
+      target.parent.splice(target.index-a.length, 0, ...insertItems.value.map(item=>item.model));
+
+      orderTreeDatas(shownTreeData.value);
     }
 
 
@@ -528,24 +565,26 @@ const rootApp = createApp({
       saveIniFile,
       dropInifile,
       
-      clickNextInput,
-      toggleHide,
-      orderTreeDatas,
-
       insertTarget,
       insertItems,
-      modifierKeyFlag,
-      bulkSetHide,
-      dragStartNewFolder,
-      clearInsertChoice,
-
-      dragLeaveFromDropArea,
-      dropToDropArea,
-
+      dragData,
       resultDivClass,
-      dragEnterToResultDiv,
-      dragLeaveFromResultDiv,
-      dropToResultDiv,
+      clickNextInput,
+      bulkSetHide,
+
+      mouseEnterToDropArea,
+      mouseLeaveFromDropArea,
+      mouseEnterToResultDiv,
+      mouseLeaveFromResultDiv,
+
+      mouseDownAll,
+      mouseUpAll,
+
+      mouseUpDropArea,
+
+      mouseDownResultDiv,
+      mouseUpResultDiv,
+      mouseDownNewFolder,
     }
   }
 });
