@@ -538,23 +538,10 @@ const rootApp = createApp({
 
 
 
-    // ----------------------
-    //       code test
-    // ----------------------
-    async function readTestIniFile() {
-      const string = await fetch("./_test/aviutl2.ini").then(res=>res.text());
-      console.log('read test-aviutl2.ini.');
-      createTreeDataFromString(string);
-      if (setting.value.process==='home') setting.value.process = 'labeling';
-    }
-
-
-
     onMounted(async () => {
       setting.value = await fetch('./data/setting.json').then(res=>res.json());
       defPackageDic = await fetch('./data/default-packages.json').then(res=>res.json());
       fontEquivDic  = await fetch('./data/font-style.json').then(res=>res.json());
-      await readTestIniFile();
     });
 
 
