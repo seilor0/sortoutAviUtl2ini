@@ -122,7 +122,7 @@ export default {
     }
 
     // -----------------------
-    //         test
+    //     drag and click
     // -----------------------
     function mouseEnterExactToTreeItem (e) {
       if (!props.dragData.isDragging) return;
@@ -132,14 +132,6 @@ export default {
       if (!props.dragData.isDragging) return;
       addInsertModels();
     }
-    // function mouseEnterToTreeItem (e) {
-    //   if (!props.dragData.isDragging) return;
-    //   if (e.ctrlKey) {
-    //     addInsertModels();
-    //   } else {
-    //     props.insertTarget.push({parent: props.parentArray, index: props.index});
-    //   }
-    // }
     function mouseEnterToFolderBody (e) {
       if (!props.dragData.isDragging) return;
       const bodyHeight = e.currentTarget.getBoundingClientRect().height;
@@ -179,55 +171,16 @@ export default {
         props.dragData.startModel = null;
       }
     }
-    // function mouseLeaveFromTreeItem (e) {
-    //   if (!props.dragData.isDragging) return;
-      
-    //   if (e.ctrlKey) {
-    //     addInsertModels();
-    //     // start-modelが存在=初めての移動の場合、
-    //     // drag-start相当の処理をする
-    //     if (props.dragData.startModel) {
-    //       if (!props.insertItems.some(dic=>dic.model===props.dragData.startModel.model)) {
-    //         props.insertItems.push(props.dragData.startModel);
-    //       }
-    //       props.dragData.startModel = null;
-    //     }
-
-    //   } else {
-    //     props.insertTarget.pop();
-    //     // folder-body or result-divがドロップ対象になるので、
-    //     // indexをマウス位置に応じて修正
-    //     const bodyRect = e.currentTarget.parentElement.getBoundingClientRect();
-    //     const bodyCenter = (bodyRect.top + bodyRect.bottom) / 2;
-    //     const index = e.pageY > bodyCenter ? props.parentArray.length : 0;
-    //     props.insertTarget.at(-1).index = index;
-        
-    //     // start-modelが存在=初めての移動の場合、
-    //     // drag-start相当の処理をする
-    //     if (props.dragData.startModel) {
-    //       if (!props.insertItems.length) {
-    //         props.insertItems.push(props.dragData.startModel);
-    //         console.log('add: ', props.dragData.startModel.model.name);
-    //       }
-    //       props.dragData.startModel = null;
-    //     }
-    //   }
-    // }
     function mouseLeaveFromFolderBody (e) {
       if (!props.dragData.isDragging) return;
       props.insertTarget.pop();
     }
 
-    // drag-start相当
     function mouseDownTreeItem (e) {
       // drag-start要素を記憶
       if (props.dragData.startModel===null) {
         props.dragData.startModel = {model: props.model, parent: props.parentArray, index: props.index};
       }
-      // if (e.ctrlKey) {
-      // } else {
-      //   props.insertTarget.unshift({parent: props.parentArray, index: props.index});
-      // }
     }
     function mouseDownExactTreeItem () {
       props.insertTarget.unshift({parent: props.parentArray, index: props.index});
@@ -251,22 +204,6 @@ export default {
       // console.log('ctrl-clicked package', props.model);
       toggleInsertModels();
     }
-    // function mouseUpTreeItem (e) {
-      //   if (!props.dragData.isDragging) return;
-      //   if (props.dragData.startModel?.model!==props.model) return;
-  
-      //   if (e.ctrlKey) {
-      //     console.log('ctrl-clicked package', props.model);
-      //     toggleInsertModels();  
-  
-      //   } else {
-      //     console.log('clicked tree-item', props.model);
-      //     if (!props.model.children) {
-      //       toggleHide(props.model);
-      //       function toggleHide (model) {model.props.hide = 1-model.props.hide;}
-      //     }
-      //   }
-      // }  
 
 
     return {
@@ -277,9 +214,6 @@ export default {
       ungroupFolder,
       sortTreeData,
       toggleDetails,
-
-      addInsertModels,
-      toggleInsertModels,
 
       mouseEnterExactToTreeItem,
       mouseEnterCtrlToTreeItem,

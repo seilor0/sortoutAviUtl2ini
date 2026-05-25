@@ -345,9 +345,34 @@ const rootApp = createApp({
       document.getElementById('iniInput').dispatchEvent(new Event('change'));
     }
 
+
+    /** { parent, index } */
+    const insertTarget = ref([]);
+    /** { model, parent, index } */
+    const insertItems = ref([]);
+    const dragData = ref({isDragging: false, startModel: null});
+    const resultDivClass = computed(() => {
+      const targetDownFlag = 
+        dragData.value.startModel === null &&
+        insertTarget.value.at(-1)?.parent === shownTreeData.value && 
+        insertTarget.value.at(-1)?.index === shownTreeData.value.length;
+      return {'target-down': targetDownFlag, };
+    });
+
+    function clearInsertChoice () {
+      insertTarget.value.splice(0);
+      insertItems.value.splice(0);
+    }
+    watch(()=>[setting.value.process, setting.value.type], clearInsertChoice);
+
     function clickNextInput(e) {e.currentTarget.nextElementSibling?.click();}
 
-    function toggleHide (model) {model.props.hide = 1 - model.props.hide;}
+    function bulkSetHide (model, newState, includeDecendant=false) {
+      // パッケージの場合
+      if (!model.children) model.props.hide = newState ? 1 : 0;
+      // フォルダの場合
+      else if (includeDecendant) model.children.forEach(child=>bulkSetHide(child, newState));
+    }
 
     function orderTreeDatas (modelDatas, startOrder=0) {
       if (startOrder===0) console.log('order tree datas', modelDatas[0]?.name);
@@ -366,14 +391,6 @@ const rootApp = createApp({
       });
       return order;
     }
-    
-
-
-    /** { parent, index } */
-    const insertTarget = ref([]);
-    /** { model, parent, index } */
-    const insertItems = ref([]);
-    const dragData = ref({isDragging: false, startModel: null});
 
     /** 選択フォルダ内の要素をInsertItemsから除く
      * これをしないと要素がフォルダ外に出てしまう
@@ -391,30 +408,14 @@ const rootApp = createApp({
         });
     }
 
-    function bulkSetHide (model, newState, includeDecendant=false) {
-      // パッケージの場合
-      if (!model.children) model.props.hide = newState ? 1 : 0;
-      // フォルダの場合
-      else if (includeDecendant) model.children.forEach(child=>bulkSetHide(child, newState));
-    }
 
-    function clearInsertChoice () {
-      insertTarget.value.splice(0);
-      insertItems.value.splice(0);
-    }
-    watch(()=>[setting.value.process, setting.value.type], clearInsertChoice);
-
-    const resultDivClass = computed(() => {
-      const targetDownFlag = 
-        dragData.value.startModel === null &&
-        insertTarget.value.at(-1)?.parent === shownTreeData.value && 
-        insertTarget.value.at(-1)?.index === shownTreeData.value.length;
-      return {'target-down': targetDownFlag, };
-    });
 
     // -----------------------
-    //         test
+    //      drag and click
     // -----------------------
+    function mouseDownNewFolder () {
+      insertItems.value.push({model:new FolderModel(), parent:null, index:null});
+    }
     function mouseEnterToDropArea (e) {
       if (!dragData.value.isDragging) return;
       e.currentTarget.classList.add('target');
@@ -535,10 +536,6 @@ const rootApp = createApp({
       orderTreeDatas(shownTreeData.value);
     }
 
-    function mouseDownNewFolder () {
-      insertItems.value.push({model:new FolderModel(), parent:null, index:null});
-    }
-
 
 
     // ----------------------
@@ -581,17 +578,12 @@ const rootApp = createApp({
       saveIniFile,
       dropInifile,
       
-      clickNextInput,
-      toggleHide,
-      orderTreeDatas,
-
       insertTarget,
       insertItems,
       dragData,
-      bulkSetHide,
-      clearInsertChoice,
-
       resultDivClass,
+      clickNextInput,
+      bulkSetHide,
 
       mouseEnterToDropArea,
       mouseLeaveFromDropArea,
@@ -606,8 +598,6 @@ const rootApp = createApp({
       mouseDownResultDiv,
       mouseUpResultDiv,
       mouseDownNewFolder,
-
-      readTestIniFile,
     }
   }
 });
