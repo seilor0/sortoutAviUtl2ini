@@ -1,4 +1,11 @@
-@layer base, component, state;
+@layer base, layout, component, project, utility, state;
+
+/* base   : b-* */
+/* layout : l-* */
+/* object -- component : c-* */
+/*        -- project   : p-* */
+/*        -- utility   : u-* */
+/* state  : is-* */
 
 .material-symbol-outlined {
   user-select: none;
