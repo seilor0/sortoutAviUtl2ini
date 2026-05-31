@@ -101,7 +101,7 @@
           <div class="sub-sidemenu">
             <div class="new-mofism">
               <div class="new-folder" @mousedown="mouseDownNewFolder">
-                <google-icon class="hover">drag_indicator</google-icon>
+                <google-icon class="is-hover">drag_indicator</google-icon>
                 <google-icon>create_new_folder</google-icon>
                 New Group
                 <google-icon style="font-size: 1.75em;">arrow_right_alt</google-icon>
@@ -154,13 +154,13 @@
                 <toggle-button style="display: flex;justify-content: space-between;"
                   :is-checked="setting.previewFont.enabled" @checked-toggle="value=>setting.previewFont.enabled=value">フォントをプレビュー</toggle-button>
 
-                <p style="margin-block-start: 0.75rem;" :class="{disabled: !setting.previewFont.enabled}">フォントサイズ：</p>
+                <p style="margin-block-start: 0.75rem;" :class="{'is-disabled': !setting.previewFont.enabled}">フォントサイズ：</p>
                 <input type="range" min="1" max="3" step="0.1" style="width: stretch;" 
                   v-model="setting.previewFont.fontSize" 
                   :disabled="!setting.previewFont.enabled"
                 />
 
-                <p style="margin-block-start: 0.25rem;" :class="{disabled: !setting.previewFont.enabled}">デフォルトのフォント：</p>
+                <p style="margin-block-start: 0.25rem;" :class="{'is-disabled': !setting.previewFont.enabled}">デフォルトのフォント：</p>
                 <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled">
                   <option value="" selected>（指定なし）</option>
                   <option v-for="fontFamily in fontFamilySet">{{fontFamily}}</option>
@@ -207,10 +207,10 @@
               <input type="file" id="scriptsInput" style="display: none;" @change="readInstalledPackage" multiple webkitdirectory />
 
               <hr style="margin-block: 0.75rem;">
-  
+
               <div>
                 <toggle-button :is-checked="setting.previewFont.enabled" @checked-toggle="value=>setting.previewFont.enabled=value">フォントをプレビュー</toggle-button>
-                <p style="font-size: smaller;margin-block-start: 0.5rem;" :class="{disabled: !setting.previewFont.enabled}">デフォルトのフォント：</p>
+                <p style="font-size: smaller;margin-block-start: 0.5rem;" :class="{'is-disabled': !setting.previewFont.enabled}">デフォルトのフォント：</p>
                 <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled">
                   <option value="" selected>（指定なし）</option>
                   <option v-for="fontFamily in fontFamilySet">{{fontFamily}}</option>

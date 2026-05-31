@@ -23,7 +23,7 @@
   }
 }
 
-.material-symbols-outlined.hover {
+.material-symbols-outlined.is-hover {
   font-size: calc(1.5rem + 2px);
   color: darkgray;
   position: absolute;
@@ -36,33 +36,33 @@
   margin-inline-end: 0.25rem;
 }
 
-:not(:hover) .hover {display: none;}
+:not(:hover) .is-hover {display: none;}
 
 
 
 /* ---------------------- */
 /*        || event        */
 @layer state {
-  .target:is(.package,.folder,.folder-body)::before,
-  .target-down.folder-body::before {
+  .is-target:is(.package,.folder,.folder-body)::before,
+  .is-target-down.folder-body::before {
     content: '';
     background-color: red;
     width: stretch;
     height: 3px;
     position: absolute;
   }
-  .target.package::before {top: -1px;}
-  .target.folder::before {top: -6px;}
-  .target.folder-body::before {
+  .is-target.package::before {top: -1px;}
+  .is-target.folder::before {top: -6px;}
+  .is-target.folder-body::before {
     width: calc(100% - 2.25rem);
     top: 8px;
   }
-  .target-down.folder-body::before {
+  .is-target-down.folder-body::before {
     width: calc(100% - 2.25rem);
     bottom: 8px;
   }
   
-  .target-down.result > :last-child::before {
+  .is-target-down.result > :last-child::before {
     content: '';
     background-color: red;
     width: stretch;
@@ -71,8 +71,8 @@
     bottom: -6px;
   }
 
-  .target.package {background-color: #ffcdd5;}
-  .target.folder {
+  .is-target.package {background-color: #ffcdd5;}
+  .is-target.folder {
     border-color: red;
     & > summary {
       color: #db1010;
@@ -82,23 +82,23 @@
     }
   }
   
-  .target.folder-body,
-  .target-down.folder-body {background-color: #ffcdd5;}
+  .is-target.folder-body,
+  .is-target-down.folder-body {background-color: #ffcdd5;}
 
   
-  .drop-area.target {
+  .is-target.drop-area {
     color: white;
     background-color: #72bed6;
     border: 2px dotted var(--blue);
   }
 
-  button.round.blue.target {
+  button.round.blue.is-target {
     color: var(--blue);
     background-color: var(--off-white);
     border: 1px solid var(--light-blue);
   }
 
-  .choice {
+  .is-choice {
     background-color: rgb(114 190 214 / 33%);
     border-color: var(--blue);
     & > summary {
@@ -109,14 +109,16 @@
     }
   }
 
-  .hide {
+  .is-hide {
     color: rgb(0 0 0 /0.33);
     &::before {content: '(';}
     &::after  {content: ')';}
   }
 
-  .disabled {opacity: 0.3;}
-
+  .is-disabled {
+    opacity: 0.33;
+    pointer-events: none;
+  }
 }
 /* ---------------------- */
 

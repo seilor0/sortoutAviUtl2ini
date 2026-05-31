@@ -369,7 +369,7 @@ const rootApp = createApp({
         dragData.value.startModel === null &&
         insertTarget.value.at(-1)?.parent === shownTreeData.value && 
         insertTarget.value.at(-1)?.index === shownTreeData.value.length;
-      return {'target-down': targetDownFlag, };
+      return {'is-target-down': targetDownFlag, };
     });
 
     function clearInsertChoice () {
@@ -431,11 +431,11 @@ const rootApp = createApp({
     }
     function mouseEnterToDropArea (e) {
       if (!dragData.value.isDragging) return;
-      e.currentTarget.classList.add('target');
+      e.currentTarget.classList.add('is-target');
     }
     function mouseLeaveFromDropArea (e) {
       if (!dragData.value.isDragging) return;
-      e.currentTarget.classList.remove('target');
+      e.currentTarget.classList.remove('is-target');
     }
     function mouseEnterToResultDiv (e) {
       if (!dragData.value.isDragging) return;
@@ -458,7 +458,7 @@ const rootApp = createApp({
     }
     
     function mouseUpDropArea (e, toAll, toTop) {
-      e.currentTarget.classList.remove('target');
+      e.currentTarget.classList.remove('is-target');
 
       // フォルダに含まれている子要素をinsertItemsから削除
       deleteChildTreeItem(insertItems.value.map(item=>item.model));
