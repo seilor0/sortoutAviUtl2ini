@@ -253,12 +253,11 @@
       </div>
     </div>
 
-    <dialog id="modal" closedby="any" class="basic-dialog blue-header">
-      <header>
-        <h2>使い方 <span style="font-size: 0.7em;">({{setting.process==='home' ? 'Home' : setting.process==='labeling' ? 'ラベル分け' : '設定を削除'}})</span></h2>
-        <button-css-icon icon-name="icon-close" command="close" commandfor="modal"></button-css-icon>
-      </header>
-      <section>
+    <basic-dialog id="modal" class="blue-header">
+      <template #header>
+        使い方 <span style="font-size: 0.7em;">({{setting.process==='home' ? 'Home' : setting.process==='labeling' ? 'ラベル分け' : '設定を削除'}})</span>
+      </template>
+      <template #content>
         <template v-if="setting.process==='home'">
           <div class="setting-div">
             <span>この画面について</span>
@@ -352,8 +351,8 @@
             </div>
           </div>
         </template>
-      </section>
-    </dialog>
+      </template>
+    </basic-dialog>
 
   </div>
   <script type="module" src="code_vue.js"></script>

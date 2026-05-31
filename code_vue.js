@@ -1,7 +1,8 @@
+import BasicDialog from './components/basic-dialog.js';
 import ButtonCssIcon from './components/button-css-icon.js';
+import GoogleIcon from './components/google-icon.js';
 import ToggleButton from './components/toggle-button.js'
 import TreeItem from './components/tree-item.js';
-import GoogleIcon from './components/google-icon.js';
 
 import {PackageModel, FolderModel} from './components/class.js'
 
@@ -9,10 +10,11 @@ const {createApp, ref, computed, watch, onMounted, toRaw} = Vue;
 
 const rootApp = createApp({
   components: {
+    BasicDialog,
     ButtonCssIcon,
+    GoogleIcon,
     ToggleButton,
     TreeItem,
-    GoogleIcon,
   },
   
   setup () {
