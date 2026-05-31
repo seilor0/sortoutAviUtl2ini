@@ -47,7 +47,9 @@ const rootApp = createApp({
       {label:'パッケージ名', value:'name', isAsc:true},
     ]);
 
-    /** 現在インストールされているパッケージのセット */
+    /** 現在インストールされているパッケージのセット
+     * @type {{loaded: boolean, data: Map.<string, Set.string>}}
+     */
     const installedPackage = {
       loaded: false,
       data: new Map([
@@ -60,7 +62,9 @@ const rootApp = createApp({
     const systemArr = [];
     const fontFamilySet = ref(new Set());
 
-    /** FolderModel or PackageModel */
+    /** ツリー形式のパッケージデータ
+     * @type {Map.<string, (FolderModel|PackageModel)[]>}
+     */
     const treeDataMap = ref(new Map([
       [ 'Color',    [] ],
       [ 'Effect',   [] ],
@@ -69,7 +73,9 @@ const rootApp = createApp({
       [ 'Params',   [] ],
     ]));
 
-    /** 読み込み時のtreeDataMap */
+    /** 読み込み時のtreeDataMap
+     * @type {Map.<string, (FolderModel|PackageModel)[]>}
+     */
     const initTreeDataMap = new Map([
       [ 'Color',    [] ],
       [ 'Effect',   [] ],
@@ -81,7 +87,8 @@ const rootApp = createApp({
     const shownTreeData = computed(()=>treeDataMap.value.get(setting.value.type));
     
     /** treeDataMapをflatにしたもの
-     * PackageModel [] */
+     * @type {Map.<string, PackageModel[]>}
+     */
     const packageDataMap = computed(() => {
       const resultMap = new Map();
       treeDataMap.value.forEach((modelDatas, key) => {
@@ -111,7 +118,9 @@ const rootApp = createApp({
       }
     });
 
-    /** PackageModel [] */
+    /** packageDataMapをソートしたもの、「設定を削除」ページ用
+     * @type {Map.<string, PackageModel[]>}
+     */
     const delDupData = computed(() => {
       const sortStyle = setting.value.delDupSort.style;
       const isAsc = setting.value.delDupSort.isAsc ? 1 : -1;
@@ -141,7 +150,9 @@ const rootApp = createApp({
       fontFamilySet.value.clear();
 
       // read file
-      /** PackageModel [] */
+      /** 読み込み時のflatなパッケージデータ
+       * @type {Map<string, PackageModel[]}
+       */
       const initPackageData = new Map([
         [ 'Color',    [] ],
         [ 'Effect',   [] ],
@@ -348,9 +359,9 @@ const rootApp = createApp({
     }
 
 
-    /** { parent, index } */
+    /** @type { {parent: (FolderModel|PackageModel)[], index: number}[] } */
     const insertTarget = ref([]);
-    /** { model, parent, index } */
+    /** @type { {model: Model, parent: (FolderModel|PackageModel)[], index: number}[] } */
     const insertItems = ref([]);
     const dragData = ref({isDragging: false, startModel: null});
     const resultDivClass = computed(() => {

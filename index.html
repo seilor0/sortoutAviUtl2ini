@@ -250,7 +250,10 @@
 
     <basic-dialog id="modal" class="blue-header">
       <template #header>
-        使い方 <span style="font-size: 0.7em;">({{setting.process==='home' ? 'Home' : setting.process==='labeling' ? 'ラベル分け' : '設定を削除'}})</span>
+        使い方 
+        <span style="font-size: 0.7em;">
+          ({{setting.process==='home' ? 'Home' : setting.process==='labeling' ? 'ラベル分け' : '設定を削除'}})
+        </span>
       </template>
       <template #content>
         <template v-if="setting.process==='home'">
