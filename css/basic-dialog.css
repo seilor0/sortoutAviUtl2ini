@@ -64,7 +64,7 @@
     }
   }
 
-  .custom-dialog.blue-header{
+  .basic-dialog.blue-header{
     border-color: var(--blue);
     header {
       color: white;

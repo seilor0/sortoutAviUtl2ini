@@ -14,7 +14,7 @@
   
     input[type=checkbox] {display: none;}
   
-    .slider {
+    .toggle-button__slider {
       position: relative;
       width:  calc(4*var(--radius) + 2*var(--padding));
       height: calc(2*var(--radius) + 2*var(--padding));
@@ -24,7 +24,7 @@
       background-color: #d9d9d9;
       :checked ~ & {background-color: var(--color);}
     }
-    .slider::before {
+    .toggle-button__slider::before {
       content: '';
       aspect-ratio: 1 / 1;
       height: calc(2*var(--radius));
@@ -37,7 +37,7 @@
   
       transition: left var(--transition-time);
     }
-    :checked ~ .slider::before {
+    :checked ~ .toggle-button__slider::before {
       left: calc(2*var(--radius) + var(--padding));
     }
   }
