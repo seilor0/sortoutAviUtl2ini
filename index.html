@@ -136,10 +136,10 @@
               <p style="display: flex;align-items: center;gap: 2px;">
                 <google-icon style="font-size: 1.5em;">sort</google-icon>
                 <span style="flex-grow: 1;">ソート設定：</span>
-                <toggle-button :top-is-slider="false"
-                  :is-checked="setting.labelSort.isAsc" @checked-toggle="val=>setting.labelSort.isAsc=val"
-                  text-checked="昇順" text-not-checked="降順"
-                ></toggle-button>
+                <toggle-button :is-checked="setting.labelSort.isAsc" @checked-toggle="val=>setting.labelSort.isAsc=val">
+                  <template #checked>昇順</template>
+                  <template #not-checked>降順</template>
+                </toggle-button>
               </p>
 
               <select v-model="setting.labelSort.style">
@@ -151,10 +151,8 @@
               <hr color="darkgray" size="1" noshade>
   
               <div>
-                <toggle-button :top-is-slider="false" style="display: flex;justify-content: space-between;"
-                  :is-checked="setting.previewFont.enabled" @checked-toggle="value=>setting.previewFont.enabled=value"
-                  text="フォントをプレビュー"
-                ></toggle-button>
+                <toggle-button style="display: flex;justify-content: space-between;"
+                  :is-checked="setting.previewFont.enabled" @checked-toggle="value=>setting.previewFont.enabled=value">フォントをプレビュー</toggle-button>
 
                 <p style="margin-block-start: 0.75rem;" :class="{disabled: !setting.previewFont.enabled}">フォントサイズ：</p>
                 <input type="range" min="1" max="3" step="0.1" style="width: stretch;" 
@@ -211,10 +209,7 @@
               <hr style="margin-block: 0.75rem;">
   
               <div>
-                <toggle-button :top-is-slider="false"
-                  :is-checked="setting.previewFont.enabled" @checked-toggle="value=>setting.previewFont.enabled=value"
-                  text="フォントをプレビュー"
-                ></toggle-button>
+                <toggle-button :is-checked="setting.previewFont.enabled" @checked-toggle="value=>setting.previewFont.enabled=value">フォントをプレビュー</toggle-button>
                 <p style="font-size: smaller;margin-block-start: 0.5rem;" :class="{disabled: !setting.previewFont.enabled}">デフォルトのフォント：</p>
                 <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled">
                   <option value="" selected>（指定なし）</option>
