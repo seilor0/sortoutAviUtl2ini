@@ -7,8 +7,13 @@
   <title>sort out AviUtl2.ini</title>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,100..700,1,0&icon_names=arrow_left_alt,arrow_right_alt,create_new_folder,drag_indicator,sort" />
-  <link rel="stylesheet" href="../__utility/style.css" />
-  <link rel="stylesheet" href="./style.css" />
+
+  <link rel="stylesheet" href="./css/_base.css" />
+  <link rel="stylesheet" href="./css/basic-dialog.css" />
+  <link rel="stylesheet" href="./css/css-icon.css" />
+  <link rel="stylesheet" href="./css/toggle-button.css" />
+  <link rel="stylesheet" href="./css/__style.css" />
+
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 
@@ -248,7 +253,7 @@
       </div>
     </div>
 
-    <dialog id="modal" closedby="any">
+    <dialog id="modal" closedby="any" class="basic-dialog blue-header">
       <header>
         <h2>使い方 <span style="font-size: 0.7em;">({{setting.process==='home' ? 'Home' : setting.process==='labeling' ? 'ラベル分け' : '設定を削除'}})</span></h2>
         <button-css-icon icon-name="icon-close" command="close" commandfor="modal"></button-css-icon>

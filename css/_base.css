@@ -1,0 +1,27 @@
+@layer base, component, state;
+
+.material-symbol-outlined {
+  user-select: none;
+}
+
+@layer base {
+  :root {
+    --off-white: #fafafa;
+    --light-blue: #a3b7e0;
+    --blue: #326cc2;
+    --blue-gradient: linear-gradient(90deg, #1a5bbd 60%, #1089d3 100%);
+    --pale-green-gradient: linear-gradient(150deg,#e7ecef 40%, #cee8ed 100%);
+
+    --accent: var(--blue);
+    accent-color: var(--accent);
+  }
+  /* || 一般的なスタイル */
+  label {cursor: pointer;}
+  input[type=checkbox] {cursor: pointer;}
+  select {cursor: pointer;}
+  button {cursor: pointer;}
+  
+  /* || カスタムエレメントの共通スタイル */
+  label:has(:checked)   .not-checked {display: none;}
+  label:not(:has(:checked)) .checked {display: none;}
+}

@@ -1,0 +1,75 @@
+@layer component {
+  .basic-dialog {
+    --radius: 0.5em;
+    background-color: var(--off-white);
+    border: 1px solid hsl(210, 13%, 66%);
+    border-radius: var(--radius);
+    scrollbar-color: #ccc transparent;
+    box-shadow: 0px 6px 20px rgb(0 0 0 / 0.2);
+    overflow: hidden auto;
+    padding: 0;
+    
+    max-height: 90%;
+    max-width: 90%;
+    min-width: 20rem;
+  
+    > header {
+      background: var(--pale-green-gradient);
+      border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
+      
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+
+      position: sticky;
+      top: 0;
+  
+      h2 {
+        font-size: 1.2em;
+        font-weight: 500;
+        user-select: none;
+        margin: 0;
+      }
+  
+      .icon-frame {
+        color: slategray;
+        background-color: transparent;
+        border: 1px solid currentColor;
+        border-radius: 3px;
+        padding: 0.5em;
+        font-size: inherit;
+      }
+      .icon {
+        --size: 0.75em;
+        --line-radius: 1px;
+      }
+    }
+  
+    > header,
+    > section,
+    > footer {
+      padding: 0.75em 1em;
+    }
+    > header {
+      padding-inline-end: 0.75em;
+    }
+  
+    > footer {
+      background: var(--pale-green-gradient);
+      border-radius: 0 0 calc(var(--radius) - 1px) calc(var(--radius) - 1px);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5em;
+    }
+  }
+
+  .custom-dialog.blue-header{
+    border-color: var(--blue);
+    header {
+      color: white;
+      background: var(--blue-gradient);
+      .icon-frame {color: currentColor;}
+    }
+  }
+}
