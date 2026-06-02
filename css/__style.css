@@ -42,6 +42,7 @@
 
 /* ---------------------- */
 /*        || event        */
+/* ---------------------- */
 @layer state {
   .is-target:is(.package,.folder,.folder-body)::before,
   .is-target-down.folder-body::before {
@@ -92,7 +93,7 @@
     border: 2px dotted var(--blue);
   }
 
-  button.round.blue.is-target {
+  .round-button.blue.is-target {
     color: var(--blue);
     background-color: var(--off-white);
     border: 1px solid var(--light-blue);
@@ -120,11 +121,11 @@
     pointer-events: none;
   }
 }
-/* ---------------------- */
 
 
 /* ---------------------- */
 /*      || 汎用設定        */
+/* ---------------------- */
 @layer base {
   p {margin: 0;}
   a {color: var(--blue);}
@@ -147,39 +148,25 @@
     border-radius: 4px;
     padding: 1px 0.5rem;
   }
+  h1 {
+    text-align: center;
+    user-select: none;
+    font-weight: 100;
+  }
 }
 /* ---------------------- */
 
 
 /* ---------------------- */
 /*       || layout        */
-@layer component {
-  body {
-    margin: 0;
-    background-color: var(--off-white);
-    scrollbar-color: #ccc transparent;
-  }
-  
-  #root {
-    display: flex;
-    height: 100dvh;
-  }
-  
-  .sidemenu {
-    padding: 1rem 1rem;
-    border-inline-end: 1px solid var(--light-blue);
-    box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
-
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+/* ---------------------- */
+@layer layout {
+  .l-side-bar {
+    padding: 1rem;
     gap: 1rem;
-  
-    position: sticky;
-    top: 0;
     width: 20rem;
 
-    button.round {
+    .round-button {
       width: 75%;
       white-space: nowrap;
     }
@@ -194,12 +181,12 @@
     }
   }
   
-  .main-content {
+  .l-main-content {
     flex: 1;
     overflow-y: auto;
   }
 
-  .tab-ribbon {
+  .l-tab-bar {
     color: white;
     background: var(--blue-gradient);
     height: 2.5rem;
@@ -207,24 +194,25 @@
     display: flex;
     padding-inline: 2.5rem 1rem;
     padding-block: 0.5rem 0;
-    
-    label {
-      border: 1px solid transparent;
-      border-radius: 0.75rem 0.75rem 0 0;
-      align-content: center;
-      padding: 0.375rem 1rem;
-      min-width: 3rem;
-      text-align: center;
-    }
-    label:has(:checked) {
+  }
+  .l-tab {
+    border: 1px solid transparent;
+    border-radius: 0.75rem 0.75rem 0 0;
+    align-content: center;
+    padding: 0.375rem 1rem;
+    min-width: 3rem;
+    text-align: center;
+
+    input[type=radio] {display: none;}
+
+    &:has(:checked) {
       color: var(--blue);
       background-color: var(--off-white);
       font-weight: 600;
     }
-    label:not(:has(:checked)):hover {
+    &:not(:has(:checked)):hover {
       background-color: rgb(0 0 0 / 0.2);
     }
-    input[type=radio] {display: none;}
   }
 
   [data-process] {
@@ -233,13 +221,19 @@
     height: calc(100dvh - 5rem);
     overflow-block: auto;
   }
+  
+  .result {
+    padding-block-end: 20%;
+    height: max-content;
+    user-select: none;
+  }
 }
-/* ---------------------- */
 
 
 /* ---------------------- */
-/*        || each         */
-@layer component {
+/*   imported component   */
+/* ---------------------- */
+@layer project {
   .toggle-button {
     --radius: 7px;
     color: var(--accent);
@@ -247,58 +241,68 @@
     justify-content: flex-start;
   }
 
-  label.round,
-  button.round {
-    color: var(--blue);
-    background-color: var(--off-white);
-    border: 1px solid var(--light-blue);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    font-size: smaller;
-    font-weight: 600;
-    text-align: center;
-    border-radius: 2.5rem;
-    min-height: 2.5rem;
-    min-width: fit-content;
-    padding: 4px 0.5rem;
+  .invert-el {
+    --line-color: var(--light-blue);
+    --active-back-color: var(--blue-gradient);
+  }
 
-    &.blue {
-      color: white;
-      background: var(--blue-gradient);
-      border-color: white;
+  .link {
+    font-weight: 500;
+  }
+
+  .basic-dialog {
+    width: max-content;
+    max-width: min(50rem,90dvw);
+    user-select: none;
+
+    header {
+      padding-inline-start: 2rem;
     }
-    &:hover {
+
+    section {
+      padding: 1rem 2rem;
+      h3 {
+        border-block-end: 1px solid darkgray;
+        margin-block: 1.5rem 0;
+        &:first-child {margin-block-start: 0;}
+      }
+    }
+  }
+
+  .setting-div {
+    margin-block: 1rem;
+    > :nth-child(odd) {
+      background-color: var(--light-blue);
+    }
+  }
+}
+
+
+/* ---------------------- */
+/*    project component   */
+/* ---------------------- */
+@layer component {
+  .round-tag {
+    color: var(--light-blue);
+    border: 1px solid currentColor;
+    box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.2);
+    padding: 0.25rem 1rem;
+    height: 1.5rem;
+    border-radius: 1.5rem;
+    align-content: center;
+    text-align: center;
+    
+    &:active {
       text-decoration: underline;
     }
-  }
-  button.round {
-    &:active {
+    &:has(:checked) {
       color: white;
       background: var(--blue-gradient);
-      border-color: white;
     }
-    &.blue:active {
-      color: var(--blue);
-      background-color: var(--off-white);
-      border-color: var(--light-blue);
-    }
-  }
-
-  button.link {
-    color: var(--blue);
-    background-color: transparent;
-    border: none;
-    font-size: 1em;
-    font-weight: 500;
-    text-decoration: underline;
+    input {display: none;}
   }
   
-  h1 {
-    text-align: center;
-    user-select: none;
-    font-weight: 100;
-  }
-  
-  .sub-sidemenu {
+  .float-menu {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -311,7 +315,7 @@
     top: 0;
   }
 
-  .new-mofism{
+  .new-mofism-card {
     border: 1px solid white;
     padding: 1rem 1.5rem;
     border-radius: 1.5rem;
@@ -329,30 +333,6 @@
     p {font-size: smaller;}
   }
 
-  .select-tag {
-    color: var(--light-blue);
-    border: 1px solid var(--light-blue);
-    box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.2);
-    padding: 0.25rem 1rem;
-    height: 1.5rem;
-    border-radius: 1.5rem;
-    align-content: center;
-    text-align: center;
-    
-    &:has(:checked) {
-      color: white;
-      background: var(--blue-gradient);
-      border-color: white;
-    }
-    input {display: none;}
-  }
-
-  .result {
-    padding-block-end: 20%;
-    height: max-content;
-    user-select: none;
-  }
-
   .annotation {
     color: rgb(0 0 0 /0.5);
     font-size: calc(1em - 1px);
@@ -360,7 +340,7 @@
 }
 
 /*   ホーム　ページ   */
-@layer component {
+@layer project {
   [data-process=home] {
     h2 {margin: 0;}
     h3 {
@@ -373,24 +353,25 @@
       font-weight: 600;
     }
     li {margin-block: 0.75rem;}
-    li::marker {color: var(--blue);}
   }
 }
 
 /* 重複を削除　ページ */
-@layer component {
-  [data-process=del-dup] {
-    .see-through {color: rgb(0 0 0 /0.4);}
+@layer project {
+  .see-through {color: rgb(0 0 0 /0.4);}
+    
+  .del-dup-table {
+    border-collapse: collapse;
+    user-select: none;
+    width: stretch;
+    min-width: 36rem;
+    font-weight: 300;
 
-    table {
-      border-collapse: collapse;
-      user-select: none;
-      width: stretch;
-      min-width: 36rem;
-      font-weight: 300;
+    thead {
+      white-space: nowrap;
+      color: white;
+      background: var(--blue-gradient);
     }
-
-    thead {white-space: nowrap;}
     thead input[type=radio] {display: none;}
     thead label {display: block;}
     thead th:has(:checked) {
@@ -414,8 +395,6 @@
 
     tbody td {border-block: 1px solid rgb(0 0 0 /0.25);}
     th {
-      color: white;
-      background-color: var(--blue);
       font-size: calc(1em - 2px);
       font-weight: 400;
       text-align: center;
@@ -426,7 +405,7 @@
 }
 
 /* ラベリング　ページ */
-@layer component {
+@layer project {
   .new-folder {
     color: #a29d13;
     border: 1px solid #d7d02b;
@@ -470,24 +449,6 @@
     font-size: calc(1rem - 2px);
     display: inline-flex;
     align-items: center;
-  }
-
-  .setting-div {
-    margin-block: 1rem;
-    display: grid;
-    align-items: center;
-    grid-template-columns: max-content auto;
-    gap: 1rem;
-
-    > :nth-child(odd) {
-      color: white;
-      background-color: var(--light-blue);
-      font-size: calc(1rem - 1px);
-      border-radius: 4px;
-      padding: 4px 0.5rem;
-      text-align: center;
-      align-content: center;
-    }
   }
 }
 
@@ -571,32 +532,5 @@
     border-end-start-radius: 0.5rem;
     border-end-end-radius: 0.5rem;
     position: relative;
-  }
-}
-
-/* modal */
-@layer component {
-  dialog {
-    border-radius: 0.75rem;
-    width: max-content;
-    max-width: min(50rem,90dvw);
-    user-select: none;
-
-    header {
-      border-block-end: 1px solid var(--blue);
-      padding: 0.5rem;
-      padding-inline-start: 2rem;
-    }
-    h3 {
-      border-block-end: 1px solid darkgray;
-      margin-block: 1.5rem 0;
-      &:first-child {margin-block-start: 0;}
-    }
-    li {margin-block: 0.75rem;}
-    li::marker {color: var(--light-blue);}
-
-    section {
-      padding: 1rem 2rem;
-    }
   }
 }

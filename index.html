@@ -20,15 +20,15 @@
 <body>
   <div id="root">
 
-    <div class="sidemenu" @dragover.prevent @drop.prevent="dropInifile">
+    <div class="l-side-bar l-side-bar__content" @dragover.prevent @drop.prevent="dropInifile">
       <h1>sort out<br>AviUtl2.ini</h1>
 
-      <button class="round blue" @click="clickNextInput">aviutl2.iniを読み込む</button>
+      <button class="round-button invert-el invert" @click="clickNextInput">aviutl2.iniを読み込む</button>
       <input type="file" id="iniInput" accept=".ini" style="display: none;" @change="readIniFile">
 
-      <button class="round blue" @click="saveIniFile">iniファイルを保存</button>
-      <button class="round" @click="resetPackageData">読み込み時の設定に戻す</button>
-      <button class="round" @click="clear">クリア</button>
+      <button class="round-button invert-el invert" @click="saveIniFile">iniファイルを保存</button>
+      <button class="round-button invert-el" @click="resetPackageData">読み込み時の設定に戻す</button>
+      <button class="round-button invert-el" @click="clear">クリア</button>
 
       <div>
         <button class="link" command="show-modal" commandfor="modal">使い方</button>
@@ -36,19 +36,15 @@
       </div>
     </div>
 
-    <div class="main-content">
-      <div class="tab-ribbon">
-        <label>
-          <input type="radio" value="home" v-model="setting.process" />
-          Home
-        </label>
-        <label>
-          <input type="radio" value="labeling" v-model="setting.process" />
-          ラベル分け
-        </label>
-        <label>
-          <input type="radio" value="del-dup" v-model="setting.process" />
-          設定を削除
+    <div class="l-main-content">
+      <div class="l-tab-bar">
+        <label class="l-tab" v-for="dic in [
+          {name: 'Home', value: 'home'},
+          {name: 'ラベル分け', value: 'labeling'},
+          {name: '設定を削除', value: 'del-dup'},
+        ]">
+          <input type="radio" :value="dic.value" v-model="setting.process" name="process" />
+          {{dic.name}}
         </label>
       </div>
 
@@ -65,7 +61,7 @@
             <li>
               「アプリケーションデータ」フォルダ内の<code>aviutl2.ini</code>を読み込む<br>
               <span class="annotation">
-                ※「アプリケーションデータ」フォルダはAviUtl2の<code>「その他」メニュー > 「アプリケーションデータ」 > 「アプリケーションデータフォルダ」</code>から開くことができます
+                ※「アプリケーションデータ」フォルダはAviUtl2の<mark>「その他」メニュー > 「アプリケーションデータ」 > 「アプリケーションデータフォルダ」</mark>から開くことができます
               </span>
             </li>
             <li>各種変更する</li>
@@ -91,15 +87,15 @@
           @mousedown.capture="mouseDownAll"
           @mouseup="mouseUpAll"
         >
-          <aside class="sub-sidemenu">
-            <label v-for="name in treeDataMap.keys()" class="select-tag">
+          <aside class="float-menu">
+            <label v-for="name in treeDataMap.keys()" class="round-tag">
               <input type="radio" :value="name" v-model="setting.type" />
               {{name}}
             </label>
           </aside>
 
-          <div class="sub-sidemenu">
-            <div class="new-mofism">
+          <div class="float-menu">
+            <div class="new-mofism-card">
               <div class="new-folder" @mousedown="mouseDownNewFolder">
                 <google-icon class="is-hover">drag_indicator</google-icon>
                 <google-icon>create_new_folder</google-icon>
@@ -121,11 +117,11 @@
               </div>
             </div>
 
-            <div class="new-mofism" style="margin-block-start: 0.5rem;"
+            <div class="new-mofism-card" style="margin-block-start: 0.5rem;"
               @mousedown.stop
               @mouseup.stop
             >
-              <label class="round">
+              <label class="round-button invert-el">
                 選択パッケージを<br>
                 {{setting.setToHide ? '非表示にする' : '表示する'}}
                 <input type="checkbox" v-model="setting.setToHide" style="display: none;" @change="insertItems.forEach(item=>bulkSetHide(item.model, !$event.currentTarget.checked, true))" />
@@ -189,18 +185,18 @@
         </div>
 
         <div v-else-if="setting.process==='del-dup'" style="display:flex;gap:3rem;">
-          <aside class="sub-sidemenu">
-            <label v-for="name in treeDataMap.keys()" class="select-tag">
+          <aside class="float-menu">
+            <label v-for="name in treeDataMap.keys()" class="round-tag">
               <input type="radio" :value="name" v-model="setting.type" />
               {{name}}
             </label>
             
-            <div class="new-mofism" style="margin-block-start: 1rem;padding: 1rem;">
+            <div class="new-mofism-card" style="margin-block-start: 1rem;padding: 1rem;">
               <p>
                 アンインストール済スクリプトの<br>
                 設定をまとめて削除→
               </p>
-              <button class="round blue" style="height: 3.5rem;" @click="clickNextInput">
+              <button class="round-button invert-el invert" style="height: 3.5rem;" @click="clickNextInput">
                 アプリケーション<br>
                 データフォルダを選択
               </button>
@@ -220,7 +216,7 @@
           </aside>
 
           <div class="result">
-            <table>
+            <table class="del-dup-table">
               <thead>
                 <tr>
                   <th v-for="dic in delDupSortType">
