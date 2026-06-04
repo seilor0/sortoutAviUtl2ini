@@ -290,10 +290,11 @@
     grid-template-columns: max-content auto;
     align-items: center;
     gap: 1em;
+    height: fit-content;
 
     > :nth-child(odd) {
-      color: white;
-      background-color: lightslategray;
+      color: darkslategray;
+      background: var(--pale-green-gradient);
       font-size: calc(1em - 1px);
       border-radius: 4px;
       padding: 4px 0.5em;
