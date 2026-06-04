@@ -43,6 +43,7 @@
       .icon {
         --size: 0.75em;
         --line-radius: 1px;
+        color: unset;
       }
     }
   
