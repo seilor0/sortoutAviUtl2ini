@@ -124,7 +124,7 @@
 
 
 /* ---------------------- */
-/*      || 汎用設定        */
+/*     || base, reset     */
 /* ---------------------- */
 @layer base {
   p {margin: 0;}
@@ -160,17 +160,18 @@
 /* ---------------------- */
 /*       || layout        */
 /* ---------------------- */
+/* imported */
 @layer layout {
   .l-side-bar {
     padding: 1rem;
     gap: 1rem;
     width: 20rem;
-
+  
     .round-button {
       width: 75%;
       white-space: nowrap;
     }
-
+  
     > :last-child {
       flex-grow: 1;
       margin-block-end: 2rem;
@@ -180,7 +181,12 @@
       gap: 1rem;
     }
   }
-  
+
+}
+
+
+/* project */
+@layer layout {
   .l-main-content {
     flex: 1;
     overflow-y: auto;
@@ -233,7 +239,7 @@
 /* ---------------------- */
 /*   imported component   */
 /* ---------------------- */
-@layer project {
+@layer component {
   .toggle-button {
     --radius: 7px;
     color: var(--accent);
@@ -340,7 +346,7 @@
 }
 
 /*   ホーム　ページ   */
-@layer project {
+@layer component {
   [data-process=home] {
     h2 {margin: 0;}
     h3 {
@@ -357,7 +363,7 @@
 }
 
 /* 重複を削除　ページ */
-@layer project {
+@layer component {
   .see-through {color: rgb(0 0 0 /0.4);}
     
   .del-dup-table {
@@ -405,7 +411,7 @@
 }
 
 /* ラベリング　ページ */
-@layer project {
+@layer component {
   .new-folder {
     color: #a29d13;
     border: 1px solid #d7d02b;
