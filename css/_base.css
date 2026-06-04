@@ -20,6 +20,9 @@
     --off-white: #fafafa;
     --light-blue: #a3b7e0;
     --blue: #326cc2;
+    --cool-gray: #e7ecef;
+    --sky-blue: #1089d3;
+
     --blue-gradient: linear-gradient(90deg, #1a5bbd 60%, #1089d3 100%);
     --pale-green-gradient: linear-gradient(150deg,#e7ecef 40%, #cee8ed 100%);
 
@@ -165,24 +168,24 @@
     --back-color: var(--off-white);
     --line-color: var(--text-color);
     
-    --avtive-text-color: white;
+    --active-text-color: white;
     --active-back-color: var(--text-color);
-    --avtive-line-color: var(--active-text-color);
+    --active-line-color: var(--active-text-color);
 
     color: var(--text-color);
     background: var(--back-color);
     border: 1px solid var(--line-color);
 
     &:active {
-      color: var(--avtive-text-color);
+      color: var(--active-text-color);
       background: var(--active-back-color);
-      border-color: var(--avtive-line-color);
+      border-color: var(--active-line-color);
     }
   }
   .invert-el.invert {
-    color: var(--avtive-text-color);
+    color: var(--active-text-color);
     background: var(--active-back-color);
-    border-color: var(--avtive-line-color);
+    border-color: var(--active-line-color);
     &:active {
       color: var(--text-color);
       background: var(--back-color);
@@ -219,18 +222,18 @@
     --back-color: transparent;
     --line-color: hsl(from var(--text-color) h s calc(l - 10));
     
-    --avtive-text-color: white;
+    --active-text-color: white;
     --active-back-color: hsl(from var(--text-color) h s calc(l + 7));
-    --avtive-line-color: hsl(from var(--text-color) h s calc(l - 10));
+    --active-line-color: hsl(from var(--text-color) h s calc(l - 10));
     
     color: var(--text-color);
     background-color: var(--back-color);
     border: 1px solid var(--line-color);
     
     &:has(:checked) {
-      color: var(--avtive-text-color);
+      color: var(--active-text-color);
       background: var(--active-back-color);
-      border-color: var(--avtive-line-color);
+      border-color: var(--active-line-color);
     }
 
     input[type=checkbox] {display: none;}
@@ -262,7 +265,7 @@
   
     &.dark {
       --active-back-color: hsl(from var(--text-color) h s calc(l - 20));
-      --avtive-line-color: var(--text-color);
+      --active-line-color: var(--text-color);
     }
   }
 
