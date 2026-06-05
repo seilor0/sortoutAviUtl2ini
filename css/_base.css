@@ -216,59 +216,6 @@
     }
   }
 
-  .button-tag,
-  .flag-tag {
-    --text-color: var(--accent);
-    --back-color: transparent;
-    --line-color: hsl(from var(--text-color) h s calc(l - 10));
-    
-    --active-text-color: white;
-    --active-back-color: hsl(from var(--text-color) h s calc(l + 7));
-    --active-line-color: hsl(from var(--text-color) h s calc(l - 10));
-    
-    color: var(--text-color);
-    background-color: var(--back-color);
-    border: 1px solid var(--line-color);
-    
-    &:has(:checked) {
-      color: var(--active-text-color);
-      background: var(--active-back-color);
-      border-color: var(--active-line-color);
-    }
-
-    input[type=checkbox] {display: none;}
-  }
-
-  .button-tag {
-    font-size: calc(1em - 1px);
-    font-weight: 500;
-    align-content: center;
-    white-space: nowrap;
-    
-    border-radius: 2px;
-    padding: 2px 4px;
-  
-  }
-  .button-tag.round {
-    border-radius: 10em;
-    padding-inline: 0.75em;
-  }
-
-  .flag-tag {
-    font-size: calc(1em - 1px);
-    font-weight: 500;
-    align-content: center;
-    
-    border-radius: 2px;
-    border-inline-start-width: 0.25em;
-    padding: 2px 0.375em;
-  
-    &.dark {
-      --active-back-color: hsl(from var(--text-color) h s calc(l - 20));
-      --active-line-color: var(--text-color);
-    }
-  }
-
 
   .link {
     color: var(--accent);
