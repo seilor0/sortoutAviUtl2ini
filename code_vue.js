@@ -1,7 +1,8 @@
+import BasicDialog from './components/basic-dialog.js';
 import ButtonCssIcon from './components/button-css-icon.js';
+import GoogleIcon from './components/google-icon.js';
 import ToggleButton from './components/toggle-button.js'
 import TreeItem from './components/tree-item.js';
-import GoogleIcon from './components/google-icon.js';
 
 import {PackageModel, FolderModel} from './components/class.js'
 
@@ -9,10 +10,11 @@ const {createApp, ref, computed, watch, onMounted, toRaw} = Vue;
 
 const rootApp = createApp({
   components: {
+    BasicDialog,
     ButtonCssIcon,
+    GoogleIcon,
     ToggleButton,
     TreeItem,
-    GoogleIcon,
   },
   
   setup () {
@@ -45,7 +47,9 @@ const rootApp = createApp({
       {label:'パッケージ名', value:'name', isAsc:true},
     ]);
 
-    /** 現在インストールされているパッケージのセット */
+    /** 現在インストールされているパッケージのセット
+     * @type {{loaded: boolean, data: Map.<string, Set.string>}}
+     */
     const installedPackage = {
       loaded: false,
       data: new Map([
@@ -58,7 +62,9 @@ const rootApp = createApp({
     const systemArr = [];
     const fontFamilySet = ref(new Set());
 
-    /** FolderModel or PackageModel */
+    /** ツリー形式のパッケージデータ
+     * @type {Map.<string, (FolderModel|PackageModel)[]>}
+     */
     const treeDataMap = ref(new Map([
       [ 'Color',    [] ],
       [ 'Effect',   [] ],
@@ -67,7 +73,9 @@ const rootApp = createApp({
       [ 'Params',   [] ],
     ]));
 
-    /** 読み込み時のtreeDataMap */
+    /** 読み込み時のtreeDataMap
+     * @type {Map.<string, (FolderModel|PackageModel)[]>}
+     */
     const initTreeDataMap = new Map([
       [ 'Color',    [] ],
       [ 'Effect',   [] ],
@@ -79,7 +87,8 @@ const rootApp = createApp({
     const shownTreeData = computed(()=>treeDataMap.value.get(setting.value.type));
     
     /** treeDataMapをflatにしたもの
-     * PackageModel [] */
+     * @type {Map.<string, PackageModel[]>}
+     */
     const packageDataMap = computed(() => {
       const resultMap = new Map();
       treeDataMap.value.forEach((modelDatas, key) => {
@@ -109,7 +118,9 @@ const rootApp = createApp({
       }
     });
 
-    /** PackageModel [] */
+    /** packageDataMapをソートしたもの、「設定を削除」ページ用
+     * @type {Map.<string, PackageModel[]>}
+     */
     const delDupData = computed(() => {
       const sortStyle = setting.value.delDupSort.style;
       const isAsc = setting.value.delDupSort.isAsc ? 1 : -1;
@@ -139,7 +150,9 @@ const rootApp = createApp({
       fontFamilySet.value.clear();
 
       // read file
-      /** PackageModel [] */
+      /** 読み込み時のflatなパッケージデータ
+       * @type {Map<string, PackageModel[]}
+       */
       const initPackageData = new Map([
         [ 'Color',    [] ],
         [ 'Effect',   [] ],
@@ -346,9 +359,9 @@ const rootApp = createApp({
     }
 
 
-    /** { parent, index } */
+    /** @type { {parent: (FolderModel|PackageModel)[], index: number}[] } */
     const insertTarget = ref([]);
-    /** { model, parent, index } */
+    /** @type { {model: Model, parent: (FolderModel|PackageModel)[], index: number}[] } */
     const insertItems = ref([]);
     const dragData = ref({isDragging: false, startModel: null});
     const resultDivClass = computed(() => {
@@ -356,7 +369,7 @@ const rootApp = createApp({
         dragData.value.startModel === null &&
         insertTarget.value.at(-1)?.parent === shownTreeData.value && 
         insertTarget.value.at(-1)?.index === shownTreeData.value.length;
-      return {'target-down': targetDownFlag, };
+      return {'is-target-down': targetDownFlag, };
     });
 
     function clearInsertChoice () {
@@ -418,11 +431,11 @@ const rootApp = createApp({
     }
     function mouseEnterToDropArea (e) {
       if (!dragData.value.isDragging) return;
-      e.currentTarget.classList.add('target');
+      e.currentTarget.classList.add('is-target');
     }
     function mouseLeaveFromDropArea (e) {
       if (!dragData.value.isDragging) return;
-      e.currentTarget.classList.remove('target');
+      e.currentTarget.classList.remove('is-target');
     }
     function mouseEnterToResultDiv (e) {
       if (!dragData.value.isDragging) return;
@@ -445,7 +458,7 @@ const rootApp = createApp({
     }
     
     function mouseUpDropArea (e, toAll, toTop) {
-      e.currentTarget.classList.remove('target');
+      e.currentTarget.classList.remove('is-target');
 
       // フォルダに含まれている子要素をinsertItemsから削除
       deleteChildTreeItem(insertItems.value.map(item=>item.model));

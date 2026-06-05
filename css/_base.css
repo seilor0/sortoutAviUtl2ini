@@ -1,0 +1,252 @@
+@layer base, layout, component, utility, state;
+
+/* base   : b-* */
+/* layout : l-* */
+/* object -- component : c-* */
+/*        -- project   : p-* */
+/*        -- utility   : u-* */
+/* state  : is-* */
+
+.material-symbol-outlined {
+  user-select: none;
+}
+
+/* ---------------------- */
+/*     || base, reset     */
+/* ---------------------- */
+
+@layer base {
+  :root {
+    --off-white: #fafafa;
+    --light-blue: #a3b7e0;
+    --blue: #326cc2;
+    --cool-gray: #e7ecef;
+    --sky-blue: #1089d3;
+
+    --blue-gradient: linear-gradient(90deg, #1a5bbd 60%, #1089d3 100%);
+    --pale-green-gradient: linear-gradient(150deg,#e7ecef 40%, #cee8ed 100%);
+
+    --accent: var(--blue);
+    accent-color: var(--accent);
+  }
+  /* || 一般的なスタイル */
+  label {cursor: pointer;}
+  input[type=checkbox] {cursor: pointer;}
+  select {cursor: pointer;}
+  button {
+    user-select: none;
+    cursor: pointer;
+  }
+  
+  /* || カスタムエレメントの共通スタイル */
+  label:has(:checked)   .not-checked {display: none;}
+  label:not(:has(:checked)) .checked {display: none;}
+}
+
+
+/* ---------------------- */
+/*       || layout        */
+/* ---------------------- */
+@layer layout {
+  html {height: 100%;}
+
+  body {
+    font-family: var(--basic-font);
+    margin:0;
+    height: 100%;
+  }
+  
+  #root {
+    display: flex;
+    min-height: stretch;
+    min-width: stretch;
+    width: fit-content;
+    background-color: var(--off-white);
+    scrollbar-color: #ccc transparent;
+  }
+
+  main {
+    display: flex;
+    flex: 1;
+  }
+}
+
+
+@layer layout {
+  .l-side-bar {
+    border-inline-end: 1px solid darkgray;
+    box-shadow: 2px -4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  .l-side-bar__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    white-space: nowrap;
+  
+    position: sticky;
+    top: 0;
+  }
+
+  .l-basic-footer {
+    color: #6a7787;
+    background: var(--pale-green-gradient);
+    
+    border-block-start: 1px solid darkgray;
+    font-size: 0.75rem;
+    font-weight: 400;
+    padding: 1rem 1.5rem;
+
+    h2 {
+      font-weight: 600;
+      font-size: larger;
+      margin-block: 0.25rem;
+    }
+    
+    ul {
+      padding-inline-start: 2.5ch;
+      margin-block: 0;
+      li {margin-block: 0.25rem;}
+  
+      @media (max-width:600px) {
+        max-width: calc(100vw - 3rem);
+        box-sizing: border-box;
+      }
+    }
+  
+    table {
+      border-collapse: collapse;
+      font-size: small;
+      letter-spacing: 0.5px;
+      margin-block-start: 0.5rem;
+      width: 55ch;
+      @media (max-width:600px) {width: stretch}
+  
+      tr {
+        vertical-align: baseline;
+        border-block: 1px solid #aaa;
+      }
+  
+      th,td {
+        padding: 0.25rem;
+        font-weight: unset;
+        text-align: left;
+        tbody & {padding-block-start: 0.5rem;}
+        &:first-child {width: 20%}
+        &:nth-child(2){width: 20%}
+      }
+    }
+  }
+
+  .l-basic-footer__content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-self: center;
+    justify-content: center;
+    gap: 1rem 3rem;
+
+    padding-block-end: 0.75rem;
+    width: max-content;
+    max-width: calc(100vw - 3rem);
+    
+    @media(max-width: 600px) {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  }
+}
+
+
+
+/* ---------------------- */
+/*      || component      */
+/* ---------------------- */
+@layer component {
+  .invert-el {
+    --text-color: var(--accent);
+    --back-color: var(--off-white);
+    --line-color: var(--text-color);
+    
+    --active-text-color: white;
+    --active-back-color: var(--text-color);
+    --active-line-color: var(--active-text-color);
+
+    color: var(--text-color);
+    background: var(--back-color);
+    border: 1px solid var(--line-color);
+
+    &:active {
+      color: var(--active-text-color);
+      background: var(--active-back-color);
+      border-color: var(--active-line-color);
+    }
+  }
+  .invert-el.invert {
+    color: var(--active-text-color);
+    background: var(--active-back-color);
+    border-color: var(--active-line-color);
+    &:active {
+      color: var(--text-color);
+      background: var(--back-color);
+      border-color: var(--line-color);
+    }
+  }
+
+
+  .round-button {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-size: smaller;
+    font-weight: 600;
+    text-align: center;
+    user-select: none;
+
+    border-radius: 3em;
+    min-height: 3em;
+    min-width: fit-content;
+    padding: 4px 0.6em;
+
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+
+  .link {
+    color: var(--accent);
+    background-color: transparent;
+    border: none;
+    font-size: 1em;
+    font-weight: 400;
+    text-decoration: underline;
+  }
+}
+
+
+/* ---------------------- */
+/*    component - card    */
+/* ---------------------- */
+@layer component {
+  .setting-div {
+    display: grid;
+    grid-template-columns: max-content auto;
+    align-items: center;
+    gap: 1em;
+    height: fit-content;
+
+    > :nth-child(odd) {
+      color: darkslategray;
+      background: var(--pale-green-gradient);
+      font-size: calc(1em - 1px);
+      border-radius: 4px;
+      padding: 4px 0.5em;
+      text-align: center;
+      align-content: center;
+    }
+  }
+}

@@ -44,10 +44,9 @@ export default {
         props.insertTarget.at(-1)?.parent === props.parentArray && 
         props.insertTarget.at(-1)?.index === props.index;
 
-      return {
-        target: targetFlag, 
-        choice: props.insertItems.some(dic=>dic.model===props.model)
-      }
+      const choiceFlag = props.insertItems.some(dic=>dic.model===props.model);
+
+      return {'is-target': targetFlag, 'is-choice': choiceFlag};
     });
 
     const folderBodyClass = computed(() => {
@@ -60,7 +59,7 @@ export default {
         props.insertTarget.at(-1)?.parent === props.model.children && 
         props.insertTarget.at(-1)?.index === props.model.children.length;
 
-      return { 'target': targetFlag, 'target-down': targetDownFlag, };
+      return { 'is-target': targetFlag, 'is-target-down': targetDownFlag, };
     });
 
 
@@ -245,7 +244,7 @@ export default {
     @mouseup.ctrl="mouseUpCtrlTreeItem"
   >
     <summary @click.stop.prevent="if (!$event.ctrlKey) toggleDetails(!model.isOpen, model, parentArray, $event.shiftKey, $event.altKey);">
-      <google-icon class="hover">drag_indicator</google-icon>
+      <google-icon class="is-hover">drag_indicator</google-icon>
       <div>
         <span class="folder-name-wrap">
           <input type="text" v-model="model.name" class="folder-name" placeholder="グループ名を入力" @click.exact.stop />
@@ -272,7 +271,7 @@ export default {
     </div>
   </details>
   
-  <p v-else v-if="!model.toDelete" class="package" :class="{hide: model.props.hide, ...treeItemClass}" :style="packageStyle"
+  <p v-else v-if="!model.toDelete" class="package" :class="{'is-hide': model.props.hide, ...treeItemClass}" :style="packageStyle"
     @mouseenter.exact="mouseEnterExactToTreeItem"
     @mouseenter.ctrl="mouseEnterCtrlToTreeItem"
     @mouseleave.exact="mouseLeaveExactFromTreeItem"
@@ -282,7 +281,7 @@ export default {
     @mouseup.exact="mouseUpExactTreeItem"
     @mouseup.ctrl="mouseUpCtrlTreeItem"
   >
-    <google-icon class="hover">drag_indicator</google-icon>{{model.name}}
+    <google-icon class="is-hover">drag_indicator</google-icon>{{model.name}}
   </p>
   `
 }

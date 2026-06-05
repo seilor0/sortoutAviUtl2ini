@@ -1,0 +1,63 @@
+@layer component {
+  .icon-frame {
+    cursor: pointer;
+    width: max-content;
+    height: max-content;
+  }
+  
+  .icon {
+    --size: 1rem;
+    --line-radius: 2px;
+  
+    aspect-ratio: 1;
+    width: var(--size);
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+  
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      background-color: currentColor;
+      border-radius: var(--line-radius);
+    }
+  }
+  
+  .icon-plus {
+    &::before,&::after {
+      height: var(--size);
+      width: calc(2 * var(--line-radius));
+      translate: calc(-1 * var(--line-radius));
+    }
+    &::after {rotate: 90deg;}
+  }
+  
+  .icon-minus::before {
+    height: calc(2*var(--line-radius));
+    width: var(--size);
+    translate: calc(-0.5 * var(--size)) calc(0.5 * var(--size) - var(--line-radius));
+  }
+  
+  .icon-close {
+    &::before,&::after {
+      height: calc(1.4*var(--size));
+      width:  calc(2*var(--line-radius));
+      translate: calc(-1 * var(--line-radius)) calc(-0.2 * var(--size));
+    }
+    &::before {rotate: 45deg;}
+    &::after {rotate: -45deg;}
+  }
+  
+  /* デフォルト上向き */
+  .icon-arrow {
+    transition: rotate 0.2s;
+    &::before, &::after {
+      height: calc(var(--size) * 0.7);
+      width:  calc(var(--line-radius) * 2);
+      transform-origin: var(--line-radius) var(--line-radius);
+      translate: calc(-1 * var(--line-radius)) calc(0.2 * var(--size));
+    }
+    &::before {rotate: 45deg;}
+    &::after {rotate: -45deg;}
+  }
+}
