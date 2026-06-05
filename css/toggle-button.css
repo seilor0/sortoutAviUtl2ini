@@ -13,32 +13,32 @@
     cursor: pointer;
   
     input[type=checkbox] {display: none;}
+  }
   
-    .toggle-button__slider {
-      position: relative;
-      width:  calc(4*var(--radius) + 2*var(--padding));
-      height: calc(2*var(--radius) + 2*var(--padding));
-      border-radius: calc(var(--radius) + var(--padding));
-  
-      transition: background-color var(--transition-time);
-      background-color: #d9d9d9;
-      :checked ~ & {background-color: var(--color);}
-    }
-    .toggle-button__slider::before {
-      content: '';
-      aspect-ratio: 1 / 1;
-      height: calc(2*var(--radius));
-      border-radius: 50%;
-      background-color: white;
-  
-      position: absolute;
-      top: var(--padding);
-      left: var(--padding);
-  
-      transition: left var(--transition-time);
-    }
-    :checked ~ .toggle-button__slider::before {
-      left: calc(2*var(--radius) + var(--padding));
-    }
+  .toggle-button__slider {
+    position: relative;
+    width:  calc(4*var(--radius) + 2*var(--padding));
+    height: calc(2*var(--radius) + 2*var(--padding));
+    border-radius: calc(var(--radius) + var(--padding));
+
+    transition: background-color var(--transition-time);
+    background-color: #d9d9d9;
+    :checked ~ & {background-color: var(--color);}
+  }
+  .toggle-button__slider::before {
+    content: '';
+    aspect-ratio: 1 / 1;
+    height: calc(2*var(--radius));
+    border-radius: 50%;
+    background-color: white;
+
+    position: absolute;
+    top: var(--padding);
+    left: var(--padding);
+
+    transition: left var(--transition-time);
+  }
+  :checked ~ .toggle-button__slider::before {
+    left: calc(2*var(--radius) + var(--padding));
   }
 }
