@@ -15,6 +15,12 @@
 /*     || base, reset     */
 /* ---------------------- */
 
+@property --accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: lightgray;
+}
+
 @layer base {
   :root {
     --off-white: #fafafa;
