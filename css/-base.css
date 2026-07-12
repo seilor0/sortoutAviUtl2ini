@@ -123,7 +123,7 @@
   
     table {
       border-collapse: collapse;
-      font-size: small;
+      /* font-size: small; */
       letter-spacing: 0.5px;
       margin-block-start: 0.5rem;
       width: 55ch;
@@ -138,7 +138,7 @@
         padding: 0.25rem;
         font-weight: unset;
         text-align: left;
-        tbody & {padding-block-start: 0.5rem;}
+        /* tbody & {padding-block-start: 0.5rem;} */
         &:first-child {width: 20%}
         &:nth-child(2){width: 20%}
       }
