@@ -117,10 +117,7 @@
               </div>
             </div>
 
-            <div class="new-mofism-card" style="margin-block-start: 0.5rem;"
-              @mousedown.stop
-              @mouseup.stop
-            >
+            <div class="new-mofism-card" style="margin-block-start: 0.5rem;">
               <label class="round-button invert-el">
                 選択パッケージを<br>
                 {{setting.setToHide ? '非表示にする' : '表示する'}}
@@ -157,7 +154,7 @@
                 />
 
                 <p style="margin-block-start: 0.25rem;" :class="{'is-disabled': !setting.previewFont.enabled}">デフォルトのフォント：</p>
-                <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled">
+                <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled" style="width: 24ch;">
                   <option value="" selected>（指定なし）</option>
                   <option v-for="fontFamily in fontFamilySet">{{fontFamily}}</option>
                 </select>
@@ -207,7 +204,7 @@
               <div>
                 <toggle-button :is-checked="setting.previewFont.enabled" @checked-toggle="value=>setting.previewFont.enabled=value">フォントをプレビュー</toggle-button>
                 <p style="font-size: smaller;margin-block-start: 0.5rem;" :class="{'is-disabled': !setting.previewFont.enabled}">デフォルトのフォント：</p>
-                <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled" style="width: 24ch;">
+                <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled" style="width: 27ch;">
                   <option value="" selected>（指定なし）</option>
                   <option v-for="fontFamily in fontFamilySet">{{fontFamily}}</option>
                 </select>
