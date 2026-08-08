@@ -207,7 +207,7 @@
               <div>
                 <toggle-button :is-checked="setting.previewFont.enabled" @checked-toggle="value=>setting.previewFont.enabled=value">フォントをプレビュー</toggle-button>
                 <p style="font-size: smaller;margin-block-start: 0.5rem;" :class="{'is-disabled': !setting.previewFont.enabled}">デフォルトのフォント：</p>
-                <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled">
+                <select v-model="setting.previewFont.defFontFamily" :disabled="!setting.previewFont.enabled" style="width: 24ch;">
                   <option value="" selected>（指定なし）</option>
                   <option v-for="fontFamily in fontFamilySet">{{fontFamily}}</option>
                 </select>
