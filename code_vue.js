@@ -232,9 +232,10 @@ const rootApp = createApp({
         modelArr.forEach(packageModel => {
           let addTarget = resultArr;
           packageModel.props.label.forEach(label => {
-            const existFolder = addTarget.find(model=>model.name===label);
-            if (existFolder) addTarget = existFolder.children;
-            else {
+            const existFolder = addTarget.find(model=>model.name===label && model instanceof FolderModel);
+            if (existFolder) {
+              addTarget = existFolder.children;
+            } else {
               const newFolder = new FolderModel({name:label});
               addTarget.push(newFolder);
               addTarget = newFolder.children;
